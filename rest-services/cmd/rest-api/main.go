@@ -23,6 +23,7 @@ func main() {
 	// Create PiNAS working partition(1-5G?).. We will need a working partition to store data, install dns, step-ca and move /etc off the micro-sd
 	// Create zpool api
 	// Create datasets - Need to look at the options and support what we need. nvme-fa block storage we will need
+	// Restart the system
 
 	e.GET("/cpuInfo", system_info.GetCpu)
 
