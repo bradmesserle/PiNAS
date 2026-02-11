@@ -65,4 +65,5 @@ func updateFile(filePath string, stringData string) error {
 		return err
 	}
 
+	return nil
 }
