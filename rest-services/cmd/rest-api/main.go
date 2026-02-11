@@ -4,6 +4,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/pinas/rest-services/internal/system-info"
+	"github.com/pinas/rest-services/internal/system-updates"
 )
 
 func main() {
@@ -26,6 +27,9 @@ func main() {
 	// Restart the system
 
 	e.GET("/cpuInfo", system_info.GetCpu)
+
+	//Verify the config.txt has pcie gen3 enabled. If not, update the config.txt file
+	e.GET("/verifyUpdateConfig", system_updates.VerifyUpdateConfig)
 
 	// Start the server
 	e.Logger.Fatal(e.Start("localhost:9090"))
