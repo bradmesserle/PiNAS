@@ -3,8 +3,10 @@ package main
 import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	kernel_compile "github.com/pinas/rest-services/internal/kernel-compile"
 	"github.com/pinas/rest-services/internal/system-info"
 	"github.com/pinas/rest-services/internal/system-updates"
+	zfs_install "github.com/pinas/rest-services/internal/zfs-install"
 )
 
 func main() {
@@ -30,6 +32,18 @@ func main() {
 
 	//Verify the config.txt has pcie gen3 enabled. If not, update the config.txt file
 	e.GET("/verifyUpdateConfig", system_updates.VerifyUpdateConfig)
+
+	//Compile linux kernel we need to enable the nvme-fa options
+	e.GET("/compileKernel", kernel_compile.CompileLinuxKernel)
+
+	//Install ZFS
+	e.GET("/installZFS", zfs_install.InstallZfs)
+
+	//Get Drive Telemetry
+	e.GET("/getDriveTelemetry", system_info.GetDriveTelemetry)
+
+	//Move the /etc directory off the micro-sd card
+	e.GET("/moveEtcDirectory", system_updates.MoveEtcDirectory)
 
 	// Start the server
 	e.Logger.Fatal(e.Start("localhost:9090"))
