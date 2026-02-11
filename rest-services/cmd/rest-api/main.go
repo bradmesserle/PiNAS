@@ -1,17 +1,27 @@
 package main
 
 import (
+	"log"
+
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	kernel_compile "github.com/pinas/rest-services/internal/kernel-compile"
+	"github.com/pinas/rest-services/internal/kernel-compile"
 	"github.com/pinas/rest-services/internal/system-info"
 	"github.com/pinas/rest-services/internal/system-updates"
-	zfs_install "github.com/pinas/rest-services/internal/zfs-install"
+	"github.com/pinas/rest-services/internal/zfs-install"
 )
 
 func main() {
 
-	e := echo.New()
+	var e = echo.New()
+
+	defer func(e *echo.Echo) {
+		err := e.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}(e)
+
 	e.Use(middleware.RequestLogger())
 
 	//TODO: Endpoints
