@@ -166,5 +166,60 @@ func BuildKernel() error {
 // InstallKernel Install the kernel
 func InstallKernel() error {
 
+	// Install Kernel modules
+	cmd := exec.Command("make", "-j6", "modules_install")
+	cmd.Dir = linuxDir
+	cmd.Env = append(os.Environ(), "KERNEL=kernel_2712")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err := cmd.Run()
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	//Copy files
+	backupImageErr := CopyFile("/boot/firmware/$KERNEL.img", "/boot/firmware/$KERNEL-backup.img")
+	if backupImageErr != nil {
+		return err
+	}
+
+	copyImageErr := CopyFile("arch/arm64/boot/Image.gz", "/boot/firmware/$KERNEL.img")
+	if copyImageErr != nil {
+		return err
+	}
+
+	copyDTBErr := CopyFile("arch/arm64/boot/dts/broadcom/*.dtb", "/boot/firmware/")
+	if copyDTBErr != nil {
+		return err
+	}
+
+	copyOverlaysErr := CopyFile("arch/arm64/boot/dts/overlays/*.dtb*", "/boot/firmware/overlays/")
+	if copyOverlaysErr != nil {
+		return err
+	}
+
+	copyOverlaysReadMeErr := CopyFile("arch/arm64/boot/dts/overlays/README", "/boot/firmware/overlays/")
+	if copyOverlaysReadMeErr != nil {
+		return err
+	}
+
+	return nil
+}
+
+// CopyFile Command line copy function
+func CopyFile(src string, dst string) error {
+
+	cmd := exec.Command("cp", "src", "dst")
+	cmd.Dir = linuxDir
+	cmd.Env = append(os.Environ(), "KERNEL=kernel_2712")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err := cmd.Run()
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
 	return nil
 }
