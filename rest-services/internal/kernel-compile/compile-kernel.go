@@ -179,27 +179,27 @@ func InstallKernel() error {
 	}
 
 	//Copy files
-	backupImageErr := CopyFile(linuxDir+"/boot/firmware/$KERNEL.img", "/boot/firmware/$KERNEL-backup.img")
+	backupImageErr := CopyFile("/boot/firmware/kernel_2712.img", "/boot/firmware/kernel_2712-backup.img")
 	if backupImageErr != nil {
 		return err
 	}
 
-	copyImageErr := CopyFile(linuxDir+"arch/arm64/boot/Image.gz", "/boot/firmware/$KERNEL.img")
+	copyImageErr := CopyFile(linuxDir+"/arch/arm64/boot/Image.gz", "/boot/firmware/kernel_2712.img")
 	if copyImageErr != nil {
 		return err
 	}
 
-	copyDTBErr := CopyFile(linuxDir+"arch/arm64/boot/dts/broadcom/*.dtb", "/boot/firmware/")
+	copyDTBErr := CopyFile(linuxDir+"/arch/arm64/boot/dts/broadcom/*.dtb", "/boot/firmware/")
 	if copyDTBErr != nil {
 		return err
 	}
 
-	copyOverlaysErr := CopyFile(linuxDir+"arch/arm64/boot/dts/overlays/*.dtb*", "/boot/firmware/overlays/")
+	copyOverlaysErr := CopyFile(linuxDir+"/arch/arm64/boot/dts/overlays/*.dtb*", "/boot/firmware/overlays/")
 	if copyOverlaysErr != nil {
 		return err
 	}
 
-	copyOverlaysReadMeErr := CopyFile(linuxDir+"arch/arm64/boot/dts/overlays/README", "/boot/firmware/overlays/")
+	copyOverlaysReadMeErr := CopyFile(linuxDir+"/arch/arm64/boot/dts/overlays/README", "/boot/firmware/overlays/")
 	if copyOverlaysReadMeErr != nil {
 		return err
 	}
@@ -211,11 +211,10 @@ func InstallKernel() error {
 func CopyFile(src string, dst string) error {
 
 	log.Println("Copying file ", src, " to ", dst)
-	cmd := exec.Command("cp", "src", "dst")
-	cmd.Dir = linuxDir
-	cmd.Env = append(os.Environ(), "KERNEL=kernel_2712")
+	cmd := exec.Command("cp", src, dst)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
+
 	err := cmd.Run()
 	if err != nil {
 		log.Println(err)
