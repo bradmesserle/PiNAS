@@ -1,2 +1,2 @@
 # PiNAS
-Raspberry Pi Network Attached Storage Applicance
+Raspberry Pi Network Attached Storage Appliance
