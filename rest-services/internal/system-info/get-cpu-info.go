@@ -35,26 +35,22 @@ func GetCpu(c echo.Context) error {
 		return err
 	}
 
-	data := string(out)
-
 	cpuInfo := CpuInfo{}
 
 	//Get Number of CPUs
-	cpuInfo.NumberOfCpus = strings.Count(data, "processor")
+	cpuInfo.NumberOfCpus = strings.Count(string(out), "processor")
 
 	//Get MIPS
-	cpuInfo.BogoMIPS = GetFieldValue(data, bogoMips)
+	cpuInfo.BogoMIPS = GetFieldValue(string(out), bogoMips)
 
 	//Get Architecture
-	cpuInfo.Architecture = GetFieldValue(data, architecture)
+	cpuInfo.Architecture = GetFieldValue(string(out), architecture)
 
 	//Get Features
-	cpuInfo.Features = GetFieldValue(data, features)
+	cpuInfo.Features = GetFieldValue(string(out), features)
 
 	//Get Revision
-	cpuInfo.Revision = GetFieldValue(data, revision)
-
-	fmt.Println(cpuInfo)
+	cpuInfo.Revision = GetFieldValue(string(out), revision)
 
 	jsonData, marshalErr := json.Marshal(cpuInfo)
 	if marshalErr != nil {
@@ -62,7 +58,7 @@ func GetCpu(c echo.Context) error {
 		return marshalErr
 	}
 
-	return c.JSON(http.StatusOK, jsonData)
+	return c.JSON(http.StatusOK, string(jsonData))
 
 }
 
@@ -77,8 +73,3 @@ func GetFieldValue(data string, field string) string {
 
 	return ""
 }
-
-//func GetMockData() string {
-//	var data string = "processor       : 0\nBogoMIPS        : 108.00\nFeatures        : fp asimd evtstrm aes pmull sha1 sha2 crc32 atomics fphp asimdhp cpuid asimdrdm lrcpc dcpop asimddp\nCPU implementer : 0x41\nCPU architecture: 8\nCPU variant     : 0x4\nCPU part        : 0xd0b\nCPU revision    : 1\n\nprocessor       : 1\nBogoMIPS        : 108.00\nFeatures        : fp asimd evtstrm aes pmull sha1 sha2 crc32 atomics fphp asimdhp cpuid asimdrdm lrcpc dcpop asimddp\nCPU implementer : 0x41\nCPU architecture: 8\nCPU variant     : 0x4\nCPU part        : 0xd0b\nCPU revision    : 1\n\nprocessor       : 2\nBogoMIPS        : 108.00\nFeatures        : fp asimd evtstrm aes pmull sha1 sha2 crc32 atomics fphp asimdhp cpuid asimdrdm lrcpc dcpop asimddp\nCPU implementer : 0x41\nCPU architecture: 8\nCPU variant     : 0x4\nCPU part        : 0xd0b\nCPU revision    : 1\n\nprocessor       : 3\nBogoMIPS        : 108.00\nFeatures        : fp asimd evtstrm aes pmull sha1 sha2 crc32 atomics fphp asimdhp cpuid asimdrdm lrcpc dcpop asimddp\nCPU implementer : 0x41\nCPU architecture: 8\nCPU variant     : 0x4\nCPU part        : 0xd0b\nCPU revision    : 1\n\nRevision        : e04171\nSerial          : 4e34a94cdf59ebcf\nModel           : Raspberry Pi 5 Model B Rev 1.1"
-//	return data
-//}
