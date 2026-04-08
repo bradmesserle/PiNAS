@@ -25,6 +25,7 @@ func GetPiModelInfo(c echo.Context) error {
 
 	modelInfo := PIModel{}
 	modelInfo.PiModel = GetFieldValue(string(out), "Model")
+
 	jsonData, marshalErr := json.Marshal(modelInfo)
 
 	if marshalErr != nil {
@@ -33,5 +34,4 @@ func GetPiModelInfo(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, string(jsonData))
-
 }

@@ -37,13 +37,13 @@ func GetMemoryInfo(c echo.Context) error {
 	}
 
 	memoryInfo := MemoryInfo{}
-	memoryInfo.Total = GetFieldValue(string(out), memTotal)
-	memoryInfo.Free = GetFieldValue(string(out), memFree)
-	memoryInfo.Available = GetFieldValue(string(out), available)
-	memoryInfo.Buffers = GetFieldValue(string(out), buffers)
-	memoryInfo.Cached = GetFieldValue(string(out), cached)
-	memoryInfo.SwapTotal = GetFieldValue(string(out), swapTotal)
-	memoryInfo.SwapFree = GetFieldValue(string(out), swapFree)
+	memoryInfo.Total = GetLastFieldValue(string(out), memTotal)
+	memoryInfo.Free = GetLastFieldValue(string(out), memFree)
+	memoryInfo.Available = GetLastFieldValue(string(out), available)
+	memoryInfo.Buffers = GetLastFieldValue(string(out), buffers)
+	memoryInfo.Cached = GetLastFieldValue(string(out), cached)
+	memoryInfo.SwapTotal = GetLastFieldValue(string(out), swapTotal)
+	memoryInfo.SwapFree = GetLastFieldValue(string(out), swapFree)
 
 	jsonData, marshalErr := json.Marshal(memoryInfo)
 	if marshalErr != nil {

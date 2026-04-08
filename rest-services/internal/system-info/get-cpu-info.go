@@ -40,16 +40,16 @@ func GetCpuInfo(c echo.Context) error {
 	cpuInfo.NumberOfCpus = strings.Count(string(out), processor)
 
 	//Get MIPS
-	cpuInfo.BogoMIPS = GetFieldValue(string(out), bogoMips)
+	cpuInfo.BogoMIPS = GetLastFieldValue(string(out), bogoMips)
 
 	//Get Architecture
-	cpuInfo.Architecture = GetFieldValue(string(out), architecture)
+	cpuInfo.Architecture = GetLastFieldValue(string(out), architecture)
 
 	//Get Features
-	cpuInfo.Features = GetFieldValue(string(out), features)
+	cpuInfo.Features = GetLastFieldValue(string(out), features)
 
 	//Get Revision
-	cpuInfo.Revision = GetFieldValue(string(out), revision)
+	cpuInfo.Revision = GetLastFieldValue(string(out), revision)
 
 	jsonData, marshalErr := json.Marshal(cpuInfo)
 	if marshalErr != nil {
