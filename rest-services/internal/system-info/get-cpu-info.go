@@ -25,8 +25,8 @@ type CpuInfo struct {
 	Features     string `json:"features"`
 }
 
-// GetCpu Get the CPU Info
-func GetCpu(c echo.Context) error {
+// GetCpuInfo  Get the CPU Info
+func GetCpuInfo(c echo.Context) error {
 
 	out, err := exec.Command("cat", "/proc/cpuinfo").Output()
 	if err != nil {

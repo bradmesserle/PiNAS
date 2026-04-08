@@ -38,7 +38,14 @@ func main() {
 	// Create datasets - Need to look at the options and support what we need. nvme-fa block storage we will need
 	// Restart the system
 
-	e.GET("/cpuInfo", system_info.GetCpu)
+	//Get CPU Info
+	e.GET("/cpuInfo", system_info.GetCpuInfo)
+
+	//Get Model Info
+	e.GET("/modelInfo", system_info.GetPiModelInfo)
+
+	//Get Memory Info
+	e.GET("/memoryInfo", system_info.GetMemoryInfo)
 
 	//Verify the config.txt has pcie gen3 enabled. If not, update the config.txt file
 	e.GET("/verifyUpdateConfig", system_updates.VerifyUpdateConfig)

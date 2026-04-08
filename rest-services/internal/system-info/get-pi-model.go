@@ -13,8 +13,8 @@ type PIModel struct {
 	PiModel string `json:"piModel"`
 }
 
-// GetPiModel retrieves the Raspberry Pi model information
-func GetPiModel(c echo.Context) error {
+// GetPiModelInfo Retrieves the Raspberry Pi model information
+func GetPiModelInfo(c echo.Context) error {
 
 	out, err := exec.Command("cat", "/proc/cpuinfo").Output()
 
