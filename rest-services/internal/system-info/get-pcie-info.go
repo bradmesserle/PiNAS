@@ -12,9 +12,9 @@ import (
 )
 
 type PCIeInfo struct {
-	PCIeDevices []PCIeDevice `json:"nvmeDrives"`
-	GenVersion  string       `json:"genVersion"`
-	Gen3Enabled bool         `json:"gen3Enabled"`
+	PCIeDevices         []PCIeDevice `json:"nvmeDrives"`
+	GenVersion          string       `json:"genVersion"`
+	Gen3EnabledInConfig bool         `json:"gen3EnabledInConfig"`
 }
 
 type PCIeDevice struct {
