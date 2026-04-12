@@ -47,6 +47,9 @@ func main() {
 	//Get Memory Info
 	e.GET("/memoryInfo", system_info.GetMemoryInfo)
 
+	//Get PCIe Info
+	e.GET("/pcieInfo", system_info.GetPcieInfo)
+
 	//Verify the config.txt has pcie gen3 enabled. If not, update the config.txt file
 	e.GET("/verifyUpdateConfig", system_updates.VerifyUpdateConfig)
 
@@ -63,5 +66,5 @@ func main() {
 	e.GET("/moveEtcDirectory", system_updates.MoveEtcDirectory)
 
 	// Start the server
-	e.Logger.Fatal(e.Start("localhost:9090"))
+	e.Logger.Fatal(e.Start(":9090"))
 }
