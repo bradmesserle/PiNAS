@@ -34,6 +34,6 @@ func main() {
 	})
 
 	// Start the server
-	app.Logger.Fatal(app.Start("localhost:8080"))
+	app.Logger.Fatal(app.Start(":8080"))
 
 }

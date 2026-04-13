@@ -1,0 +1,48 @@
+package components
+
+templ WelcomePage() {
+
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-b from-blue-500 to-purple-600">
+ <div class="bg-white rounded-lg shadow-xl p-8 m-4">
+  <h1 class="text-4xl font-bold text-gray-800 mb-2">PI NAS</h1>
+  <p class="text-gray-600">Setup of PI Nas</p>
+
+
+  <div>
+
+   <p>Welcome to PiNAS</p>
+
+   <p>This setup process will help you setup your raspberry pi as network attached storage(NAS) device.</p>
+   <p>The PiNAS uses ZFS as the underlying file system</p>
+   <p>There are a few things to consider when using a raspberry pi as a storage solution</p>
+
+   <ol>
+   <li>Storage Drives: You want to use NVMe Drives for nice and fast storage medium</li>
+    <li><div>Fast PCIe Bus: You want to use a GEN3 PCIe controller to get the most out of your NVMe Drives <br>
+      It is recommended to use the <a target="_blank" rel="noopener noreferrer" href="https://www.seeedstudio.com/PCIe3-0-to-dual-M-2-hat-for-Raspberry-Pi-5-p-6358.html?srsltid=AfmBOopz5CJkUcbGJjfUnS4_AcCoOzsCAOFZxPtcGrpXfaXn1B7f8710">Seeed Stuido PCIe3.0 Dual M.2 Hat</a>
+        </div>
+       </li>
+
+   </ol>
+
+   <p></p>
+
+  </div>
+
+  <div>
+   <p>System Information</p>
+
+
+
+
+  </div>
+
+
+
+  <button class="mt-4 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Next</button>
+
+ </div>
+</div>
+
+
+ }
