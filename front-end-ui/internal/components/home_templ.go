@@ -29,7 +29,7 @@ func Home() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html lang=\"es\" class=\"dark\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>Pi NAS</title><link href=\"/static/css/style.css\" rel=\"stylesheet\"><link href=\"/static/css/pico/pico.min.css\" rel=\"stylesheet\"><script src=\"/static/js/htmx.js\" defer></script></head><body><div><!--- For now just go to the setup pi flow -->")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html lang=\"es\" class=\"dark\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>Pi NAS</title><link href=\"/static/css/style.css\" rel=\"stylesheet\"><link href=\"/static/css/pico/pico.min.css\" rel=\"stylesheet\"><script src=\"/static/js/htmx.js\" defer></script></head><body><div id=\"welcome-page\"><!--- For now just go to the setup pi flow -->")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -37,7 +37,7 @@ func Home() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div></body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div><button id=\"nextButton\" class=\"mt-4 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded\">Next</button></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

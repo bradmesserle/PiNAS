@@ -1,0 +1,42 @@
+package setup
+
+templ SystemInfoPage(data WizardData) {
+
+<form hx-post="/system-info"  hx-swap="innerHTML" hx-target="#wizard">
+
+    <div>
+        <p>Setup Pi NAS</p>
+    </div>
+
+    <div>
+    <p>System Information</p>
+
+    <div>
+        <p>Model Info</p>
+    </div>
+
+    <div>
+        <p>CPU Info</p>
+    </div>
+
+    <div>
+        <p>Memory Info</p>
+    </div>
+
+    <div>
+        <p>PCIe GEN3 is Enabled</p>
+    </div>
+
+    <div>
+        <p>PCIe Device List</p>
+    </div>
+
+    <div>
+        <p>Drive Info</p>
+    </div>
+    </div>
+
+    <button type="submit">Next</button>
+</form>
+
+}

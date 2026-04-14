@@ -33,6 +33,12 @@ func main() {
 		return endpoints.Home(c, components.Home())
 	})
 
+	app.GET("/setup", func(c echo.Context) error { return endpoints.Setup(c) })
+
+	app.POST("/system-info", func(c echo.Context) error { return endpoints.EnableNvmeFa(c) })
+
+	app.POST("/enable-nvme-fa", func(c echo.Context) error { return endpoints.EnableNvmeFa(c) })
+
 	// Start the server
 	app.Logger.Fatal(app.Start(":8080"))
 

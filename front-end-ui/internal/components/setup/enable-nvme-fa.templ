@@ -1,0 +1,23 @@
+package setup
+
+
+templ EnableNvmeFa(data WizardData) {
+
+
+<form hx-post="/enable-nvme-fa"  hx-swap="innerHTML" hx-target="#wizard">
+
+<div>
+
+    <p>Enable NVMe-FA</p>
+
+</div>
+
+    <button class="" hx-post="/system-info">Back</button>
+    <button type="submit">Next</button>
+
+</form>
+
+
+
+}
+

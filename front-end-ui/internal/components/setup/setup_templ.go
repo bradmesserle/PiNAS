@@ -8,7 +8,11 @@ package setup
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-func Setup() templ.Component {
+type WizardData struct {
+	Step int
+}
+
+func Setup(data WizardData) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -29,6 +33,25 @@ func Setup() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html lang=\"es\" class=\"dark\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>Pi NAS</title><link href=\"/static/css/style.css\" rel=\"stylesheet\"><link href=\"/static/css/pico/pico.min.css\" rel=\"stylesheet\"><script src=\"/static/js/htmx.js\" defer></script></head><div id=\"wizard\" class=\"wizard-container\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if data.Step == 0 {
+			templ_7745c5c3_Err = SystemInfoPage(data).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		} else if data.Step == 1 {
+			templ_7745c5c3_Err = EnableNvmeFa(data).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div></html>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
 		return nil
 	})
 }
