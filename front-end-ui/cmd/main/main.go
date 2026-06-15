@@ -40,10 +40,6 @@ func main() {
 
 	app.POST("/back", func(c echo.Context) error { return endpoints.WizardBack(c, wizardStep) })
 
-	//app.POST("/system-info", func(c echo.Context) error { return endpoints.EnableNvmeFa(c) })
-
-	//app.POST("/enable-nvme-fa", func(c echo.Context) error { return endpoints.EnableNvmeFa(c) })
-
 	// Start the server
 	app.Logger.Fatal(app.Start(":8080"))
 
