@@ -4,39 +4,40 @@ import "github.com/pinas/ui/internal/structs"
 
 templ SystemInfoPage(data structs.WizardInfo) {
 
+    <div id="setup-wizard">
 
-    <div>
-        <p>Setup Pi NAS</p>
+        <div>
+            <p>System Information</p>
+        <div>
+            <p>Model Info</p>
+        </div>
+
+        <div>
+            <p>CPU Info</p>
+        </div>
+
+        <div>
+            <p>Memory Info</p>
+        </div>
+
+        <div>
+            <p>PCIe GEN3 is Enabled</p>
+        </div>
+
+        <div>
+            <p>PCIe Device List</p>
+        </div>
+
+        <div>
+            <p>Drive Info</p>
+        </div>
+
+        </div>
+
+        @WizardButtons(data)
+
     </div>
 
-    <div>
-    <p>System Information</p>
-
-    <div>
-        <p>Model Info</p>
-    </div>
-
-    <div>
-        <p>CPU Info</p>
-    </div>
-
-    <div>
-        <p>Memory Info</p>
-    </div>
-
-    <div>
-        <p>PCIe GEN3 is Enabled</p>
-    </div>
-
-    <div>
-        <p>PCIe Device List</p>
-    </div>
-
-    <div>
-        <p>Drive Info</p>
-    </div>
-
-    </div>
 
 
 }

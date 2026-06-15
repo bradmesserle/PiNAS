@@ -36,8 +36,6 @@ func main() {
 		return endpoints.Home(c, components.Home(*wizardStep))
 	})
 
-	app.GET("/setup", func(c echo.Context) error { return endpoints.Setup(c) })
-
 	app.POST("/next", func(c echo.Context) error { return endpoints.WizardNext(c, wizardStep) })
 
 	app.POST("/back", func(c echo.Context) error { return endpoints.WizardBack(c, wizardStep) })

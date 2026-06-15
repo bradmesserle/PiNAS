@@ -7,3 +7,4 @@
 /front-end-ui/internal/components/setup/setup_wizard_header_templ.go
 /front-end-ui/internal/components/setup/system_info_templ.go
 /front-end-ui/internal/components/welcome_page_templ.go
+/front-end-ui/internal/components/setup/wizard_buttons_templ.go
