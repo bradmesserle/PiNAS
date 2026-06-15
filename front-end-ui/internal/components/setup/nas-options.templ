@@ -10,33 +10,52 @@ templ NasOptions(data structs.WizardInfo) {
                 NAS Options
         </div>
 
+
         <div>
-            <label>
-                <!-- Use data-bind to bind the element to your signal -->
-                <input type="checkbox" data-bind:nasOptions.installDns  />
-                Install DNS
-            </label>
+
+            <div>Install DNS Services</div>
+
+            <div>
+                <label>
+                    <!-- Use data-bind to bind the element to your signal -->
+                    <input type="checkbox" data-bind:nasOptions.installDns  />
+                    Install DNS
+                </label>
+
+            </div>
 
         </div>
 
 
-        <div>
-            <label>
-                <!-- Use data-bind to bind the element to your signal -->
-                <input type="checkbox" data-bind:nasOptions.installCa  />
-                Install CA
-            </label>
 
+        <div>
+
+            <div>Install a ROOT Certificate Authority</div>
+
+
+            <div>
+                <label>
+                    <!-- Use data-bind to bind the element to your signal -->
+                    <input type="checkbox" data-bind:nasOptions.installCa  />
+                    Install CA
+                </label>
+
+            </div>
         </div>
 
 
         <div>
-            <label>
-                <!-- Use data-bind to bind the element to your signal -->
-                <input type="checkbox" data-bind:nasOptions.installNvmeFa  />
-                Install NVMe-FA
-            </label>
 
+            <div>Enable NVMe over Fabrics</div>
+
+            <div>
+                <label>
+                    <!-- Use data-bind to bind the element to your signal -->
+                    <input type="checkbox" data-bind:nasOptions.installNvmeFa  />
+                    Enable NVMe-FA
+                </label>
+
+            </div>
         </div>
 
 
