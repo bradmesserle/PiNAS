@@ -2,3 +2,8 @@
 /rest-services/config.txt.org
 /rest-services/testing.sh
 /front-end-ui/bin/
+/front-end-ui/internal/components/setup/enable-nvme-fa_templ.go
+/front-end-ui/internal/components/setup/setup_wizard_templ.go
+/front-end-ui/internal/components/setup/setup_wizard_header_templ.go
+/front-end-ui/internal/components/setup/system_info_templ.go
+/front-end-ui/internal/components/welcome_page_templ.go
