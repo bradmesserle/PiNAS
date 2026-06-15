@@ -7,6 +7,13 @@ import (
 
 func WizardNext(c echo.Context, wizardInfo *structs.WizardInfo) error {
 
+	err := c.Bind(wizardInfo)
+	if err != nil {
+
+		//TODO: Handle Error
+		return err
+	}
+
 	wizardInfo.Step = wizardInfo.Step + 1
 	return WizardNavigation(c, wizardInfo)
 

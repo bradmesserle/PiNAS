@@ -1,0 +1,48 @@
+package setup
+
+import "github.com/pinas/ui/internal/structs"
+
+templ NasOptions(data structs.WizardInfo) {
+
+    <div id="setup-wizard">
+
+        <div>
+                NAS Options
+        </div>
+
+        <div>
+            <label>
+                <!-- Use data-bind to bind the element to your signal -->
+                <input type="checkbox" data-bind:nasOptions.installDns  />
+                Install DNS
+            </label>
+
+        </div>
+
+
+        <div>
+            <label>
+                <!-- Use data-bind to bind the element to your signal -->
+                <input type="checkbox" data-bind:nasOptions.installCa  />
+                Install CA
+            </label>
+
+        </div>
+
+
+        <div>
+            <label>
+                <!-- Use data-bind to bind the element to your signal -->
+                <input type="checkbox" data-bind:nasOptions.installNvmeFa  />
+                Install NVMe-FA
+            </label>
+
+        </div>
+
+
+
+
+        @WizardButtons(data)
+
+    </div>
+}

@@ -8,3 +8,4 @@
 /front-end-ui/internal/components/setup/system_info_templ.go
 /front-end-ui/internal/components/welcome_page_templ.go
 /front-end-ui/internal/components/setup/wizard_buttons_templ.go
+/front-end-ui/internal/components/setup/nas-options_templ.go

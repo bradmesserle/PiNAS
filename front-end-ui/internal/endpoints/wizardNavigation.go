@@ -21,9 +21,13 @@ func WizardNavigation(c echo.Context, wizardInfo *structs.WizardInfo) error {
 		//Get System Info
 
 		//Render System Info Page
-		var cmp templ.Component = setup.SystemInfoPage(*wizardInfo)
-		c.Response().Header().Set(echo.HeaderContentType, echo.MIMETextHTMLCharsetUTF8)
-		return cmp.Render(c.Request().Context(), c.Response().Writer)
+		return SystemInfo(c, wizardInfo)
+	}
+
+	if wizardInfo.Step == 2 {
+
+		//Render NAS Options Page
+		return NasOptions(c, wizardInfo)
 	}
 
 	var cmp templ.Component = setup.SetupWizard(*wizardInfo)
