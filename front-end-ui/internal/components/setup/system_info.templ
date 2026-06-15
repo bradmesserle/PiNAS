@@ -1,8 +1,9 @@
 package setup
 
-templ SystemInfoPage(data WizardData) {
+import "github.com/pinas/ui/internal/structs"
 
-<form hx-post="/system-info"  hx-swap="innerHTML" hx-target="#wizard">
+templ SystemInfoPage(data structs.WizardInfo) {
+
 
     <div>
         <p>Setup Pi NAS</p>
@@ -34,9 +35,8 @@ templ SystemInfoPage(data WizardData) {
     <div>
         <p>Drive Info</p>
     </div>
+
     </div>
 
-    <button type="submit">Next</button>
-</form>
 
 }

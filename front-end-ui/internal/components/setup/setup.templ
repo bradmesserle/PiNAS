@@ -15,17 +15,20 @@ templ Setup(data WizardData) {
     <title>Pi NAS</title>
     <link href="/static/css/style.css" rel="stylesheet">
     <link href="/static/css/pico/pico.min.css" rel="stylesheet">
-    <script src="/static/js/htmx.js" defer></script>
+    <!-- Datastar v1: a single module script is the entire client runtime. -->
+    <script type="module" src="https://cdn.jsdelivr.net/gh/starfederation/datastar@v1.0.2/bundles/datastar.js"></script>
+
 </head>
 
 
-<div id="wizard" class="wizard-container">
-    if data.Step == 0 {
-        @SystemInfoPage(data)
-    } else if data.Step == 1 {
-        @EnableNvmeFa(data)
-    }
-</div>
+<main id="app"
+      data-signals="{step: 1, host: '', email: '', title: '', format: '', tagline: '', day: '', minutes: 45, commit: false, sending: false}">
+
+    { children... }
+</main>
+
+
+
 
 </html>
 }

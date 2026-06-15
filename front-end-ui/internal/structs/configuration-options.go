@@ -1,4 +1,4 @@
-package internal
+package structs
 
 type ConfigurationOptions struct {
 	enableNvmeFa                bool

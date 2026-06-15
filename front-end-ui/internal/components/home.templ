@@ -1,6 +1,9 @@
 package components
 
-templ Home() {
+import "github.com/pinas/ui/internal/components/setup"
+import "github.com/pinas/ui/internal/structs"
+
+templ Home (data structs.WizardInfo) {
     <!DOCTYPE html>
     <html lang="es" class="dark">
         <head>
@@ -9,19 +12,32 @@ templ Home() {
             <title>Pi NAS</title>
             <link href="/static/css/style.css" rel="stylesheet">
             <link href="/static/css/pico/pico.min.css" rel="stylesheet">
-            <script src="/static/js/htmx.js" defer></script>
-        </head>
 
+            <!-- Datastar v1: a single module script is the entire client runtime. -->
+            <script type="module" src="https://cdn.jsdelivr.net/gh/starfederation/datastar@v1.0.2/bundles/datastar.js"></script>
+
+        </head>
 
        <body>
 
-        <div id="welcome-page" >
-            <!--- For now just go to the setup pi flow -->
-            @WelcomePage()
-        </div>
+           <main id="app" >
 
-        <button id="nextButton" class="mt-4 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Next</button>
+               @setup.SetupWizardHeader()
 
+               <div id="setup-wizard">
+                    <div id="welcome-page" >
+                        <!--- For now just go to the setup pi flow -->
+                        @WelcomePage()
+                    </div>
+
+                   <div>
+                       <button id="nextButton"
+                               data-on:click="@post('/next')"
+                               class="mt-4 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Next</button>
+                   </div>
+               </div>
+
+           </main>
 
        </body>
 
