@@ -7,11 +7,8 @@ import (
 	"os/exec"
 
 	"github.com/labstack/echo/v4"
+	"github.com/pinas/common-structs"
 )
-
-type PIModel struct {
-	PiModel string `json:"piModel"`
-}
 
 // GetPiModelInfo Retrieves the Raspberry Pi model information
 func GetPiModelInfo(c echo.Context) error {
@@ -23,7 +20,7 @@ func GetPiModelInfo(c echo.Context) error {
 		return err
 	}
 
-	modelInfo := PIModel{}
+	modelInfo := common_structs.PIModel{}
 	modelInfo.PiModel = GetFieldValue(string(out), "Model")
 
 	jsonData, marshalErr := json.Marshal(modelInfo)

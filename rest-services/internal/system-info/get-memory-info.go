@@ -7,6 +7,7 @@ import (
 	"os/exec"
 
 	"github.com/labstack/echo/v4"
+	"github.com/pinas/common-structs"
 )
 
 const memTotal = "MemTotal"
@@ -17,16 +18,6 @@ const cached = "Cached"
 const swapTotal = "SwapTotal"
 const swapFree = "SwapFree"
 
-type MemoryInfo struct {
-	Total     string `json:"total"`
-	Free      string `json:"free"`
-	Available string `json:"available"`
-	Buffers   string `json:"buffers"`
-	Cached    string `json:"cached"`
-	SwapTotal string `json:"swapTotal"`
-	SwapFree  string `json:"swapFree"`
-}
-
 // GetMemoryInfo Get System Memory Info
 func GetMemoryInfo(c echo.Context) error {
 
@@ -36,7 +27,7 @@ func GetMemoryInfo(c echo.Context) error {
 		return err
 	}
 
-	memoryInfo := MemoryInfo{}
+	memoryInfo := common_structs.MemoryInfo{}
 	memoryInfo.Total = GetLastFieldValue(string(out), memTotal)
 	memoryInfo.Free = GetLastFieldValue(string(out), memFree)
 	memoryInfo.Available = GetLastFieldValue(string(out), available)

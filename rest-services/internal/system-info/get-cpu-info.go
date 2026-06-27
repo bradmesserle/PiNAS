@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/labstack/echo/v4"
+	"github.com/pinas/common-structs"
 )
 
 // Cpu Info Field Names
@@ -16,14 +17,6 @@ const bogoMips = "BogoMIPS"
 const architecture = "CPU architecture"
 const features = "Features"
 const revision = "CPU revision"
-
-type CpuInfo struct {
-	NumberOfCpus int    `json:"numberOfCpus"`
-	BogoMIPS     string `json:"bogoMIPS"`
-	Architecture string `json:"architecture"`
-	Revision     string `json:"revision"`
-	Features     string `json:"features"`
-}
 
 // GetCpuInfo  Get the CPU Info
 func GetCpuInfo(c echo.Context) error {
@@ -34,7 +27,7 @@ func GetCpuInfo(c echo.Context) error {
 		return err
 	}
 
-	cpuInfo := CpuInfo{}
+	cpuInfo := common_structs.CpuInfo{}
 
 	//Get Number of CPUs
 	cpuInfo.NumberOfCpus = strings.Count(string(out), processor)

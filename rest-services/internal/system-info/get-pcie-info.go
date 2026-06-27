@@ -9,20 +9,8 @@ import (
 	"strings"
 
 	"github.com/labstack/echo/v4"
+	"github.com/pinas/common-structs"
 )
-
-type PCIeInfo struct {
-	PCIeDevices         []PCIeDevice `json:"nvmeDrives"`
-	GenVersion          string       `json:"genVersion"`
-	Gen3EnabledInConfig bool         `json:"gen3EnabledInConfig"`
-}
-
-type PCIeDevice struct {
-	Slot        string `json:"slot"`
-	Vendor      string `json:"vendor"`
-	Description string `json:"description"`
-	Speed       string `json:"speed"`
-}
 
 // GetPcieInfo Get PCIe Device Info
 func GetPcieInfo(c echo.Context) error {
@@ -34,7 +22,7 @@ func GetPcieInfo(c echo.Context) error {
 		return err
 	}
 
-	pcieInfo := PCIeInfo{}
+	pcieInfo := common_structs.PCIeInfo{}
 
 	//Create devices object
 	pcieInfo.PCIeDevices = getDevices(string(out))
@@ -60,9 +48,9 @@ func GetPcieInfo(c echo.Context) error {
 }
 
 // Parse string to extract the devices
-func getDevices(data string) []PCIeDevice {
+func getDevices(data string) []common_structs.PCIeDevice {
 
-	var devices []PCIeDevice
+	var devices []common_structs.PCIeDevice
 
 	scanner := bufio.NewScanner(strings.NewReader(data))
 	var currentBlock []string
@@ -83,10 +71,10 @@ func getDevices(data string) []PCIeDevice {
 }
 
 // Parse device string block and create device object
-func createDevice(deviceStringBlock []string) PCIeDevice {
+func createDevice(deviceStringBlock []string) common_structs.PCIeDevice {
 
 	//create pcie device
-	device := PCIeDevice{}
+	device := common_structs.PCIeDevice{}
 
 	//Set Slot
 	if len(deviceStringBlock) >= 1 {
@@ -106,7 +94,7 @@ func createDevice(deviceStringBlock []string) PCIeDevice {
 	return device
 }
 
-func getLinkStatus(busDetails string, device PCIeDevice) PCIeDevice {
+func getLinkStatus(busDetails string, device common_structs.PCIeDevice) common_structs.PCIeDevice {
 
 	scanner := bufio.NewScanner(strings.NewReader(busDetails))
 	var deviceFound bool = false
