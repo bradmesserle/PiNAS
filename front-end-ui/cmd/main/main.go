@@ -30,15 +30,15 @@ func main() {
 	//app.Use(middleware.Recover())
 	//app.Use(middleware.CORS())
 
-	wizardStep := new(structs.WizardInfo)
+	wizardInfo := new(structs.WizardInfo)
 
 	app.GET("/", func(c echo.Context) error {
-		return endpoints.Home(c, components.Home(*wizardStep))
+		return endpoints.Home(c, components.Home(*wizardInfo))
 	})
 
-	app.POST("/next", func(c echo.Context) error { return endpoints.WizardNext(c, wizardStep) })
+	app.POST("/next", func(c echo.Context) error { return endpoints.WizardNext(c, wizardInfo) })
 
-	app.POST("/back", func(c echo.Context) error { return endpoints.WizardBack(c, wizardStep) })
+	app.POST("/back", func(c echo.Context) error { return endpoints.WizardBack(c, wizardInfo) })
 
 	// Start the server
 	app.Logger.Fatal(app.Start(":8080"))

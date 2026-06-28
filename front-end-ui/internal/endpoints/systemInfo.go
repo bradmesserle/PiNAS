@@ -7,9 +7,9 @@ import (
 	"github.com/pinas/ui/internal/structs"
 )
 
-func SystemInfo(c echo.Context, wizardInfo *structs.WizardInfo) error {
+func SystemInfo(c echo.Context, wizardInfo *structs.WizardInfo, systemInfo *structs.SystemInfo) error {
 
-	var cmp templ.Component = setup.SystemInfoPage(*wizardInfo)
+	var cmp templ.Component = setup.SystemInfoPage(*wizardInfo, *systemInfo)
 	c.Response().Header().Set(echo.HeaderContentType, echo.MIMETextHTMLCharsetUTF8)
 	return cmp.Render(c.Request().Context(), c.Response().Writer)
 }

@@ -5,7 +5,10 @@ go 1.26.1
 require (
 	github.com/a-h/templ v0.3.1020
 	github.com/labstack/echo/v4 v4.15.3
+	github.com/pinas/common-structs v0.0.0-00010101000000-000000000000
 )
+
+replace github.com/pinas/common-structs => ../common-structs
 
 require (
 	github.com/a-h/parse v0.0.0-20250122154542-74294addb73e // indirect

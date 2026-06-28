@@ -2,14 +2,16 @@ package setup
 
 import "github.com/pinas/ui/internal/structs"
 
-templ SystemInfoPage(data structs.WizardInfo) {
+templ SystemInfoPage(data structs.WizardInfo, systemInfo  structs.SystemInfo) {
 
     <div id="setup-wizard">
 
         <div>
             <p>System Information</p>
         <div>
-            <p>Model Info</p>
+
+            <div><p>Model Info:</p>  { systemInfo.Model.PiModel } </div>
+
         </div>
 
         <div>
