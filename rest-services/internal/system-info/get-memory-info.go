@@ -1,7 +1,6 @@
 package system_info
 
 import (
-	"encoding/json"
 	"log"
 	"net/http"
 	"os/exec"
@@ -36,11 +35,5 @@ func GetMemoryInfo(c echo.Context) error {
 	memoryInfo.SwapTotal = GetLastFieldValue(string(out), swapTotal)
 	memoryInfo.SwapFree = GetLastFieldValue(string(out), swapFree)
 
-	jsonData, marshalErr := json.Marshal(memoryInfo)
-	if marshalErr != nil {
-		log.Println(marshalErr)
-		return marshalErr
-	}
-
-	return c.JSON(http.StatusOK, string(jsonData))
+	return c.JSON(http.StatusOK, memoryInfo)
 }

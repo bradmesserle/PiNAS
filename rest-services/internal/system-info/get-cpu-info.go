@@ -1,7 +1,6 @@
 package system_info
 
 import (
-	"encoding/json"
 	"log"
 	"net/http"
 	"os/exec"
@@ -44,12 +43,6 @@ func GetCpuInfo(c echo.Context) error {
 	//Get Revision
 	cpuInfo.Revision = GetLastFieldValue(string(out), revision)
 
-	jsonData, marshalErr := json.Marshal(cpuInfo)
-	if marshalErr != nil {
-		log.Println(marshalErr)
-		return marshalErr
-	}
-
-	return c.JSON(http.StatusOK, string(jsonData))
+	return c.JSON(http.StatusOK, cpuInfo)
 
 }

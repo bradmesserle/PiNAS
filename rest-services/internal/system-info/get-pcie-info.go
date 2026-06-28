@@ -2,7 +2,6 @@ package system_info
 
 import (
 	"bufio"
-	"encoding/json"
 	"log"
 	"net/http"
 	"os/exec"
@@ -38,13 +37,7 @@ func GetPcieInfo(c echo.Context) error {
 		pcieInfo.PCIeDevices[i] = getLinkStatus(string(detailsOut), device)
 	}
 
-	jsonData, marshalErr := json.Marshal(pcieInfo)
-	if marshalErr != nil {
-		log.Println(marshalErr)
-		return marshalErr
-	}
-
-	return c.JSON(http.StatusOK, string(jsonData))
+	return c.JSON(http.StatusOK, pcieInfo)
 }
 
 // Parse string to extract the devices
