@@ -2,6 +2,8 @@ package endpoints
 
 import (
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/gommon/log"
+	common_structs "github.com/pinas/common-structs"
 	"github.com/pinas/ui/internal/components"
 	"github.com/pinas/ui/internal/components/setup"
 	"github.com/pinas/ui/internal/rest-client"
@@ -21,12 +23,9 @@ func WizardNavigation(c echo.Context, wizardInfo *structs.WizardInfo) error {
 		systemInfoData := new(structs.SystemInfo)
 
 		//Get System Info
-		var modelInfo, err = rest_client.GetModelInfo()
-		systemInfoData.Model = modelInfo
-
-		if err != nil {
-			return err
-		}
+		systemInfoData.Model = GetModelInfo()
+		// Get CPU Info
+		systemInfoData.CpuInfo = GetCpuInfo()
 
 		//Render System Info Page
 		return SystemInfo(c, wizardInfo, systemInfoData)
@@ -42,4 +41,26 @@ func WizardNavigation(c echo.Context, wizardInfo *structs.WizardInfo) error {
 	c.Response().Header().Set(echo.HeaderContentType, echo.MIMETextHTMLCharsetUTF8)
 	return cmp.Render(c.Request().Context(), c.Response().Writer)
 
+}
+
+// GetModelInfo Get Model Info
+func GetModelInfo() common_structs.PIModel {
+	//Get System Info
+	var modelInfo, err = rest_client.GetModelInfo()
+	if err != nil {
+		log.Error(err.Error())
+	}
+
+	return modelInfo
+}
+
+// GetCpuInfo Get CPU Info
+func GetCpuInfo() common_structs.CpuInfo {
+	//Get CPU Info
+	var cpuInfo, err = rest_client.GetCpuInfo()
+	if err != nil {
+		log.Error(err.Error())
+	}
+
+	return cpuInfo
 }
