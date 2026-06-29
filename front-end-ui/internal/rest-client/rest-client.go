@@ -15,6 +15,8 @@ var enableGen3PcieUrl = "http://192.168.0.22:9090/verifyUpdateConfig"
 var getPCIeInfoUrl = "http://192.168.0.22:9090/pcieInfo"
 var getModelInfoUrl = "http://192.168.0.22:9090/modelInfo"
 var getCpuInfoUrl = "http://192.168.0.22:9090/cpuInfo"
+var getMemoryInfoUrl = "http://192.168.0.22:9090/memoryInfo"
+var verifyUpdateConfig = "http://192.168.0.22:9090/verifyUpdateConfig"
 
 // EnableGen3Pcie sends a GET request to enable Gen3 PCIe on the specified URL
 func EnableGen3Pcie() (resp *http.Response, err error) {
@@ -38,8 +40,15 @@ func GetCpuInfo() (model common_structs.CpuInfo, err error) {
 // GetPCIeInfo Get PCIe Info
 func GetPCIeInfo() (model common_structs.PCIeInfo, err error) {
 	var pcieInfo common_structs.PCIeInfo
-	err = execRestCall(&pcieInfo, getCpuInfoUrl)
+	err = execRestCall(&pcieInfo, getPCIeInfoUrl)
 	return pcieInfo, err
+}
+
+// GetMemoryInfo Get Memory Info
+func GetMemoryInfo() (model common_structs.MemoryInfo, err error) {
+	var memoryInfo common_structs.MemoryInfo
+	err = execRestCall(&memoryInfo, getMemoryInfoUrl)
+	return memoryInfo, err
 }
 
 // Execute Rest Call and handle errors

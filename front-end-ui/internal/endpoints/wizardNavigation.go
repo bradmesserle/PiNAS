@@ -22,10 +22,14 @@ func WizardNavigation(c echo.Context, wizardInfo *structs.WizardInfo) error {
 
 		systemInfoData := new(structs.SystemInfo)
 
-		//Get System Info
-		systemInfoData.Model = GetModelInfo()
+		// Get System Info
+		systemInfoData.Model = getModelInfo()
 		// Get CPU Info
-		systemInfoData.CpuInfo = GetCpuInfo()
+		systemInfoData.CpuInfo = getCpuInfo()
+		// Get Pcie Info
+		systemInfoData.PcieInfo = getPcieInfo()
+		// Get Memory Info
+		systemInfoData.MemoryInfo = getMemoryInfo()
 
 		//Render System Info Page
 		return SystemInfo(c, wizardInfo, systemInfoData)
@@ -43,8 +47,8 @@ func WizardNavigation(c echo.Context, wizardInfo *structs.WizardInfo) error {
 
 }
 
-// GetModelInfo Get Model Info
-func GetModelInfo() common_structs.PIModel {
+// getModelInfo Get Model Info
+func getModelInfo() common_structs.PIModel {
 	//Get System Info
 	var modelInfo, err = rest_client.GetModelInfo()
 	if err != nil {
@@ -54,8 +58,8 @@ func GetModelInfo() common_structs.PIModel {
 	return modelInfo
 }
 
-// GetCpuInfo Get CPU Info
-func GetCpuInfo() common_structs.CpuInfo {
+// getCpuInfo Get CPU Info
+func getCpuInfo() common_structs.CpuInfo {
 	//Get CPU Info
 	var cpuInfo, err = rest_client.GetCpuInfo()
 	if err != nil {
@@ -63,4 +67,26 @@ func GetCpuInfo() common_structs.CpuInfo {
 	}
 
 	return cpuInfo
+}
+
+// getPcieInfo Get PCIe Info
+func getPcieInfo() common_structs.PCIeInfo {
+	//Get Pcie Info
+	var pcieInfo, err = rest_client.GetPCIeInfo()
+	if err != nil {
+		log.Error(err.Error())
+	}
+
+	return pcieInfo
+}
+
+// Get Memory Info
+func getMemoryInfo() common_structs.MemoryInfo {
+	//Get Memory Info
+	var memoryInfo, err = rest_client.GetMemoryInfo()
+	if err != nil {
+		log.Error(err.Error())
+	}
+
+	return memoryInfo
 }
