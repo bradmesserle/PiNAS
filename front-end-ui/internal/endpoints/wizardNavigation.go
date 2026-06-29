@@ -3,7 +3,7 @@ package endpoints
 import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/gommon/log"
-	common_structs "github.com/pinas/common-structs"
+	"github.com/pinas/common-structs"
 	"github.com/pinas/ui/internal/components"
 	"github.com/pinas/ui/internal/components/setup"
 	"github.com/pinas/ui/internal/rest-client"
