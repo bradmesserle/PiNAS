@@ -17,3 +17,4 @@ package-deb:
 	cp deb-package-files/control /tmp/PI-NAS-REST-Services-${version}_arm64/DEBIAN
 	cp deb-package-files/postinst /tmp/PI-NAS-REST-Services-${version}_arm64/DEBIAN
 	chmod +  /tmp/PI-NAS-REST-Services-${version}_arm64/DEBIAN/postinst
+	dpkg-deb --build --root-owner-group PI-NAS-REST-Services_0.0-1_amd64
