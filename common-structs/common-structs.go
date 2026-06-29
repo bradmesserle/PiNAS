@@ -34,3 +34,10 @@ type PCIeDevice struct {
 type PIModel struct {
 	PiModel string `json:"piModel"`
 }
+
+type NvmeDrive struct {
+	DeviceIdentifier string `json:"deviceIdentifier"`
+	Name             string `json:"name"`
+	Model            string `json:"model"`
+	Size             string `json:"size"`
+}
