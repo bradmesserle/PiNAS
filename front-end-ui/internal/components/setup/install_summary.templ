@@ -1,0 +1,31 @@
+package setup
+
+import "github.com/pinas/ui/internal/structs"
+
+templ InstallSummaryPage(data structs.WizardInfo) {
+
+<div id="setup-wizard">
+
+    <div>
+        <p>Install Summary</p>
+        <div>
+
+
+            <button id="backButton"
+                    data-on:click="@post('/back')"
+                    class="mt-4 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Back</button>
+
+
+
+            <button id="installButton"
+                    data-on:click="@post('/install')"
+                    class="mt-4 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Install</button>
+
+
+        </div>
+    </div>
+
+
+</div>
+
+}

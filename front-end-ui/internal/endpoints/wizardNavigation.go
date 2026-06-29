@@ -36,9 +36,18 @@ func WizardNavigation(c echo.Context, wizardInfo *structs.WizardInfo) error {
 	}
 
 	if wizardInfo.Step == 2 {
+		//Render Drive Setup Page
+		return DriveSetup(c, wizardInfo)
+	}
 
+	if wizardInfo.Step == 3 {
 		//Render NAS Options Page
 		return NasOptions(c, wizardInfo)
+	}
+
+	if wizardInfo.Step == 4 {
+		//Render Install Summary Page
+		return InstallSummary(c, wizardInfo)
 	}
 
 	cmp := setup.SetupWizard(*wizardInfo)

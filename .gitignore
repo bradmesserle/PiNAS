@@ -12,3 +12,5 @@
 /rest-services/test.json
 /rest-services/test.txt
 /front-end-ui/internal/components/setup/drive_setup_templ.go
+/front-end-ui/internal/components/setup/install_progress_templ.go
+/front-end-ui/internal/components/setup/install_summary_templ.go
