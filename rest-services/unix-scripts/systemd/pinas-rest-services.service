@@ -1,0 +1,14 @@
+[Unit]
+Description=PI NAS Rest Services
+After=network.target
+
+[Service]
+Type=simple
+User=nobody
+WorkingDirectory=/opt/pinas/rest-services
+ExecStart=/opt/pinas/rest-services/rest-api-arm64
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
