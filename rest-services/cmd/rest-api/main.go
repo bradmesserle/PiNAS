@@ -2,6 +2,10 @@ package main
 
 import (
 	"context"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/labstack/echo/v5"
 	"github.com/labstack/echo/v5/middleware"
@@ -16,6 +20,7 @@ func main() {
 	var e = echo.New()
 
 	e.Use(middleware.RequestLogger())
+	e.Use(middleware.Recover())
 
 	//TODO: Endpoints
 	// Verify and Update config.txt enable pcie gen3
@@ -59,12 +64,22 @@ func main() {
 	e.GET("/moveEtcDirectory", system_updates.MoveEtcDirectory)
 
 	//Apt Update
+	e.GET("/aptUpdate", system_updates.AptUpdate)
 
 	//Apt Upgrade
 
 	// Start the server
-	sc := echo.StartConfig{Address: ":9090"}
-	if err := sc.Start(context.Background(), e); err != nil {
+	sc := echo.StartConfig{
+		Address: ":9090",
+		BeforeServeFunc: func(s *http.Server) error {
+			s.WriteTimeout = 0 // IMPORTANT: disable for SSE
+			return nil
+		},
+	}
+	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM) // start shutdown process on ctrl+c
+	defer cancel()
+
+	if err := sc.Start(ctx, e); err != nil {
 		e.Logger.Error("failed to start server", "error", err)
 	}
 }
