@@ -1,9 +1,8 @@
 package system_updates
 
 import (
-	"bufio"
 	"log"
-	"net/http"
+	"log/slog"
 	"os/exec"
 
 	"github.com/labstack/echo/v5"
@@ -22,38 +21,11 @@ func AptUpgrade(c *echo.Context) error {
 
 	cmd := exec.Command("sudo", "apt-get", "upgrade", "-y")
 
-	stdout, err := cmd.StdoutPipe()
+	err := utilities.ExecCmdSseStdoutText(cmd, w)
 	if err != nil {
-		log.Fatal(err)
+		slog.Error("Error while running apt upgrade", err)
+		return err
 	}
-
-	if err := cmd.Start(); err != nil {
-		log.Fatal(err)
-	}
-
-	scanner := bufio.NewScanner(stdout)
-	for scanner.Scan() {
-		event := utilities.Event{
-			Data:  []byte(scanner.Text()),
-			Event: []byte("consoleOutput"),
-		}
-		if err := event.MarshalTo(w); err != nil {
-			return err
-		}
-		if err := http.NewResponseController(w).Flush(); err != nil {
-			return err
-		}
-
-	}
-
-	if err := scanner.Err(); err != nil {
-		log.Printf("Scanner error: %v", err)
-	}
-
-	if err := cmd.Wait(); err != nil {
-		log.Fatal(err)
-	}
-
 	return nil
 
 }
