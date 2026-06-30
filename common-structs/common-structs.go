@@ -41,3 +41,19 @@ type NvmeDrive struct {
 	Model            string `json:"model"`
 	Size             string `json:"size"`
 }
+
+type InstallOptions struct {
+	InstallDns    bool `json:"installDns"`
+	InstallCa     bool `json:"installCa"`
+	InstallNvmeFa bool `json:"installNvmeFa"`
+}
+
+type InstallStatus struct {
+	DnsInstalled    bool   `json:"dnsInstalled"`
+	CaInstalled     bool   `json:"caInstalled"`
+	NvmeFaInstalled bool   `json:"nvmeFaInstalled"`
+	SystemUpdated   bool   `json:"systemUpdated"`
+	KernelCompiled  bool   `json:"kernelCompiled"`
+	CurrentProcess  string `json:"currentProcess"`
+	InstallComplete bool   `json:"installComplete"`
+}
