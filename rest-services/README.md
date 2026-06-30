@@ -1,4 +1,4 @@
-# PINAS Backend Rest Services
+# PiNAS Backend Rest Services
 
 ## Useful Commands
 
