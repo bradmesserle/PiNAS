@@ -1,0 +1,6 @@
+#!/bin/bash
+
+#Remvoe syslink
+rm /etc/systemd/system/pinas-rest-services.service
+
+
