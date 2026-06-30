@@ -10,8 +10,8 @@ import (
 	"github.com/pinas/rest-services/internal/utilities"
 )
 
-// AptUpdate Update the apt repos
-func AptUpdate(c *echo.Context) error {
+// AptUpgrade Upgrade the system
+func AptUpgrade(c *echo.Context) error {
 
 	log.Printf("SSE client connected, ip: %v", c.RealIP())
 
@@ -20,7 +20,7 @@ func AptUpdate(c *echo.Context) error {
 	w.Header().Set("Cache-Control", "no-cache")
 	w.Header().Set("Connection", "keep-alive")
 
-	cmd := exec.Command("sudo", "apt-get", "update", "-y")
+	cmd := exec.Command("sudo", "apt-get", "upgrade", "-y")
 
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {

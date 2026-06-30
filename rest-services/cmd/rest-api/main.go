@@ -67,6 +67,7 @@ func main() {
 	e.GET("/aptUpdate", system_updates.AptUpdate)
 
 	//Apt Upgrade
+	e.GET("/aptUpgrade", system_updates.AptUpgrade)
 
 	// Start the server
 	sc := echo.StartConfig{
