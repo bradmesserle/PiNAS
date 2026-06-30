@@ -6,7 +6,7 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v5"
 	"github.com/pinas/common-structs"
 )
 
@@ -18,7 +18,7 @@ const features = "Features"
 const revision = "CPU revision"
 
 // GetCpuInfo  Get the CPU Info
-func GetCpuInfo(c echo.Context) error {
+func GetCpuInfo(c *echo.Context) error {
 
 	out, err := exec.Command("cat", "/proc/cpuinfo").Output()
 	if err != nil {

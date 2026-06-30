@@ -3,10 +3,10 @@ package zfs_install
 import (
 	"net/http"
 
-	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v5"
 )
 
-func InstallZfs(c echo.Context) error {
+func InstallZfs(c *echo.Context) error {
 
 	// Check to see if kernel header packages are installed and remove them
 	headersRemovedErr := CheckForInstalledHeadersAndRemoveThem()

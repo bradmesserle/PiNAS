@@ -7,11 +7,11 @@ import (
 	"os"
 	"strings"
 
-	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v5"
 )
 
 // VerifyUpdateConfig Verify and Update config.txt enable pcie gen3
-func VerifyUpdateConfig(c echo.Context) error {
+func VerifyUpdateConfig(c *echo.Context) error {
 
 	// Hardcoded file path for now.
 	filePath := "/boot/firmware/config.txt"

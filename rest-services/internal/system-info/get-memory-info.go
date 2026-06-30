@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"os/exec"
 
-	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v5"
 	"github.com/pinas/common-structs"
 )
 
@@ -18,7 +18,7 @@ const swapTotal = "SwapTotal"
 const swapFree = "SwapFree"
 
 // GetMemoryInfo Get System Memory Info
-func GetMemoryInfo(c echo.Context) error {
+func GetMemoryInfo(c *echo.Context) error {
 
 	out, err := exec.Command("cat", "/proc/meminfo").Output()
 	if err != nil {

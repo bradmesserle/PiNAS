@@ -7,7 +7,7 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v5"
 )
 
 var buildDir = "/kernel-build"
@@ -16,7 +16,7 @@ var linuxDir = buildDir + "/linux"
 // CompileLinuxKernel Compile the linux kernel we need to enable the nvme-fa options
 // Once compiled and installed, we will need to remove any header packages that might be left behind and
 // reboot the system
-func CompileLinuxKernel(c echo.Context) error {
+func CompileLinuxKernel(c *echo.Context) error {
 
 	//Create a work area
 	if err := os.Mkdir(buildDir, os.ModePerm); err != nil {

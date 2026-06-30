@@ -7,12 +7,12 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v5"
 	"github.com/pinas/common-structs"
 )
 
 // GetPcieInfo Get PCIe Device Info
-func GetPcieInfo(c echo.Context) error {
+func GetPcieInfo(c *echo.Context) error {
 
 	//Get list of devices
 	out, err := exec.Command("lspci", "-mmv").Output()

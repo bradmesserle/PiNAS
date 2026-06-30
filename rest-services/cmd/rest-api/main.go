@@ -1,10 +1,10 @@
 package main
 
 import (
-	"log"
+	"context"
 
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
+	"github.com/labstack/echo/v5"
+	"github.com/labstack/echo/v5/middleware"
 	"github.com/pinas/rest-services/internal/kernel-compile"
 	"github.com/pinas/rest-services/internal/system-info"
 	"github.com/pinas/rest-services/internal/system-updates"
@@ -14,13 +14,6 @@ import (
 func main() {
 
 	var e = echo.New()
-
-	defer func(e *echo.Echo) {
-		err := e.Close()
-		if err != nil {
-			log.Fatal(err)
-		}
-	}(e)
 
 	e.Use(middleware.RequestLogger())
 
@@ -65,6 +58,13 @@ func main() {
 	//Move the /etc directory off the micro-sd card
 	e.GET("/moveEtcDirectory", system_updates.MoveEtcDirectory)
 
+	//Apt Update
+
+	//Apt Upgrade
+
 	// Start the server
-	e.Logger.Fatal(e.Start(":9090"))
+	sc := echo.StartConfig{Address: ":9090"}
+	if err := sc.Start(context.Background(), e); err != nil {
+		e.Logger.Error("failed to start server", "error", err)
+	}
 }

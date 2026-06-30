@@ -7,11 +7,11 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v5"
 	"github.com/pinas/common-structs"
 )
 
-func GetDriveTelemetry(c echo.Context) error {
+func GetDriveTelemetry(c *echo.Context) error {
 
 	out, err := exec.Command("lsblk", "-d", "-o", "NAME,MODEL,SIZE").Output()
 	if err != nil {
