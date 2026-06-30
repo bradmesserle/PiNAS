@@ -5,6 +5,7 @@ After=network.target
 [Service]
 Type=simple
 User=root
+Group=root
 WorkingDirectory=/opt/pinas/rest-services
 ExecStart=/opt/pinas/rest-services/rest-api-arm64
 Restart=always

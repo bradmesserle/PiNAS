@@ -3,8 +3,8 @@
 #Create symlink for the systemd service
 ln -s /opt/pinas/rest-services/pinas-rest-services.service /etc/systemd/system
 
+# Refresh Deamon
 systemctl daemon-reload
 
+#Start the service
 systemctl enable --now pinas-rest-services.service
-
-systemctl status pinas-rest-services.service
