@@ -1,1 +1,10 @@
 #!/bin/bash
+
+#Create symlink for the systemd service
+ln -s /opt/pinas/rest-services/pinas-rest-services.service /etc/systemd/system
+
+systemctl daemon-reload
+
+systemctl enable --now pinas-rest-services.service
+
+systemctl status pinas-rest-services.service
