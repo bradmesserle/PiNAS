@@ -4,9 +4,11 @@ import (
 	"bufio"
 	"fmt"
 	"log"
+	"net/http"
 	"os/exec"
 
 	"github.com/labstack/echo/v5"
+	"github.com/pinas/rest-services/internal/utilities"
 )
 
 // AptUpdate Update the apt cache
@@ -34,6 +36,17 @@ func AptUpdate(c *echo.Context) error {
 	for scanner.Scan() {
 		// Prints each line immediately as it is generated
 		fmt.Println("Streamed line:", scanner.Text())
+
+		event := utilities.Event{
+			Data: []byte(scanner.Text()),
+		}
+		if err := event.MarshalTo(w); err != nil {
+			return err
+		}
+		if err := http.NewResponseController(w).Flush(); err != nil {
+			return err
+		}
+
 	}
 
 	if err := scanner.Err(); err != nil {
