@@ -1,4 +1,4 @@
-Package: PI-NAS-REST-Services
+Package: PINAS-REST-Services
 Version: 0.0.1
 Architecture: arm64
 Essential: no
