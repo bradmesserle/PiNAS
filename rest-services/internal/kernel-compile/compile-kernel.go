@@ -264,6 +264,7 @@ func CopyFile(src string, dst string, w http.ResponseWriter) error {
 
 	log.Println("Copying file ", src, " to ", dst)
 	cmd := exec.Command("cp", src, dst)
+	cmd.Dir = "/"
 
 	err := utilities.ExecCmdSseStdoutText(cmd, w)
 	if err != nil {
