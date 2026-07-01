@@ -11,6 +11,7 @@ import (
 func ExecCmdSseStdoutText(cmd *exec.Cmd, w http.ResponseWriter) error {
 
 	stdout, err := cmd.StdoutPipe()
+	stderr, err := cmd.StderrPipe()
 	if err != nil {
 		return err
 	}
@@ -19,14 +20,21 @@ func ExecCmdSseStdoutText(cmd *exec.Cmd, w http.ResponseWriter) error {
 		return err
 	}
 
-	scanner := bufio.NewScanner(stdout)
-	for scanner.Scan() {
-		if err := SendEventData(scanner.Text(), "consoleOutput", w); err != nil {
+	stdOutScanner := bufio.NewScanner(stdout)
+	for stdOutScanner.Scan() {
+		if err := SendEventData(stdOutScanner.Text(), "consoleOutput", w); err != nil {
 			return err
 		}
 	}
 
-	if err := scanner.Err(); err != nil {
+	stdErrScanner := bufio.NewScanner(stderr)
+	for stdErrScanner.Scan() {
+		if err := SendEventData(stdErrScanner.Text(), "consoleErrOutput", w); err != nil {
+			return err
+		}
+	}
+
+	if err := stdOutScanner.Err(); err != nil {
 		log.Printf("Scanner error: %v", err)
 	}
 
