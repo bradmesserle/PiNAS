@@ -116,7 +116,7 @@ func CloneLinuxKernel(w http.ResponseWriter) error {
 		}
 	}
 
-	cmd := exec.Command("git", "clone", "--depth=1", "--branch", "rpi-6.18.y ", "https://github.com/raspberrypi/linux")
+	cmd := exec.Command("git", "clone", "--depth=1", "--branch", "rpi-6.18.y", "https://github.com/raspberrypi/linux")
 	cmd.Dir = buildDir
 	err := utilities.ExecCmdSseStdoutText(cmd, w)
 	if err != nil {
