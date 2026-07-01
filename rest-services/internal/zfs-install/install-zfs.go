@@ -1,11 +1,12 @@
 package zfs_install
 
 import (
+	"bufio"
 	"bytes"
-	"fmt"
 	"log/slog"
 	"net/http"
 	"os/exec"
+	"strings"
 
 	"github.com/labstack/echo/v5"
 )
@@ -40,8 +41,6 @@ func CheckForInstalledHeadersAndRemoveThem() error {
 	var out bytes.Buffer
 	grepCmd.Stdout = &out
 
-	//stdout, _ := grepCmd.StdoutPipe()
-
 	if err := cmd.Start(); err != nil {
 		return err
 	}
@@ -54,7 +53,23 @@ func CheckForInstalledHeadersAndRemoveThem() error {
 		slog.Error("Error while getting the kernel headers", err)
 	}
 
-	fmt.Println(out.String())
+	scanner := bufio.NewScanner(strings.NewReader(out.String()))
+	// Loop through each line
+	for scanner.Scan() {
+		line := scanner.Text()
+		if strings.Contains(line, "common") && strings.Contains(line, "install") {
+
+			result := strings.Split(line, "\t")
+			slog.Info("Removing kernel headers package: ", result[0])
+
+			//remove the package
+			cmd := exec.Command("apt-get", "remove", "-y", result[0])
+			if err := cmd.Run(); err != nil {
+				slog.Error("Error while removing the kernel headers", err)
+			}
+		}
+
+	}
 
 	return nil
 }
