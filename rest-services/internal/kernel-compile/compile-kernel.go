@@ -146,6 +146,11 @@ func PrepareKernelBuild(w http.ResponseWriter) error {
 // UpdateBuildConfig Enable nvme-fa options
 func UpdateBuildConfig(w http.ResponseWriter) error {
 
+	log.Printf("Update Build Config")
+	if err := utilities.SendEventData("Update Build Config", "consoleOutput", w); err != nil {
+		slog.Error("Error while sending event data", err)
+	}
+
 	var buf bytes.Buffer
 	buf.WriteString("CONFIG_TLS=m\n")
 	buf.WriteString("CONFIG_STREAM_PARSER=y\n")
@@ -167,7 +172,7 @@ func UpdateBuildConfig(w http.ResponseWriter) error {
 
 	err := utilities.ExecCmdSseStdoutText(cmd, w)
 	if err != nil {
-		slog.Error("Error while running apt update", err)
+		slog.Error("Error while updating the build config", err)
 		return err
 	}
 
@@ -176,12 +181,18 @@ func UpdateBuildConfig(w http.ResponseWriter) error {
 
 // BuildKernel Build the kernel
 func BuildKernel(w http.ResponseWriter) error {
+
+	log.Printf("Build the Kernel")
+	if err := utilities.SendEventData("Build the Kernel", "consoleOutput", w); err != nil {
+		slog.Error("Error while sending event data", err)
+	}
+
 	cmd := exec.Command("make", "-j6", "Image.gz", "modules", "dtbs")
 	cmd.Dir = linuxDir
 	cmd.Env = append(os.Environ(), "KERNEL=kernel_2712")
 	err := utilities.ExecCmdSseStdoutText(cmd, w)
 	if err != nil {
-		slog.Error("Error while running apt update", err)
+		slog.Error("Error while building the kernel", err)
 		return err
 	}
 
@@ -193,13 +204,18 @@ func BuildKernel(w http.ResponseWriter) error {
 func InstallKernel(w http.ResponseWriter) error {
 
 	// Install Kernel modules
+	log.Printf("Installing the Kernel")
+	if err := utilities.SendEventData("Installing the Kernel", "consoleOutput", w); err != nil {
+		slog.Error("Error while sending event data", err)
+	}
+
 	cmd := exec.Command("make", "-j6", "modules_install")
 	cmd.Dir = linuxDir
 	cmd.Env = append(os.Environ(), "KERNEL=kernel_2712")
 
 	err := utilities.ExecCmdSseStdoutText(cmd, w)
 	if err != nil {
-		slog.Error("Error while running apt update", err)
+		slog.Error("Error while installing the kernel", err)
 		return err
 	}
 
