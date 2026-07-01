@@ -40,34 +40,40 @@ func CompileLinuxKernel(c *echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, "Error installing dev tools")
 	}
 
-	//Clone the kernel repo
-	cloneErr := CloneLinuxKernel(w)
-	if cloneErr != nil {
-		return c.JSON(http.StatusInternalServerError, "Error cloning linux kernel repo")
-	}
+	////Clone the kernel repo
+	//cloneErr := CloneLinuxKernel(w)
+	//if cloneErr != nil {
+	//	return c.JSON(http.StatusInternalServerError, "Error cloning linux kernel repo")
+	//}
+	//
+	////Prep the kernel build
+	//prepareErr := PrepareKernelBuild(w)
+	//if prepareErr != nil {
+	//	return c.JSON(http.StatusInternalServerError, "Error preparing kernel build")
+	//}
+	//
+	////Configure the kernel build config.
+	//configErr := UpdateBuildConfig(w)
+	//if configErr != nil {
+	//	return c.JSON(http.StatusInternalServerError, "Error configuring kernel build")
+	//}
+	//
+	////Build the kernel
+	//buildErr := BuildKernel(w)
+	//if buildErr != nil {
+	//	return c.JSON(http.StatusInternalServerError, "Error building kernel")
+	//}
+	//
+	////Install the kernel
+	//installErr := InstallKernel(w)
+	//if installErr != nil {
+	//	return c.JSON(http.StatusInternalServerError, "Error installing kernel")
+	//}
 
-	//Prep the kernel build
-	prepareErr := PrepareKernelBuild(w)
-	if prepareErr != nil {
-		return c.JSON(http.StatusInternalServerError, "Error preparing kernel build")
-	}
-
-	//Configure the kernel build config.
-	configErr := UpdateBuildConfig(w)
-	if configErr != nil {
-		return c.JSON(http.StatusInternalServerError, "Error configuring kernel build")
-	}
-
-	//Build the kernel
-	buildErr := BuildKernel(w)
-	if buildErr != nil {
-		return c.JSON(http.StatusInternalServerError, "Error building kernel")
-	}
-
-	//Install the kernel
-	installErr := InstallKernel(w)
-	if installErr != nil {
-		return c.JSON(http.StatusInternalServerError, "Error installing kernel")
+	//Copy the files to the boot directory
+	copyErr := CopyFiles(w)
+	if copyErr != nil {
+		return c.JSON(http.StatusInternalServerError, "Error copying files")
 	}
 
 	return c.JSON(http.StatusOK, "Built and installed the linux kernel successfully")
@@ -219,30 +225,35 @@ func InstallKernel(w http.ResponseWriter) error {
 		return err
 	}
 
+	return nil
+}
+
+func CopyFiles(w http.ResponseWriter) error {
+
 	//Copy files
 	backupImageErr := CopyFile("/boot/firmware/kernel_2712.img", "/boot/firmware/kernel_2712-backup.img", w)
 	if backupImageErr != nil {
-		return err
+		return backupImageErr
 	}
 
 	copyImageErr := CopyFile(linuxDir+"/arch/arm64/boot/Image.gz", "/boot/firmware/kernel_2712.img", w)
 	if copyImageErr != nil {
-		return err
+		return copyImageErr
 	}
 
 	copyDTBErr := CopyFile(linuxDir+"/arch/arm64/boot/dts/broadcom/*.dtb", "/boot/firmware", w)
 	if copyDTBErr != nil {
-		return err
+		return copyDTBErr
 	}
 
 	copyOverlaysErr := CopyFile(linuxDir+"/arch/arm64/boot/dts/overlays/*.dtb*", "/boot/firmware/overlays", w)
 	if copyOverlaysErr != nil {
-		return err
+		return copyOverlaysErr
 	}
 
 	copyOverlaysReadMeErr := CopyFile(linuxDir+"/arch/arm64/boot/dts/overlays/README", "/boot/firmware/overlays", w)
 	if copyOverlaysReadMeErr != nil {
-		return err
+		return copyOverlaysReadMeErr
 	}
 
 	return nil
