@@ -241,17 +241,17 @@ func CopyFiles(w http.ResponseWriter) error {
 		return copyImageErr
 	}
 
-	copyDTBErr := CopyFile(linuxDir+"/arch/arm64/boot/dts/broadcom/*.dtb", "/boot/firmware", w)
+	copyDTBErr := CopyFile(linuxDir+"/arch/arm64/boot/dts/broadcom/*.dtb", "/boot/firmmware", w)
 	if copyDTBErr != nil {
 		return copyDTBErr
 	}
 
-	copyOverlaysErr := CopyFile(linuxDir+"/arch/arm64/boot/dts/overlays/*.dtb*", "/boot/firmware/overlays", w)
+	copyOverlaysErr := CopyFile(linuxDir+"/arch/arm64/boot/dts/overlays/*.dtb*", "/boot/firmmware/overlays", w)
 	if copyOverlaysErr != nil {
 		return copyOverlaysErr
 	}
 
-	copyOverlaysReadMeErr := CopyFile(linuxDir+"/arch/arm64/boot/dts/overlays/README", "/boot/firmware/overlays", w)
+	copyOverlaysReadMeErr := CopyFile(linuxDir+"/arch/arm64/boot/dts/overlays/README", "/boot/firmmware/overlays", w)
 	if copyOverlaysReadMeErr != nil {
 		return copyOverlaysReadMeErr
 	}
