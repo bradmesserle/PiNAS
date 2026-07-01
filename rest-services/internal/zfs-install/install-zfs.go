@@ -1,7 +1,8 @@
 package zfs_install
 
 import (
-	"bufio"
+	"bytes"
+	"fmt"
 	"log/slog"
 	"net/http"
 	"os/exec"
@@ -27,16 +28,19 @@ func InstallZfs(c *echo.Context) error {
 func CheckForInstalledHeadersAndRemoveThem() error {
 
 	cmd := exec.Command("dpkg", "--get-selections")
-	grepCmd := exec.Command("grep", "linux-headers")
+	grepCmd := exec.Command("grep", "headers")
 
 	pipe, err := cmd.StdoutPipe()
 	if err != nil {
 		slog.Error("Error while getting the kernel headers", err)
 	}
 
-	stdout, _ := grepCmd.StdoutPipe()
-
 	grepCmd.Stdin = pipe
+
+	var out bytes.Buffer
+	grepCmd.Stdout = &out
+
+	//stdout, _ := grepCmd.StdoutPipe()
 
 	if err := cmd.Start(); err != nil {
 		return err
@@ -46,16 +50,11 @@ func CheckForInstalledHeadersAndRemoveThem() error {
 		slog.Error("Error while getting the kernel headers", err)
 	}
 
-	scanner := bufio.NewScanner(stdout)
-
-	for scanner.Scan() {
-		line := scanner.Text()
-		slog.Info("-->", line)
-	}
-
 	if err := cmd.Wait(); err != nil {
 		slog.Error("Error while getting the kernel headers", err)
 	}
+
+	fmt.Println(out.String())
 
 	return nil
 }
