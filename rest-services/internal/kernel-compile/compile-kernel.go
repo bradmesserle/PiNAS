@@ -12,7 +12,7 @@ import (
 	"github.com/pinas/rest-services/internal/utilities"
 )
 
-var buildDir = "/kernel-build"
+var buildDir = "/zfspool/work-area/kernel-build"
 var linuxDir = buildDir + "/linux"
 
 // CompileLinuxKernel Compile the linux kernel we need to enable the nvme-fa options
