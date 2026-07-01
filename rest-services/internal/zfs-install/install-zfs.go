@@ -28,7 +28,7 @@ func InstallZfs(c *echo.Context) error {
 // CheckForInstalledHeadersAndRemoveThem checks if the kernel headers packages are installed
 func CheckForInstalledHeadersAndRemoveThem() error {
 
-	//var headerPackageName string
+	var headerPackageName string
 	var commonPackageName string
 
 	cmd := exec.Command("dpkg", "--get-selections")
@@ -64,9 +64,9 @@ func CheckForInstalledHeadersAndRemoveThem() error {
 		slog.Info("Stdout: ", "Value", line)
 
 		//Find the header package name
-		//if strings.Contains(line, "2712") && strings.Contains(line, "install") {
-		//	headerPackageName = strings.Split(line, "\t")[0]
-		//}
+		if strings.Contains(line, "2712") && strings.Contains(line, "install") {
+			headerPackageName = strings.Split(line, "\t")[0]
+		}
 
 		//Find the common package name
 		if strings.Contains(line, "common") && strings.Contains(line, "install") {
@@ -85,13 +85,13 @@ func CheckForInstalledHeadersAndRemoveThem() error {
 	}
 
 	//Install the correct version of the kernel headers
-	//if headerPackageName != "" {
-	//	slog.Info("Installing kernel headers package: ", "Value", headerPackageName)
-	//	cmd := exec.Command("apt-get", "install", "-y", headerPackageName)
-	//	if err := cmd.Run(); err != nil {
-	//		slog.Error("Error while installing the kernel headers", "Error", err)
-	//	}
-	//}
+	if headerPackageName != "" {
+		slog.Info("Installing kernel headers package: ", "Value", headerPackageName)
+		cmd := exec.Command("apt-get", "install", "-y", headerPackageName)
+		if err := cmd.Run(); err != nil {
+			slog.Error("Error while installing the kernel headers", "Error", err)
+		}
+	}
 
 	return nil
 }
