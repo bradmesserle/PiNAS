@@ -27,7 +27,7 @@ func InstallZfs(c *echo.Context) error {
 // CheckForInstalledHeadersAndRemoveThem checks if the kernel headers packages are installed
 func CheckForInstalledHeadersAndRemoveThem() error {
 
-	cmd := exec.Command("dpkg", "--get-selections")
+	cmd := exec.Command("dpkg", "--get-selections", "|", "grep", "linux-headers")
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
 		return err
