@@ -76,6 +76,12 @@ func CompileLinuxKernel(c *echo.Context) error {
 // InstallDevTools Install the dev tools needed to compile the kernel
 // sudo apt install bc bison flex libssl-dev make git libncurses-dev
 func InstallDevTools(w http.ResponseWriter) error {
+
+	log.Printf("Installing DEV Tools")
+	if err := utilities.SendEventData("Installing DEV Tools", "consoleOutput", w); err != nil {
+		slog.Error("Error while sending event data", err)
+	}
+
 	cmd := exec.Command("apt", "install", "bc", "bison", "flex", "libssl-dev", "make", "git", "libncurses-dev", "-y")
 
 	err := utilities.ExecCmdSseStdoutText(cmd, w)
@@ -91,15 +97,21 @@ func InstallDevTools(w http.ResponseWriter) error {
 // CloneLinuxKernel Clone the linux kernel repo
 func CloneLinuxKernel(w http.ResponseWriter) error {
 
+	log.Printf("Cloning Linux Kernel")
+	if err := utilities.SendEventData("Cloning Linux Kernel", "consoleOutput", w); err != nil {
+		slog.Error("Error while sending event data", err)
+	}
+
 	//Need to check if the directory exists, if so, delete it
 	if _, err := os.Stat(linuxDir); err == nil {
 		err := os.RemoveAll(linuxDir)
 		if err != nil {
-			log.Println(err)
+			slog.Error("Error while removing linux directory", err)
 		}
 	}
 
 	cmd := exec.Command("git", "clone", "--depth=1", "https://github.com/raspberrypi/linux")
+	cmd.Dir = buildDir
 	err := utilities.ExecCmdSseStdoutText(cmd, w)
 	if err != nil {
 		slog.Error("Error while running apt update", err)
@@ -111,13 +123,19 @@ func CloneLinuxKernel(w http.ResponseWriter) error {
 
 // PrepareKernelBuild Configure the kernel build config.
 func PrepareKernelBuild(w http.ResponseWriter) error {
+
+	log.Printf("Preparing the Linux Kernel")
+	if err := utilities.SendEventData("Preparing the Linux Kernel", "consoleOutput", w); err != nil {
+		slog.Error("Error while sending event data", err)
+	}
+
 	cmd := exec.Command("make", "bcm2712_defconfig")
 	cmd.Dir = linuxDir
 	cmd.Env = append(os.Environ(), "KERNEL=kernel_2712")
 
 	err := utilities.ExecCmdSseStdoutText(cmd, w)
 	if err != nil {
-		slog.Error("Error while running apt update", err)
+		slog.Error("Error while running preparing the linux kernel", err)
 		return err
 	}
 

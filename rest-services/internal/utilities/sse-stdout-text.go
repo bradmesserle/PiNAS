@@ -21,17 +21,9 @@ func ExecCmdSseStdoutText(cmd *exec.Cmd, w http.ResponseWriter) error {
 
 	scanner := bufio.NewScanner(stdout)
 	for scanner.Scan() {
-		event := Event{
-			Data:  []byte(scanner.Text()),
-			Event: []byte("consoleOutput"),
-		}
-		if err := event.MarshalTo(w); err != nil {
+		if err := SendEventData(scanner.Text(), "consoleOutput", w); err != nil {
 			return err
 		}
-		if err := http.NewResponseController(w).Flush(); err != nil {
-			return err
-		}
-
 	}
 
 	if err := scanner.Err(); err != nil {
@@ -44,4 +36,21 @@ func ExecCmdSseStdoutText(cmd *exec.Cmd, w http.ResponseWriter) error {
 
 	return nil
 
+}
+
+// SendEventData Send the event data to the client
+func SendEventData(data string, eventId string, w http.ResponseWriter) error {
+
+	event := Event{
+		Data:  []byte(data),
+		Event: []byte(eventId),
+	}
+	if err := event.MarshalTo(w); err != nil {
+		return err
+	}
+	if err := http.NewResponseController(w).Flush(); err != nil {
+		return err
+	}
+
+	return nil
 }
