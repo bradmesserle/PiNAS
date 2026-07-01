@@ -40,35 +40,35 @@ func CompileLinuxKernel(c *echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, "Error installing dev tools")
 	}
 
-	////Clone the kernel repo
-	//cloneErr := CloneLinuxKernel(w)
-	//if cloneErr != nil {
-	//	return c.JSON(http.StatusInternalServerError, "Error cloning linux kernel repo")
-	//}
-	//
-	////Prep the kernel build
-	//prepareErr := PrepareKernelBuild(w)
-	//if prepareErr != nil {
-	//	return c.JSON(http.StatusInternalServerError, "Error preparing kernel build")
-	//}
-	//
-	////Configure the kernel build config.
-	//configErr := UpdateBuildConfig(w)
-	//if configErr != nil {
-	//	return c.JSON(http.StatusInternalServerError, "Error configuring kernel build")
-	//}
-	//
-	////Build the kernel
-	//buildErr := BuildKernel(w)
-	//if buildErr != nil {
-	//	return c.JSON(http.StatusInternalServerError, "Error building kernel")
-	//}
-	//
-	////Install the kernel
-	//installErr := InstallKernel(w)
-	//if installErr != nil {
-	//	return c.JSON(http.StatusInternalServerError, "Error installing kernel")
-	//}
+	//Clone the kernel repo
+	cloneErr := CloneLinuxKernel(w)
+	if cloneErr != nil {
+		return c.JSON(http.StatusInternalServerError, "Error cloning linux kernel repo")
+	}
+
+	//Prep the kernel build
+	prepareErr := PrepareKernelBuild(w)
+	if prepareErr != nil {
+		return c.JSON(http.StatusInternalServerError, "Error preparing kernel build")
+	}
+
+	//Configure the kernel build config.
+	configErr := UpdateBuildConfig(w)
+	if configErr != nil {
+		return c.JSON(http.StatusInternalServerError, "Error configuring kernel build")
+	}
+
+	//Build the kernel
+	buildErr := BuildKernel(w)
+	if buildErr != nil {
+		return c.JSON(http.StatusInternalServerError, "Error building kernel")
+	}
+
+	//Install the kernel
+	installErr := InstallKernel(w)
+	if installErr != nil {
+		return c.JSON(http.StatusInternalServerError, "Error installing kernel")
+	}
 
 	//Copy the files to the boot directory
 	copyErr := CopyFiles(w)
@@ -85,14 +85,14 @@ func InstallDevTools(w http.ResponseWriter) error {
 
 	log.Printf("Installing DEV Tools")
 	if err := utilities.SendEventData("Installing DEV Tools", "consoleOutput", w); err != nil {
-		slog.Error("Error while sending event data", err)
+		slog.Error("Error while sending event data", "Value", err)
 	}
 
 	cmd := exec.Command("apt", "install", "bc", "bison", "flex", "libssl-dev", "make", "git", "libncurses-dev", "-y")
 
 	err := utilities.ExecCmdSseStdoutText(cmd, w)
 	if err != nil {
-		slog.Error("Error while running apt update", err)
+		slog.Error("Error while running apt update", "Value", err)
 		return err
 	}
 
@@ -105,14 +105,14 @@ func CloneLinuxKernel(w http.ResponseWriter) error {
 
 	log.Printf("Cloning Linux Kernel")
 	if err := utilities.SendEventData("Cloning Linux Kernel", "consoleOutput", w); err != nil {
-		slog.Error("Error while sending event data", err)
+		slog.Error("Error while sending event data", "Value", err)
 	}
 
 	//Need to check if the directory exists, if so, delete it
 	if _, err := os.Stat(linuxDir); err == nil {
 		err := os.RemoveAll(linuxDir)
 		if err != nil {
-			slog.Error("Error while removing linux directory", err)
+			slog.Error("Error while removing linux directory", "Value", err)
 		}
 	}
 
@@ -120,7 +120,7 @@ func CloneLinuxKernel(w http.ResponseWriter) error {
 	cmd.Dir = buildDir
 	err := utilities.ExecCmdSseStdoutText(cmd, w)
 	if err != nil {
-		slog.Error("Error while running apt update", err)
+		slog.Error("Error while running apt update", "Value", err)
 		return err
 	}
 
@@ -132,7 +132,7 @@ func PrepareKernelBuild(w http.ResponseWriter) error {
 
 	log.Printf("Preparing the Linux Kernel")
 	if err := utilities.SendEventData("Preparing the Linux Kernel", "consoleOutput", w); err != nil {
-		slog.Error("Error while sending event data", err)
+		slog.Error("Error while sending event data", "Value", err)
 	}
 
 	cmd := exec.Command("make", "bcm2712_defconfig")
@@ -141,7 +141,7 @@ func PrepareKernelBuild(w http.ResponseWriter) error {
 
 	err := utilities.ExecCmdSseStdoutText(cmd, w)
 	if err != nil {
-		slog.Error("Error while running preparing the linux kernel", err)
+		slog.Error("Error while running preparing the linux kernel", "Value", err)
 		return err
 	}
 
@@ -154,7 +154,7 @@ func UpdateBuildConfig(w http.ResponseWriter) error {
 
 	log.Printf("Update Build Config")
 	if err := utilities.SendEventData("Update Build Config", "consoleOutput", w); err != nil {
-		slog.Error("Error while sending event data", err)
+		slog.Error("Error while sending event data", "Value", err)
 	}
 
 	var buf bytes.Buffer
@@ -178,7 +178,7 @@ func UpdateBuildConfig(w http.ResponseWriter) error {
 
 	err := utilities.ExecCmdSseStdoutText(cmd, w)
 	if err != nil {
-		slog.Error("Error while updating the build config", err)
+		slog.Error("Error while updating the build config", "Value", err)
 		return err
 	}
 
@@ -190,7 +190,7 @@ func BuildKernel(w http.ResponseWriter) error {
 
 	log.Printf("Build the Kernel")
 	if err := utilities.SendEventData("Build the Kernel", "consoleOutput", w); err != nil {
-		slog.Error("Error while sending event data", err)
+		slog.Error("Error while sending event data", "Value", err)
 	}
 
 	cmd := exec.Command("make", "-j6", "Image.gz", "modules", "dtbs")
@@ -212,7 +212,7 @@ func InstallKernel(w http.ResponseWriter) error {
 	// Install Kernel modules
 	log.Printf("Installing the Kernel")
 	if err := utilities.SendEventData("Installing the Kernel", "consoleOutput", w); err != nil {
-		slog.Error("Error while sending event data", err)
+		slog.Error("Error while sending event data", "Value", err)
 	}
 
 	cmd := exec.Command("make", "-j6", "modules_install")
@@ -221,7 +221,7 @@ func InstallKernel(w http.ResponseWriter) error {
 
 	err := utilities.ExecCmdSseStdoutText(cmd, w)
 	if err != nil {
-		slog.Error("Error while installing the kernel", err)
+		slog.Error("Error while installing the kernel", "Value", err)
 		return err
 	}
 
@@ -273,7 +273,7 @@ func CopyFile(src string, dst string, w http.ResponseWriter) error {
 
 	err := utilities.ExecCmdSseStdoutText(cmd, w)
 	if err != nil {
-		slog.Error("Error while running apt update", err)
+		slog.Error("Error while running apt update", "Value", err)
 		return err
 	}
 
