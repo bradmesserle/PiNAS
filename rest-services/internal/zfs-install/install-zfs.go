@@ -6,7 +6,6 @@ import (
 	"log/slog"
 	"net/http"
 	"os/exec"
-	"strings"
 
 	"github.com/labstack/echo/v5"
 )
@@ -28,16 +27,25 @@ func InstallZfs(c *echo.Context) error {
 // CheckForInstalledHeadersAndRemoveThem checks if the kernel headers packages are installed
 func CheckForInstalledHeadersAndRemoveThem() error {
 
-	out, err := exec.Command("dpkg", "--get-selections").Output()
+	cmd := exec.Command("dpkg", "--get-selections")
+	stdout, err := cmd.StdoutPipe()
 	if err != nil {
-		log.Println(err)
 		return err
 	}
-	scanner := bufio.NewScanner(strings.NewReader(string(out)))
+
+	if err := cmd.Start(); err != nil {
+		return err
+	}
+
+	scanner := bufio.NewScanner(stdout)
 
 	for scanner.Scan() {
 		line := scanner.Text()
 		slog.Info("-->", line)
+	}
+
+	if err := cmd.Wait(); err != nil {
+		log.Fatal(err)
 	}
 
 	return nil
