@@ -230,17 +230,17 @@ func InstallKernel(w http.ResponseWriter) error {
 		return err
 	}
 
-	copyDTBErr := CopyFile(linuxDir+"/arch/arm64/boot/dts/broadcom/*.dtb", "/boot/firmware/", w)
+	copyDTBErr := CopyFile(linuxDir+"/arch/arm64/boot/dts/broadcom/*.dtb", "/boot/firmware", w)
 	if copyDTBErr != nil {
 		return err
 	}
 
-	copyOverlaysErr := CopyFile(linuxDir+"/arch/arm64/boot/dts/overlays/*.dtb*", "/boot/firmware/overlays/", w)
+	copyOverlaysErr := CopyFile(linuxDir+"/arch/arm64/boot/dts/overlays/*.dtb*", "/boot/firmware/overlays", w)
 	if copyOverlaysErr != nil {
 		return err
 	}
 
-	copyOverlaysReadMeErr := CopyFile(linuxDir+"/arch/arm64/boot/dts/overlays/README", "/boot/firmware/overlays/", w)
+	copyOverlaysReadMeErr := CopyFile(linuxDir+"/arch/arm64/boot/dts/overlays/README", "/boot/firmware/overlays", w)
 	if copyOverlaysReadMeErr != nil {
 		return err
 	}
