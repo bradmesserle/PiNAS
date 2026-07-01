@@ -33,7 +33,7 @@ func CheckForInstalledHeadersAndRemoveThem() error {
 
 	pipe, err := cmd.StdoutPipe()
 	if err != nil {
-		slog.Error("Error while getting the kernel headers", err)
+		slog.Error("Error while getting the kernel headers", "Error", err)
 	}
 
 	grepCmd.Stdin = pipe
@@ -46,11 +46,11 @@ func CheckForInstalledHeadersAndRemoveThem() error {
 	}
 
 	if err := grepCmd.Run(); err != nil {
-		slog.Error("Error while getting the kernel headers", err)
+		slog.Error("Error while getting the kernel headers", "Error", err)
 	}
 
 	if err := cmd.Wait(); err != nil {
-		slog.Error("Error while getting the kernel headers", err)
+		slog.Error("Error while getting the kernel headers", "Error", err)
 	}
 
 	scanner := bufio.NewScanner(strings.NewReader(out.String()))
@@ -60,12 +60,12 @@ func CheckForInstalledHeadersAndRemoveThem() error {
 		if strings.Contains(line, "common") && strings.Contains(line, "install") {
 
 			result := strings.Split(line, "\t")
-			slog.Info("Removing kernel headers package: ", result[0])
+			slog.Info("Removing kernel headers package: ", "Value", result[0])
 
 			//remove the package
 			cmd := exec.Command("apt-get", "remove", "-y", result[0])
 			if err := cmd.Run(); err != nil {
-				slog.Error("Error while removing the kernel headers", err)
+				slog.Error("Error while removing the kernel headers", "Error", err)
 			}
 		}
 
