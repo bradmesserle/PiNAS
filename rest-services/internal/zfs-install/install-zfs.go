@@ -28,6 +28,9 @@ func InstallZfs(c *echo.Context) error {
 // CheckForInstalledHeadersAndRemoveThem checks if the kernel headers packages are installed
 func CheckForInstalledHeadersAndRemoveThem() error {
 
+	var headerPackageName string
+	var commonPackageName string
+
 	cmd := exec.Command("dpkg", "--get-selections")
 	grepCmd := exec.Command("grep", "headers")
 
@@ -54,21 +57,40 @@ func CheckForInstalledHeadersAndRemoveThem() error {
 	}
 
 	scanner := bufio.NewScanner(strings.NewReader(out.String()))
+
 	// Loop through each line
 	for scanner.Scan() {
 		line := scanner.Text()
-		if strings.Contains(line, "common") && strings.Contains(line, "install") {
+		slog.Info("Stdout: ", "Value", line)
 
-			result := strings.Split(line, "\t")
-			slog.Info("Removing kernel headers package: ", "Value", result[0])
-
-			//remove the package
-			cmd := exec.Command("apt-get", "remove", "-y", result[0])
-			if err := cmd.Run(); err != nil {
-				slog.Error("Error while removing the kernel headers", "Error", err)
-			}
+		//Find the header package name
+		if strings.Contains(line, "2712") && strings.Contains(line, "install") {
+			headerPackageName = strings.Split(line, "\t")[0]
 		}
 
+		//Find the common package name
+		if strings.Contains(line, "common") && strings.Contains(line, "install") {
+			commonPackageName = strings.Split(line, "\t")[0]
+		}
+
+	}
+
+	//Remove the common hearers package
+	if commonPackageName != "" {
+		slog.Info("Removing kernel headers package: ", "Value", commonPackageName)
+		cmd := exec.Command("apt-get", "remove", "-y", commonPackageName)
+		if err := cmd.Run(); err != nil {
+			slog.Error("Error while removing the kernel headers", "Error", err)
+		}
+	}
+
+	//Install the correct version of the kernel headers
+	if headerPackageName != "" {
+		slog.Info("Installing kernel headers package: ", "Value", headerPackageName)
+		cmd := exec.Command("apt-get", "install", "-y", headerPackageName)
+		if err := cmd.Run(); err != nil {
+			slog.Error("Error while installing the kernel headers", "Error", err)
+		}
 	}
 
 	return nil
