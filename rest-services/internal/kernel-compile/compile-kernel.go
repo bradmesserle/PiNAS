@@ -163,7 +163,7 @@ func UpdateBuildConfig(w http.ResponseWriter) error {
 	buf.WriteString("CONFIG_NVME_KEYRING=m\n")
 	buf.WriteString("CONFIG_NVME_CORE=y\n")
 	buf.WriteString("CONFIG_BLK_DEV_NVME=y\n")
-	buf.WriteString("CCONFIG_NVME_HWMON=y\n")
+	buf.WriteString("CONFIG_NVME_HWMON=y\n")
 	buf.WriteString("CONFIG_NVME_TARGET=y\n")
 	buf.WriteString("CONFIG_NVME_TARGET_TCP=y\n")
 	buf.WriteString("CONFIG_NVME_TARGET_TCP_TLS=y\n")
