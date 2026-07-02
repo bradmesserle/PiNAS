@@ -60,7 +60,7 @@ func updateFile(filePath string, stringData string) error {
 		}
 	}(file)
 
-	if _, err := file.WriteString("\n" + stringData); err != nil {
+	if _, err := file.WriteString("\n" + stringData + "\n"); err != nil {
 		log.Fatal(err)
 		return err
 	}
