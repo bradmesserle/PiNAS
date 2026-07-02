@@ -13,7 +13,7 @@ import (
 
 func GetDriveTelemetry(c *echo.Context) error {
 
-	out, err := exec.Command("lsblk", "-d", "-o", "NAME,MODEL,SIZE").Output()
+	out, err := exec.Command("lsblk", "-d", "-o", "NAME,MODEL,SIZE,SERIAL").Output()
 	if err != nil {
 		log.Println(err)
 		return err
@@ -54,6 +54,7 @@ func createDrive(driveString string) interface{} {
 		drive.Name = strings.TrimSpace(fields[1])
 		drive.Model = strings.TrimSpace(fields[2])
 		drive.Size = strings.TrimSpace(fields[3])
+		drive.Serial = strings.TrimSpace(fields[4])
 
 		return drive
 	}

@@ -40,6 +40,7 @@ type NvmeDrive struct {
 	Name             string `json:"name"`
 	Model            string `json:"model"`
 	Size             string `json:"size"`
+	Serial           string `json:"serial"`
 }
 
 type InstallOptions struct {
