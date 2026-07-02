@@ -116,7 +116,7 @@ func aptInstallZfs(w http.ResponseWriter) error {
 		slog.Error("Error while installing zfs", "Value", err)
 	}
 
-	cmd := exec.Command("DEBIAN_FRONTEND=noninteractive", "apt", "install", "zfs-dkms", "zfsutils-linux", "-y")
+	cmd := exec.Command("sudo", "DEBIAN_FRONTEND=noninteractive", "apt", "install", "zfs-dkms", "zfsutils-linux", "-y")
 	err := utilities.ExecCmdSseStdoutText(cmd, w)
 	if err != nil {
 		slog.Error("Error while installing zfs", "Value", err)
