@@ -211,7 +211,7 @@ func buildKernel(w http.ResponseWriter) error {
 		slog.Error("Error while sending event data", "Value", err)
 	}
 
-	cmd := exec.Command("make", "-j8", "Image.gz", "modules", "dtbs")
+	cmd := exec.Command("make", "-j4", "Image.gz", "modules", "dtbs")
 	cmd.Dir = linuxDir
 	cmd.Env = append(os.Environ(), "KERNEL=kernel_2712")
 	err := utilities.ExecCmdSseStdoutText(cmd, w)
