@@ -3,30 +3,42 @@ package zfs_install
 import (
 	"bufio"
 	"bytes"
+	"log"
 	"log/slog"
 	"net/http"
 	"os/exec"
 	"strings"
 
 	"github.com/labstack/echo/v5"
+	"github.com/pinas/rest-services/internal/utilities"
 )
 
 func InstallZfs(c *echo.Context) error {
 
-	// Check to see if kernel header packages are installed and remove them
-	headersRemovedErr := CheckForInstalledHeadersAndRemoveThem()
+	log.Printf("SSE client connected, ip: %v", c.RealIP())
 
+	w := c.Response()
+	w.Header().Set("Content-Type", "text/event-stream")
+	w.Header().Set("Cache-Control", "no-cache")
+	w.Header().Set("Connection", "keep-alive")
+
+	// Check to see if kernel header packages are installed and remove them
+	headersRemovedErr := checkForInstalledHeadersAndRemoveThem()
 	if headersRemovedErr != nil {
 		return c.JSON(http.StatusInternalServerError, "Error removing kernel headers")
 	}
 
 	//Install ZFS
+	aptErr := aptInstallZfs(w)
+	if aptErr != nil {
+		return c.JSON(http.StatusInternalServerError, "Error installing zfs")
+	}
 
 	return c.JSON(http.StatusOK, "Installed ZFS successfully")
 }
 
-// CheckForInstalledHeadersAndRemoveThem checks if the kernel headers packages are installed
-func CheckForInstalledHeadersAndRemoveThem() error {
+// checkForInstalledHeadersAndRemoveThem checks if the kernel headers packages are installed
+func checkForInstalledHeadersAndRemoveThem() error {
 
 	var headerPackageName string
 	var commonPackageName string
@@ -91,6 +103,24 @@ func CheckForInstalledHeadersAndRemoveThem() error {
 		if err := cmd.Run(); err != nil {
 			slog.Error("Error while installing the kernel headers", "Error", err)
 		}
+	}
+
+	return nil
+}
+
+// aptInstallZfs Install ZFS using apt installer
+func aptInstallZfs(w http.ResponseWriter) error {
+
+	log.Printf("Installing ZFS")
+	if err := utilities.SendEventData("Installing ZFS", "consoleOutput", w); err != nil {
+		slog.Error("Error while installing zfs", "Value", err)
+	}
+
+	cmd := exec.Command("apt", "install", "zfs-dkms", "zfsutils-linux", "-y")
+	err := utilities.ExecCmdSseStdoutText(cmd, w)
+	if err != nil {
+		slog.Error("Error while installing zfs", "Value", err)
+		return err
 	}
 
 	return nil
