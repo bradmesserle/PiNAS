@@ -35,45 +35,57 @@ func CompileLinuxKernel(c *echo.Context) error {
 	}
 
 	//Install the dev tools needed to compile the kernel
-	aptErr := InstallDevTools(w)
+	aptErr := installDevTools(w)
 	if aptErr != nil {
 		return c.JSON(http.StatusInternalServerError, "Error installing dev tools")
 	}
 
 	//Clone the kernel repo
-	cloneErr := CloneLinuxKernel(w)
+	cloneErr := cloneLinuxKernel(w)
 	if cloneErr != nil {
 		return c.JSON(http.StatusInternalServerError, "Error cloning linux kernel repo")
 	}
 
 	//Prep the kernel build
-	prepareErr := PrepareKernelBuild(w)
+	prepareErr := prepareKernelBuild(w)
 	if prepareErr != nil {
 		return c.JSON(http.StatusInternalServerError, "Error preparing kernel build")
 	}
 
 	//Configure the kernel build config.
-	configErr := UpdateBuildConfig(w)
+	configErr := updateBuildConfig(w)
 	if configErr != nil {
 		return c.JSON(http.StatusInternalServerError, "Error configuring kernel build")
 	}
 
 	//Build the kernel
-	buildErr := BuildKernel(w)
+	buildErr := buildKernel(w)
 	if buildErr != nil {
 		return c.JSON(http.StatusInternalServerError, "Error building kernel")
 	}
 
 	//Install the kernel
-	installErr := InstallKernel(w)
+	installErr := installKernel(w)
 	if installErr != nil {
 		return c.JSON(http.StatusInternalServerError, "Error installing kernel")
 	}
 
 	//Copy the files to the boot directory
-	copyErr := CopyFiles(w)
+	copyErr := copyFiles(w)
 	if copyErr != nil {
 		return c.JSON(http.StatusInternalServerError, "Error copying files")
+	}
+
+	//Build deb packages
+	createDebPackageErr := createDebPackage(w)
+	if createDebPackageErr != nil {
+		return c.JSON(http.StatusInternalServerError, "Error creating deb package")
+	}
+
+	//Copy the header file to the home directory
+	copyHeaderErr := copyHeaderFile(w)
+	if copyHeaderErr != nil {
+		return c.JSON(http.StatusInternalServerError, "Error copying header file to home directory")
 	}
 
 	return c.JSON(http.StatusOK, "Built and installed the linux kernel successfully")
@@ -81,14 +93,14 @@ func CompileLinuxKernel(c *echo.Context) error {
 
 // InstallDevTools Install the dev tools needed to compile the kernel
 // sudo apt install bc bison flex libssl-dev make git libncurses-dev
-func InstallDevTools(w http.ResponseWriter) error {
+func installDevTools(w http.ResponseWriter) error {
 
 	log.Printf("Installing DEV Tools")
 	if err := utilities.SendEventData("Installing DEV Tools", "consoleOutput", w); err != nil {
 		slog.Error("Error while sending event data", "Value", err)
 	}
 
-	cmd := exec.Command("apt", "install", "bc", "bison", "flex", "libssl-dev", "make", "git", "libncurses-dev", "-y")
+	cmd := exec.Command("apt", "install", "bc", "bison", "flex", "libssl-dev", "make", "git", "libncurses-dev", "debhelper-compat", "libdw-dev", "libelf-dev", "-y")
 
 	err := utilities.ExecCmdSseStdoutText(cmd, w)
 	if err != nil {
@@ -101,7 +113,7 @@ func InstallDevTools(w http.ResponseWriter) error {
 }
 
 // CloneLinuxKernel Clone the linux kernel repo
-func CloneLinuxKernel(w http.ResponseWriter) error {
+func cloneLinuxKernel(w http.ResponseWriter) error {
 
 	log.Printf("Cloning Linux Kernel")
 	if err := utilities.SendEventData("Cloning Linux Kernel", "consoleOutput", w); err != nil {
@@ -128,7 +140,7 @@ func CloneLinuxKernel(w http.ResponseWriter) error {
 }
 
 // PrepareKernelBuild Configure the kernel build config.
-func PrepareKernelBuild(w http.ResponseWriter) error {
+func prepareKernelBuild(w http.ResponseWriter) error {
 
 	log.Printf("Preparing the Linux Kernel")
 	if err := utilities.SendEventData("Preparing the Linux Kernel", "consoleOutput", w); err != nil {
@@ -150,7 +162,7 @@ func PrepareKernelBuild(w http.ResponseWriter) error {
 }
 
 // UpdateBuildConfig Enable nvme-fa options
-func UpdateBuildConfig(w http.ResponseWriter) error {
+func updateBuildConfig(w http.ResponseWriter) error {
 
 	log.Printf("Update Build Config")
 	if err := utilities.SendEventData("Update Build Config", "consoleOutput", w); err != nil {
@@ -191,8 +203,8 @@ func UpdateBuildConfig(w http.ResponseWriter) error {
 	return nil
 }
 
-// BuildKernel Build the kernel
-func BuildKernel(w http.ResponseWriter) error {
+// buildKernel Build the kernel
+func buildKernel(w http.ResponseWriter) error {
 
 	log.Printf("Build the Kernel")
 	if err := utilities.SendEventData("Build the Kernel", "consoleOutput", w); err != nil {
@@ -212,8 +224,8 @@ func BuildKernel(w http.ResponseWriter) error {
 
 }
 
-// InstallKernel Install the kernel
-func InstallKernel(w http.ResponseWriter) error {
+// installKernel Install the kernel
+func installKernel(w http.ResponseWriter) error {
 
 	// Install Kernel modules
 	log.Printf("Installing the Kernel")
@@ -234,30 +246,74 @@ func InstallKernel(w http.ResponseWriter) error {
 	return nil
 }
 
-func CopyFiles(w http.ResponseWriter) error {
+func copyFiles(w http.ResponseWriter) error {
 
 	//Copy files
-	backupImageErr := CopyFile("/boot/firmware/kernel_2712.img", "/boot/firmware/kernel_2712-backup.img", w)
+	backupImageErr := copyFile("/boot/firmware/kernel_2712.img", "/boot/firmware/kernel_2712-backup.img", w)
 	if backupImageErr != nil {
 		return backupImageErr
 	}
 
-	copyImageErr := CopyFile(linuxDir+"/arch/arm64/boot/Image.gz", "/boot/firmware/kernel_2712.img", w)
+	copyImageErr := copyFile(linuxDir+"/arch/arm64/boot/Image.gz", "/boot/firmware/kernel_2712.img", w)
 	if copyImageErr != nil {
 		return copyImageErr
 	}
 
-	copyDTBErr := CopyFile(linuxDir+"/arch/arm64/boot/dts/broadcom/*.dtb", "/boot/firmware/.", w)
+	copyDTBErr := copyFile(linuxDir+"/arch/arm64/boot/dts/broadcom/*.dtb", "/boot/firmware/.", w)
 	if copyDTBErr != nil {
 		return copyDTBErr
 	}
 
-	copyOverlaysErr := CopyFile(linuxDir+"/arch/arm64/boot/dts/overlays/*.dtb*", "/boot/firmware/overlays/.", w)
+	copyOverlaysErr := copyFile(linuxDir+"/arch/arm64/boot/dts/overlays/*.dtb*", "/boot/firmware/overlays/.", w)
 	if copyOverlaysErr != nil {
 		return copyOverlaysErr
 	}
 
-	copyOverlaysReadMeErr := CopyFile(linuxDir+"/arch/arm64/boot/dts/overlays/README", "/boot/firmware/overlays/.", w)
+	copyOverlaysReadMeErr := copyFile(linuxDir+"/arch/arm64/boot/dts/overlays/README", "/boot/firmware/overlays/.", w)
+	if copyOverlaysReadMeErr != nil {
+		return copyOverlaysReadMeErr
+	}
+
+	return nil
+}
+
+// createDebPackage Create deb packages
+func createDebPackage(w http.ResponseWriter) error {
+	// Create deb packages
+	log.Printf("Creating deb packages")
+	if err := utilities.SendEventData("Creating deb packages", "consoleOutput", w); err != nil {
+		slog.Error("Error while creating deb packages", "Value", err)
+	}
+
+	//make deb-pkg
+	cmd := exec.Command("make", "deb-pkg")
+	cmd.Dir = linuxDir
+	cmd.Env = append(os.Environ(), "KERNEL=kernel_2712")
+
+	err := utilities.ExecCmdSseStdoutText(cmd, w)
+	if err != nil {
+		slog.Error("Error while creating deb packages", "Value", err)
+		return err
+	}
+
+	log.Printf("Created deb packages successfully")
+	if err := utilities.SendEventData("Created deb packages successfully", "consoleOutput", w); err != nil {
+		slog.Error("Error while creating deb packages", "Value", err)
+	}
+
+	return nil
+}
+
+// copyHeaderFile Copy the header package file to the home directory
+func copyHeaderFile(w http.ResponseWriter) error {
+
+	// Create deb packages
+	log.Printf("Coping header deb package to home directory")
+	if err := utilities.SendEventData("Coping header deb package to home directory", "consoleOutput", w); err != nil {
+		slog.Error("Error while coping header deb package to home directory", "Value", err)
+	}
+
+	copyOverlaysReadMeErr := copyFile(buildDir+"/linux-headers*.deb", "~/.", w)
 	if copyOverlaysReadMeErr != nil {
 		return copyOverlaysReadMeErr
 	}
@@ -266,7 +322,7 @@ func CopyFiles(w http.ResponseWriter) error {
 }
 
 // CopyFile Command line copy function
-func CopyFile(src string, dst string, w http.ResponseWriter) error {
+func copyFile(src string, dst string, w http.ResponseWriter) error {
 
 	log.Println("Copying file ", src, " to ", dst)
 	sendEventErr := utilities.SendEventData("Copying file "+src+" to "+dst, "consoleOutput", w)
