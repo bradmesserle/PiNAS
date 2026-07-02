@@ -1,11 +1,11 @@
 package endpoints
 
 import (
-	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v5"
 	"github.com/pinas/ui/internal/structs"
 )
 
-func WizardNext(c echo.Context, wizardInfo *structs.WizardInfo) error {
+func WizardNext(c *echo.Context, wizardInfo *structs.WizardInfo) error {
 
 	err := c.Bind(wizardInfo)
 	if err != nil {

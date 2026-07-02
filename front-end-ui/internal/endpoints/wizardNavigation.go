@@ -1,7 +1,7 @@
 package endpoints
 
 import (
-	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v5"
 	"github.com/labstack/gommon/log"
 	"github.com/pinas/common-structs"
 	"github.com/pinas/ui/internal/components"
@@ -10,12 +10,12 @@ import (
 	"github.com/pinas/ui/internal/structs"
 )
 
-func WizardNavigation(c echo.Context, wizardInfo *structs.WizardInfo) error {
+func WizardNavigation(c *echo.Context, wizardInfo *structs.WizardInfo) error {
 
 	if wizardInfo.Step == 0 {
 		cmp := components.Home(*wizardInfo)
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMETextHTMLCharsetUTF8)
-		return cmp.Render(c.Request().Context(), c.Response().Writer)
+		return cmp.Render(c.Request().Context(), c.Response())
 	}
 
 	if wizardInfo.Step == 1 {
@@ -52,7 +52,7 @@ func WizardNavigation(c echo.Context, wizardInfo *structs.WizardInfo) error {
 
 	cmp := setup.SetupWizard(*wizardInfo)
 	c.Response().Header().Set(echo.HeaderContentType, echo.MIMETextHTMLCharsetUTF8)
-	return cmp.Render(c.Request().Context(), c.Response().Writer)
+	return cmp.Render(c.Request().Context(), c.Response())
 
 }
 

@@ -4,7 +4,8 @@ go 1.26.1
 
 require (
 	github.com/a-h/templ v0.3.1020
-	github.com/labstack/echo/v4 v4.15.3
+	github.com/labstack/echo/v5 v5.2.1
+	github.com/labstack/gommon v0.5.0
 	github.com/pinas/common-structs v0.0.0-00010101000000-000000000000
 )
 
@@ -17,7 +18,6 @@ require (
 	github.com/cli/browser v1.3.0 // indirect
 	github.com/fatih/color v1.19.0 // indirect
 	github.com/fsnotify/fsnotify v1.10.1 // indirect
-	github.com/labstack/gommon v0.5.0 // indirect
 	github.com/mattn/go-colorable v0.1.15 // indirect
 	github.com/mattn/go-isatty v0.0.22 // indirect
 	github.com/natefinch/atomic v1.0.1 // indirect
