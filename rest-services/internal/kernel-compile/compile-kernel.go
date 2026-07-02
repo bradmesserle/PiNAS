@@ -161,6 +161,12 @@ func UpdateBuildConfig(w http.ResponseWriter) error {
 	buf.WriteString("CONFIG_TLS=m\n")
 	buf.WriteString("CONFIG_STREAM_PARSER=y\n")
 	buf.WriteString("CONFIG_NVME_KEYRING=m\n")
+	buf.WriteString("CONFIG_NVME_CORE=y\n")
+	buf.WriteString("CONFIG_BLK_DEV_NVME=y\n")
+	buf.WriteString("CCONFIG_NVME_HWMON=y\n")
+	buf.WriteString("CONFIG_NVME_TARGET=y\n")
+	buf.WriteString("CONFIG_NVME_TARGET_TCP=y\n")
+	buf.WriteString("CONFIG_NVME_TARGET_TCP_TLS=y\n")
 	buf.WriteString("CONFIG_NVME_FABRICS=m\n")
 	buf.WriteString("CONFIG_NVME_TCP=m\n")
 	buf.WriteString("CONFIG_NVME_TCP_TLS=y\n")
@@ -193,7 +199,7 @@ func BuildKernel(w http.ResponseWriter) error {
 		slog.Error("Error while sending event data", "Value", err)
 	}
 
-	cmd := exec.Command("make", "-j6", "Image.gz", "modules", "dtbs")
+	cmd := exec.Command("make", "-j8", "Image.gz", "modules", "dtbs")
 	cmd.Dir = linuxDir
 	cmd.Env = append(os.Environ(), "KERNEL=kernel_2712")
 	err := utilities.ExecCmdSseStdoutText(cmd, w)
