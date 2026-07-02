@@ -40,6 +40,8 @@ func main() {
 
 	app.POST("/back", func(c echo.Context) error { return endpoints.WizardBack(c, wizardInfo) })
 
+	app.GET("/install", func(c echo.Context) error { return endpoints.Install(c, wizardInfo) })
+
 	// Start the server
 	app.Logger.Fatal(app.Start(":8080"))
 
