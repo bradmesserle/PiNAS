@@ -233,7 +233,7 @@ func installKernel(w http.ResponseWriter) error {
 		slog.Error("Error while sending event data", "Value", err)
 	}
 
-	cmd := exec.Command("make", "-j6", "modules_install")
+	cmd := exec.Command("make", "-j4", "modules_install")
 	cmd.Dir = linuxDir
 	cmd.Env = append(os.Environ(), "KERNEL=kernel_2712")
 
