@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -54,6 +55,10 @@ func setupWebServer() {
 	// Start the server
 	sc := echo.StartConfig{
 		Address: ":8080",
+		BeforeServeFunc: func(s *http.Server) error {
+			s.WriteTimeout = 0 // IMPORTANT: disable for SSE
+			return nil
+		},
 	}
 
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM) // start shutdown process on ctrl+c

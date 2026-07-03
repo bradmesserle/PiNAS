@@ -1,6 +1,7 @@
 package endpoints
 
 import (
+	"log"
 	"sync"
 
 	"github.com/a-h/templ"
@@ -14,16 +15,29 @@ func Install(c *echo.Context, wizardInfo *structs.WizardInfo) error {
 
 	//Kick off the installation process
 	var wg sync.WaitGroup
-	wg.Add(1)
-
-	go func() {
-		err := rest_client.AptUpdate(&wg)
-		if err != nil {
-
-		}
-	}()
+	wg.Add(3)
 
 	var cmp templ.Component = setup.InstallProgressPage(*wizardInfo)
 	c.Response().Header().Set(echo.HeaderContentType, echo.MIMETextHTMLCharsetUTF8)
-	return cmp.Render(c.Request().Context(), c.Response())
+	renderPage := cmp.Render(c.Request().Context(), c.Response())
+
+	go func() {
+		errUpdate := rest_client.AptUpdate(&wg)
+		if errUpdate != nil {
+			log.Println(errUpdate.Error())
+		}
+
+		errUpgrade := rest_client.AptUpgrade(&wg)
+		if errUpgrade != nil {
+			log.Println(errUpgrade.Error())
+		}
+
+		errInstallZfs := rest_client.InstallZfs(&wg)
+		if errInstallZfs != nil {
+			log.Println(errInstallZfs.Error())
+		}
+
+	}()
+
+	return renderPage
 }

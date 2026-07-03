@@ -14,16 +14,16 @@ import (
 	"github.com/pinas/ui/internal"
 )
 
-func AptUpdate(wg *sync.WaitGroup) error {
+func InstallZfs(wg *sync.WaitGroup) error {
 
 	defer wg.Done()
 
 	// 1. Setup a cancellable context to close the stream when needed
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Hour)
 	defer cancel()
 
 	// 2. Create the long-lived HTTP request
-	req, err := http.NewRequestWithContext(ctx, "GET", "http://192.168.0.22:9090/aptUpdate", nil)
+	req, err := http.NewRequestWithContext(ctx, "GET", "http://192.168.0.22:9090/installZFS", nil)
 	if err != nil {
 		log.Printf("Failed to create request: %v", err)
 	}
@@ -44,12 +44,11 @@ func AptUpdate(wg *sync.WaitGroup) error {
 		err := Body.Close()
 		if err != nil {
 			//log.Fatalf("Failed to close body: %v", err)
-			log.Printf("Failed to close body: %v", err)
 		}
 	}(resp.Body)
 
 	if resp.StatusCode != http.StatusOK {
-		//log.Fatalf("Unexpected status code: %d", resp.StatusCode)
+		//log.("Unexpected status code: %d", resp.StatusCode)
 	}
 
 	// 5. Scan the body line by line
