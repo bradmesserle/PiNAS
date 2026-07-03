@@ -11,11 +11,20 @@ import (
 	"github.com/pinas/ui/internal"
 	"github.com/pinas/ui/internal/components"
 	"github.com/pinas/ui/internal/endpoints"
-	"github.com/pinas/ui/internal/rest-client"
 	"github.com/pinas/ui/internal/structs"
 )
 
 func main() {
+
+	//Setup web server
+	setupWebServer()
+
+}
+
+// setupWebServer Setup web server
+func setupWebServer() {
+
+	//Echo web server
 	app := echo.New()
 
 	//Static Files
@@ -40,7 +49,7 @@ func main() {
 	app.GET("/install", func(c *echo.Context) error { return endpoints.Install(c, wizardInfo) })
 
 	//Console output SSE
-	app.GET("/consoleStream", func(c *echo.Context) error { return rest_client.StreamHandler(c) })
+	app.GET("/consoleStream", func(c *echo.Context) error { return endpoints.ConsoleLogStreamHandler(c) })
 
 	// Start the server
 	sc := echo.StartConfig{
@@ -54,4 +63,5 @@ func main() {
 	if err := sc.Start(ctx, app); err != nil {
 		app.Logger.Error("failed to start server", "error", err)
 	}
+
 }

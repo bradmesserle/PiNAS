@@ -14,7 +14,7 @@ templ InstallProgressPage(data structs.WizardInfo) {
 
         function updateText(newValue) {
 
-            bodyText = bodyText + newValue + " ";
+            bodyText = bodyText + newValue + "\n";
             const consoleTextArea = document.getElementById("consoleOutput");
             consoleTextArea.dispatchEvent( new CustomEvent('js-updated', {
                 detail: { consoleLog: bodyText },
@@ -32,7 +32,7 @@ templ InstallProgressPage(data structs.WizardInfo) {
               id="consoleOutput">
 
             <label>
-                <textarea  data-bind="output2"  rows="10" cols="60" readonly></textarea>
+                <textarea  data-bind="output2"  rows="10" cols="60" readonly  style="overflow: auto;" ></textarea>
             </label>
 
         </div>

@@ -11,14 +11,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/labstack/echo/v5"
-	"github.com/starfederation/datastar-go/datastar"
+	"github.com/pinas/ui/internal"
 )
-
-type Signals struct {
-	Content   string `json:"content"`
-	Streaming bool   `json:"streaming"`
-}
 
 func AptUpdate(wg *sync.WaitGroup) error {
 
@@ -46,8 +40,6 @@ func AptUpdate(wg *sync.WaitGroup) error {
 		log.Fatalf("Failed to connect: %v", err)
 	}
 
-	//http.HandleFunc("/aptUpdate", streamHandler)
-
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
 		if err != nil {
@@ -70,7 +62,8 @@ func AptUpdate(wg *sync.WaitGroup) error {
 		// Empty line denotes the end of an event block
 		if line == "" {
 			if currentData.Len() > 0 {
-				fmt.Printf("%s\n", strings.TrimSpace(currentData.String()))
+				internal.EventBus.Publish("consoleLog", strings.TrimSpace(currentData.String()))
+				//fmt.Printf("%s\n", strings.TrimSpace(currentData.String()))
 				currentData.Reset()
 			}
 			continue
@@ -96,56 +89,4 @@ func AptUpdate(wg *sync.WaitGroup) error {
 	}
 
 	return nil
-}
-
-func StreamHandler(c *echo.Context) error {
-
-	var in Signals
-	_ = datastar.ReadSignals(c.Request(), &in)
-
-	// NewSSE sets the SSE headers and returns a generator bound to this request.
-	sse := datastar.NewSSE(c.Response(), c.Request())
-
-	// Flip the `streaming` signal on so the buttons disable and the status
-	// indicator lights up. This is a datastar-patch-signals SSE event.
-	_ = sse.MarshalAndPatchSignals(map[string]any{"streaming": true})
-
-	message := `Datastar streams this text one token at a time, straight from ` +
-		`the Go server into the textarea using Server-Sent Events. Each chunk ` +
-		`patches the "output" signal, and because the textarea is bound with ` +
-		`data-bind, its value updates live — no custom JavaScript required.`
-
-	//var b strings.Builder
-	for _, tok := range strings.Fields(message) {
-		// Stop early if the browser closes the connection (tab closed, etc.).
-		select {
-		case <-c.Request().Context().Done():
-			return nil
-		default:
-		}
-
-		//if b.Len() > 0 {
-		//	b.WriteByte(' ')
-		//}
-		//b.WriteString(tok)
-
-		//scriptText = fmt.Printf("%s",tok)
-		sse.ExecuteScript(fmt.Sprintf(`updateText("%s")`, tok))
-		//sse.ExecuteScript(`console.log(bodyText)`)
-		//if err != nil {
-		//	//return err
-		//}
-
-		// Patch just the `output` signal with the accumulated text so far.
-		// A signals patch is a merge, so `streaming` is left untouched.
-		//if err := sse.MarshalAndPatchSignals(map[string]any{"output": b.String()}); err != nil {
-		//	return nil // client went away
-		//}
-
-		time.Sleep(150 * time.Millisecond)
-	}
-
-	// Done: turn the `streaming` signal back off.
-	return sse.MarshalAndPatchSignals(map[string]any{"streaming": false})
-
 }
