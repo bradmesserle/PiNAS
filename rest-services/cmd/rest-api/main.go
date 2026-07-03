@@ -37,6 +37,8 @@ func main() {
 	// Restart the system
 	// Wipe Drives Clean - for before creating pools
 	// Save the installation progress to a file so we can restart from where we left off
+	// Create endpoint to install DNS Server
+	// Create endpoint to install Step CA
 
 	//Get CPU Info
 	e.GET("/cpuInfo", system_info.GetCpuInfo)

@@ -11,6 +11,7 @@ import (
 	"github.com/pinas/ui/internal"
 	"github.com/pinas/ui/internal/components"
 	"github.com/pinas/ui/internal/endpoints"
+	"github.com/pinas/ui/internal/rest-client"
 	"github.com/pinas/ui/internal/structs"
 )
 
@@ -37,6 +38,9 @@ func main() {
 	app.POST("/back", func(c *echo.Context) error { return endpoints.WizardBack(c, wizardInfo) })
 
 	app.GET("/install", func(c *echo.Context) error { return endpoints.Install(c, wizardInfo) })
+
+	//Console output SSE
+	app.GET("/consoleStream", func(c *echo.Context) error { return rest_client.StreamHandler(c) })
 
 	// Start the server
 	sc := echo.StartConfig{

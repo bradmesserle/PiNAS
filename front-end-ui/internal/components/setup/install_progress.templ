@@ -2,14 +2,38 @@ package setup
 
 import "github.com/pinas/ui/internal/structs"
 
+var helloHandle = templ.NewOnceHandle()
+
 templ InstallProgressPage(data structs.WizardInfo) {
 
 <div id="setup-wizard">
 
-    <div>
-        <p>Install Progress</p>
-        <div>
+    @helloHandle.Once() {
+    <script>
+        let bodyText = "";
 
+        function updateText(newValue) {
+
+            bodyText = bodyText + newValue + " ";
+            const consoleTextArea = document.getElementById("consoleOutput");
+            consoleTextArea.dispatchEvent( new CustomEvent('js-updated', {
+                detail: { consoleLog: bodyText },
+            }));
+
+        }
+
+    </script>
+    }
+
+    <div data-init="@get('/consoleStream')">
+        <p>Install Progress</p>
+        <div  data-signals:output2
+              data-on:js-updated="$output2 = evt.detail.consoleLog"
+              id="consoleOutput">
+
+            <label>
+                <textarea  data-bind="output2"  rows="10" cols="60" readonly></textarea>
+            </label>
 
         </div>
     </div>
