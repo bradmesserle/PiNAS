@@ -41,6 +41,7 @@ type NvmeDrive struct {
 	Model            string `json:"model"`
 	Size             string `json:"size"`
 	Serial           string `json:"serial"`
+	DrivePath        string `json:"drivePath"`
 }
 
 type InstallOptions struct {

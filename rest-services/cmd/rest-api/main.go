@@ -10,6 +10,7 @@ import (
 	"github.com/labstack/echo/v5"
 	"github.com/labstack/echo/v5/middleware"
 	"github.com/pinas/rest-services/internal/kernel-compile"
+	os_functions "github.com/pinas/rest-services/internal/os-functions"
 	"github.com/pinas/rest-services/internal/system-info"
 	"github.com/pinas/rest-services/internal/system-updates"
 	"github.com/pinas/rest-services/internal/zfs-install"
@@ -63,6 +64,9 @@ func main() {
 
 	//Get Drive Telemetry
 	e.GET("/getDriveTelemetry", system_info.GetDriveTelemetry)
+
+	//Wipe File System
+	e.GET("/wipeFilesystem", os_functions.WipeFileSystem)
 
 	//Move the /etc directory off the micro-sd card
 	e.GET("/moveEtcDirectory", system_updates.MoveEtcDirectory)

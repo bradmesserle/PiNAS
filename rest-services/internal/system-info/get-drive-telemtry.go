@@ -55,6 +55,7 @@ func createDrive(driveString string) interface{} {
 		drive.Model = strings.TrimSpace(fields[2])
 		drive.Size = strings.TrimSpace(fields[3])
 		drive.Serial = strings.TrimSpace(fields[4])
+		drive.DrivePath = strings.TrimSpace("/dev/" + drive.Name)
 
 		return drive
 	}
