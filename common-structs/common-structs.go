@@ -41,7 +41,6 @@ type NvmeDrive struct {
 	Model            string `json:"model"`
 	Size             string `json:"size"`
 	Serial           string `json:"serial"`
-	DrivePath        string `json:"drivePath"`
 }
 
 type InstallOptions struct {
@@ -58,4 +57,10 @@ type InstallStatus struct {
 	KernelCompiled  bool   `json:"kernelCompiled"`
 	CurrentProcess  string `json:"currentProcess"`
 	InstallComplete bool   `json:"installComplete"`
+}
+
+type ZfsPool struct {
+	PoolName       string      `json:"poolName"`
+	WifeFilesystem bool        `json:"wipeFilesystem"`
+	NvmeDrives     []NvmeDrive `json:"nvmeDrives"`
 }
