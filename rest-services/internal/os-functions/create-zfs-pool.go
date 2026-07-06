@@ -13,7 +13,7 @@ import (
 	"github.com/pinas/rest-services/internal/utilities"
 )
 
-// CreateZfsPool Create ZFS Pool
+// CreateZfsPool Create ZFS Pool Zfspool object should contain the pool name and the nvme drives you want to create the pool with
 func CreateZfsPool(zfsPool common_structs.ZfsPool, w http.ResponseWriter) error {
 
 	var drivePaths []string
@@ -35,16 +35,13 @@ func CreateZfsPool(zfsPool common_structs.ZfsPool, w http.ResponseWriter) error 
 	if len(drivePaths) == 2 {
 		//Generate the create pool command
 		//zpool create {pool name} mirror /dev/disk/by-id/nvme-KINGSTON_SNV3S1000G_50026B768714C0F8 /dev/disk/by-id/nvme-KINGSTON_SNV3S1000G_50026B768714C15B
-		log.Printf("Creating ZFS Pool: " + zfsPool.PoolName)
-		//if err := utilities.SendEventData("Creating ZFS Pool: "+poolInfo.PoolName, "consoleOutput", w); err != nil {
-		//	slog.Error("Error while sendingCreating ZFS Pool String", "Value", err)
-		//}
+		sendInfoMessage(zfsPool, w)
 
 		cmd := exec.Command("zpool", "create", zfsPool.PoolName, "mirror", drivePaths[0], drivePaths[1])
 		err := utilities.ExecCmdSseStdoutText(cmd, w)
 		if err != nil {
-			//slog.Error("Error while wiping filesystem: "+drivePath, "Value", err)
-			//return err
+			slog.Error("Error while creating the zfs pool", "Value", err)
+			return err
 		}
 
 	}
@@ -53,16 +50,13 @@ func CreateZfsPool(zfsPool common_structs.ZfsPool, w http.ResponseWriter) error 
 	if len(drivePaths) == 1 {
 		//Generate the create pool command
 		//zpool create {pool name} /dev/disk/by-id/nvme-KINGSTON_SNV3S1000G_50026B768714C0F8
-		//log.Printf("Creating ZFS Pool: " + poolInfo.PoolName)
-		//if err := utilities.SendEventData("Creating ZFS Pool: "+poolInfo.PoolName, "consoleOutput", w); err != nil {
-		//	slog.Error("Error while sendingCreating ZFS Pool String", "Value", err)
-		//}
+		sendInfoMessage(zfsPool, w)
 
 		cmd := exec.Command("zpool", "create", zfsPool.PoolName, drivePaths[0])
 		err := utilities.ExecCmdSseStdoutText(cmd, w)
 		if err != nil {
-			//slog.Error("Error while wiping filesystem: "+drivePath, "Value", err)
-			//return err
+			slog.Error("Error while creating the zfs pool", "Value", err)
+			return err
 		}
 
 	}
@@ -113,4 +107,12 @@ func getDrivePath(serialNumber string) (string, error) {
 	}
 
 	return "/dev/disk/by-id/" + id, nil
+}
+
+// sendInfoMessage Send an info message to the client
+func sendInfoMessage(zfsPool common_structs.ZfsPool, w http.ResponseWriter) {
+	log.Printf("Creating ZFS Pool: " + zfsPool.PoolName)
+	if err := utilities.SendEventData("Creating ZFS Pool: "+zfsPool.PoolName, "consoleOutput", w); err != nil {
+		slog.Error("Error while sending creating ZFS Pool String", "Value", err)
+	}
 }
