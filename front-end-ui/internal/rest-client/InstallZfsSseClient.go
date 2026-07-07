@@ -36,6 +36,10 @@ func InstallZfs(wg *sync.WaitGroup) error {
 		//log.Fatalf("Failed to connect: %v", err)
 	}
 
+	if resp == nil {
+		return nil
+	}
+
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
 		if err != nil {

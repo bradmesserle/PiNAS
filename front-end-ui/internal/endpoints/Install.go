@@ -7,7 +7,7 @@ import (
 
 	"github.com/a-h/templ"
 	"github.com/labstack/echo/v5"
-	common_structs "github.com/pinas/common-structs"
+	"github.com/pinas/common-structs"
 	"github.com/pinas/ui/internal/components/setup"
 	"github.com/pinas/ui/internal/rest-client"
 	"github.com/pinas/ui/internal/structs"
@@ -17,7 +17,7 @@ func Install(c *echo.Context, wizardInfo *structs.WizardInfo) error {
 
 	//Kick off the installation process
 	var wg sync.WaitGroup
-	wg.Add(6)
+	wg.Add(7)
 
 	var cmp templ.Component = setup.InstallProgressPage(*wizardInfo)
 	c.Response().Header().Set(echo.HeaderContentType, echo.MIMETextHTMLCharsetUTF8)
