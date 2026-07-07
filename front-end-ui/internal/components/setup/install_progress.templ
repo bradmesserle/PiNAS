@@ -13,12 +13,14 @@ templ InstallProgressPage(data structs.WizardInfo) {
         let bodyText = "";
 
         function updateText(newValue) {
-
+            let textarea = document.getElementById('consoleLog');
             bodyText = bodyText + newValue + "\n";
             const consoleTextArea = document.getElementById("consoleOutput");
             consoleTextArea.dispatchEvent( new CustomEvent('js-updated', {
                 detail: { consoleLog: bodyText },
             }));
+
+            textarea.scrollTop = textarea.scrollHeight;
 
         }
 
@@ -32,7 +34,7 @@ templ InstallProgressPage(data structs.WizardInfo) {
               id="consoleOutput">
 
             <label>
-                <textarea  data-bind="output2"  rows="10" cols="60" readonly  style="overflow: auto;" ></textarea>
+                <textarea  id="consoleLog" data-bind="output2"  rows="10" cols="60" readonly  style="overflow-y: auto; " ></textarea>
             </label>
 
         </div>
