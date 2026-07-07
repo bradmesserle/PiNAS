@@ -11,6 +11,7 @@ import (
 	"github.com/pinas/rest-services/internal/utilities"
 )
 
+// DestroyPools destroys all ZFS pools on the system.
 func DestroyPools(w http.ResponseWriter) error {
 
 	out, err := exec.Command("zpool", "list", "-H").Output()

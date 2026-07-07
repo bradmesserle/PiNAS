@@ -1,4 +1,4 @@
-package zfs_install
+package zfs
 
 import (
 	"log"
@@ -11,6 +11,7 @@ import (
 	"github.com/pinas/rest-services/internal/utilities"
 )
 
+// CreateZfsPool Create ZFS Pool
 func CreateZfsPool(c *echo.Context) error {
 
 	log.Printf("SSE client connected, ip: %v", c.RealIP())

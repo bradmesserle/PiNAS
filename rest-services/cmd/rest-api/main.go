@@ -9,12 +9,12 @@ import (
 
 	"github.com/labstack/echo/v5"
 	"github.com/labstack/echo/v5/middleware"
+	"github.com/pinas/rest-services/internal/endpoint-functions/zfs"
 	"github.com/pinas/rest-services/internal/kernel-compile"
-	os_functions "github.com/pinas/rest-services/internal/os-functions"
+	"github.com/pinas/rest-services/internal/os-functions"
 	"github.com/pinas/rest-services/internal/system-info"
 	"github.com/pinas/rest-services/internal/system-updates"
 	"github.com/pinas/rest-services/internal/utilities"
-	"github.com/pinas/rest-services/internal/zfs-install"
 )
 
 func main() {
@@ -61,13 +61,16 @@ func main() {
 	e.GET("/compileKernel", kernel_compile.CompileLinuxKernel)
 
 	//Install ZFS
-	e.GET("/installZFS", zfs_install.InstallZfs)
+	e.GET("/installZFS", zfs.InstallZfs)
 
 	//Get Drive Telemetry
 	e.GET("/getDriveTelemetry", system_info.GetDriveTelemetry)
 
 	//Create ZFS Pool
-	e.POST("/createZfsPool", zfs_install.CreateZfsPool)
+	e.POST("/createZfsPool", zfs.CreateZfsPool)
+
+	//Create ZFS Dataset
+	e.POST("/createZfsDataset", zfs.CreateZfsDataset)
 
 	//Move the /etc directory off the micro-sd card
 	e.GET("/moveEtcDirectory", system_updates.MoveEtcDirectory)

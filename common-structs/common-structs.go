@@ -64,3 +64,9 @@ type ZfsPool struct {
 	WifeFilesystem bool        `json:"wipeFilesystem"`
 	NvmeDrives     []NvmeDrive `json:"nvmeDrives"`
 }
+
+type ZfsDataset struct {
+	DatasetName string            `json:"datasetName"`
+	PoolName    string            `json:"poolName"`
+	Options     map[string]string `json:"options"`
+}

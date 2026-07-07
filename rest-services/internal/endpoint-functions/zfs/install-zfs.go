@@ -1,4 +1,4 @@
-package zfs_install
+package zfs
 
 import (
 	"bufio"
