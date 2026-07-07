@@ -21,7 +21,7 @@ func WipeFileSystem(drivePath string, w http.ResponseWriter) error {
 			slog.Error("Error while sending wiping file system log info string", "Value", err)
 		}
 
-		cmd := exec.Command("wipefs", "-all", "--force", drivePath)
+		cmd := exec.Command("wipefs", "--all", "--force", drivePath)
 		err := utilities.ExecCmdSseStdoutText(cmd, w)
 		if err != nil {
 			slog.Error("Error while wiping filesystem: "+drivePath, "Value", err)
