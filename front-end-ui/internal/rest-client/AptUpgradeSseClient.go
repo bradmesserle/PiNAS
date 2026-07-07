@@ -36,6 +36,11 @@ func AptUpgrade(wg *sync.WaitGroup) error {
 		//log.Fatalf("Failed to connect: %v", err)
 	}
 
+	//Check to see if we have a response.
+	if resp == nil {
+		return nil
+	}
+
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
 		if err != nil {

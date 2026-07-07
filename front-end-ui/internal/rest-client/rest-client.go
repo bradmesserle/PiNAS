@@ -71,13 +71,6 @@ func GetDriveTelemetry() (drives []common_structs.NvmeDrive, err error) {
 	return driveTelemetry, err
 }
 
-// Create ZFS Pool
-func CreateZfsPool(wg *sync.WaitGroup) (err error) {
-	defer wg.Done()
-	err = execRestGetCall(nil, createZfsPoolUrl)
-	return err
-}
-
 // HealthCheck Validate the rest-api is running
 func HealthCheck() (err error) {
 

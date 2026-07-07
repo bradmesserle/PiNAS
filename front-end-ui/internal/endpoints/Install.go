@@ -7,6 +7,7 @@ import (
 
 	"github.com/a-h/templ"
 	"github.com/labstack/echo/v5"
+	common_structs "github.com/pinas/common-structs"
 	"github.com/pinas/ui/internal/components/setup"
 	"github.com/pinas/ui/internal/rest-client"
 	"github.com/pinas/ui/internal/structs"
@@ -96,6 +97,10 @@ func waitForReboot(wg *sync.WaitGroup) {
 func createZfsPool(wg *sync.WaitGroup) {
 	defer wg.Done()
 
+	poolInfo := new(common_structs.ZfsPool)
+	poolInfo.WifeFilesystem = true
+	poolInfo.PoolName = "ZfsPool"
+
 	//Get Drive Telemetry
 	var drives, err = rest_client.GetDriveTelemetry()
 	if err != nil {
@@ -103,12 +108,12 @@ func createZfsPool(wg *sync.WaitGroup) {
 	}
 
 	for _, drive := range drives {
+		poolInfo.NvmeDrives = append(poolInfo.NvmeDrives, drive)
+	}
 
-		log.Println(drive.DeviceIdentifier)
-		log.Println(drive.Name)
-		log.Println(drive.Size)
-		log.Println(drive.Serial)
-
+	errCreatePool := rest_client.CreateZfsPool(wg, *poolInfo)
+	if errCreatePool != nil {
+		log.Println(errCreatePool.Error())
 	}
 
 }

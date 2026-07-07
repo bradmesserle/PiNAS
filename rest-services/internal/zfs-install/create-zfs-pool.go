@@ -22,15 +22,15 @@ func CreateZfsPool(c *echo.Context) error {
 
 	poolInfo := new(common_structs.ZfsPool)
 
-	log.Printf("Creating ZFS Pool: " + poolInfo.PoolName)
-	if err := utilities.SendEventData("Creating ZFS Pool: "+poolInfo.PoolName, "consoleOutput", w); err != nil {
-		slog.Error("Error while sendingCreating ZFS Pool String", "Value", err)
-	}
-
 	if err := c.Bind(poolInfo); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{
 			"error": "Invalid request payload",
 		})
+	}
+
+	log.Printf("Creating ZFS Pool: " + poolInfo.PoolName)
+	if err := utilities.SendEventData("Creating ZFS Pool: "+poolInfo.PoolName, "consoleOutput", w); err != nil {
+		slog.Error("Error while sendingCreating ZFS Pool String", "Value", err)
 	}
 
 	//Wipe Filesystem data
