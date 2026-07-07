@@ -1,4 +1,4 @@
-package endpoints
+package setup_navigation
 
 import (
 	"github.com/labstack/echo/v5"

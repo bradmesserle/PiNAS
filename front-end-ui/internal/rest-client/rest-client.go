@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"sync"
 
 	"github.com/labstack/gommon/log"
 	"github.com/pinas/common-structs"
@@ -16,7 +17,9 @@ var getPCIeInfoUrl = "http://192.168.0.22:9090/pcieInfo"
 var getModelInfoUrl = "http://192.168.0.22:9090/modelInfo"
 var getCpuInfoUrl = "http://192.168.0.22:9090/cpuInfo"
 var getMemoryInfoUrl = "http://192.168.0.22:9090/memoryInfo"
-var verifyUpdateConfig = "http://192.168.0.22:9090/verifyUpdateConfig"
+var verifyUpdateConfigUrl = "http://192.168.0.22:9090/verifyUpdateConfig"
+var rebootUrl = "http://192.168.0.22:9090/reboot"
+var healthCheckUrl = "http://192.168.0.22:9090/healthCheck"
 
 // EnableGen3Pcie sends a GET request to enable Gen3 PCIe on the specified URL
 func EnableGen3Pcie() (resp *http.Response, err error) {
@@ -49,6 +52,21 @@ func GetMemoryInfo() (model common_structs.MemoryInfo, err error) {
 	var memoryInfo common_structs.MemoryInfo
 	err = execRestCall(&memoryInfo, getMemoryInfoUrl)
 	return memoryInfo, err
+}
+
+// Reboot system
+func Reboot(wg *sync.WaitGroup) (err error) {
+
+	defer wg.Done()
+
+	err = execRestCall(nil, rebootUrl)
+	return err
+}
+
+// HealthCheck Validate the rest-api is running
+func HealthCheck() (err error) {
+	err = execRestCall(nil, healthCheckUrl)
+	return err
 }
 
 // Execute Rest Call and handle errors

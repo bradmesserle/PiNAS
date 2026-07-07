@@ -34,10 +34,10 @@ func main() {
 	// Install ZFS -Done
 	// Get Drive Telemetry - get the installed nvme drive data with serial number so we can build the pool from drive SN - Done
 	// Create PiNAS working partition(1-5G?).. We will need a working partition to store data, install dns, step-ca and move /etc off the micro-sd
-	// Create zpool api
+	// Create zpool api - Done
 	// Create datasets - Need to look at the options and support what we need. nvme-fa block storage we will need
-	// Restart the system
-	// Wipe Drives Clean - for before creating pools
+	// Restart the system - Done
+	// Wipe Drives Clean - for before creating pools - Done
 	// Save the installation progress to a file so we can restart from where we left off
 	// Create endpoint to install DNS Server
 	// Create endpoint to install Step CA
