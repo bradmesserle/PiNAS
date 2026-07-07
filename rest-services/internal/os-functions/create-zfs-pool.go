@@ -70,7 +70,7 @@ func getDrivePath(serialNumber string) (string, error) {
 	var id string
 
 	//ls -al /dev/disk/by-id | grep serialNumber
-	cmd := exec.Command("ls", "-al", "/dev/disk/by-id/")
+	cmd := exec.Command("ls", "/dev/disk/by-id/")
 	grepCmd := exec.Command("grep", serialNumber)
 
 	pipe, err := cmd.StdoutPipe()
