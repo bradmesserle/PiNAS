@@ -56,16 +56,27 @@ func GetMemoryInfo() (model common_structs.MemoryInfo, err error) {
 
 // Reboot system
 func Reboot(wg *sync.WaitGroup) (err error) {
-
 	defer wg.Done()
-
 	err = execRestCall(nil, rebootUrl)
 	return err
 }
 
 // HealthCheck Validate the rest-api is running
 func HealthCheck() (err error) {
-	err = execRestCall(nil, healthCheckUrl)
+
+	client := &http.Client{}
+	resp, err := client.Get(healthCheckUrl)
+	if err != nil {
+		return err
+	}
+
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+
+		}
+	}(resp.Body)
+
 	return err
 }
 

@@ -3,6 +3,7 @@ package endpoints
 import (
 	"log"
 	"sync"
+	"time"
 
 	"github.com/a-h/templ"
 	"github.com/labstack/echo/v5"
@@ -15,13 +16,16 @@ func Install(c *echo.Context, wizardInfo *structs.WizardInfo) error {
 
 	//Kick off the installation process
 	var wg sync.WaitGroup
-	wg.Add(4)
+	wg.Add(5)
 
 	var cmp templ.Component = setup.InstallProgressPage(*wizardInfo)
 	c.Response().Header().Set(echo.HeaderContentType, echo.MIMETextHTMLCharsetUTF8)
 	renderPage := cmp.Render(c.Request().Context(), c.Response())
 
 	go func() {
+
+		//Install Part 1
+		//Update system and install ZFS
 
 		//Update repos
 		errUpdate := rest_client.AptUpdate(&wg)
@@ -47,7 +51,42 @@ func Install(c *echo.Context, wizardInfo *structs.WizardInfo) error {
 			log.Println(errReboot.Error())
 		}
 
+		//Install Part 2
+		//Wait for the reboot to complete
+		//Create ZFS Pool
+		waitForReboot(&wg)
+
 	}()
 
 	return renderPage
+}
+
+func waitForReboot(wg *sync.WaitGroup) {
+
+	defer wg.Done()
+	rebootStarted := false
+
+	//Check the health check
+	for {
+
+		//Check to see if we have an error if show we know the system is rebooting..
+		if !rebootStarted {
+			errReboot := rest_client.HealthCheck()
+			if errReboot != nil {
+				rebootStarted = true
+			}
+		} else {
+
+			//Lets wait until we dont get an error
+			errReboot := rest_client.HealthCheck()
+			if errReboot == nil {
+				log.Println("Reboot is finished")
+				break
+			}
+
+		}
+
+		time.Sleep(1 * time.Second)
+	}
+
 }
