@@ -16,7 +16,7 @@ func Install(c *echo.Context, wizardInfo *structs.WizardInfo) error {
 
 	//Kick off the installation process
 	var wg sync.WaitGroup
-	wg.Add(5)
+	wg.Add(6)
 
 	var cmp templ.Component = setup.InstallProgressPage(*wizardInfo)
 	c.Response().Header().Set(echo.HeaderContentType, echo.MIMETextHTMLCharsetUTF8)
@@ -53,8 +53,10 @@ func Install(c *echo.Context, wizardInfo *structs.WizardInfo) error {
 
 		//Install Part 2
 		//Wait for the reboot to complete
-		//Create ZFS Pool
 		waitForReboot(&wg)
+
+		//Create ZFS Pool
+		createZfsPool(&wg)
 
 	}()
 
@@ -87,6 +89,26 @@ func waitForReboot(wg *sync.WaitGroup) {
 		}
 
 		time.Sleep(1 * time.Second)
+	}
+
+}
+
+func createZfsPool(wg *sync.WaitGroup) {
+	defer wg.Done()
+
+	//Get Drive Telemetry
+	var drives, err = rest_client.GetDriveTelemetry()
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	for _, drive := range drives {
+
+		log.Println(drive.DeviceIdentifier)
+		log.Println(drive.Name)
+		log.Println(drive.Size)
+		log.Println(drive.Serial)
+
 	}
 
 }
