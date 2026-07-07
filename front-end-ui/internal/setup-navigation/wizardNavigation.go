@@ -6,6 +6,7 @@ import (
 	"github.com/pinas/common-structs"
 	"github.com/pinas/ui/internal/components"
 	"github.com/pinas/ui/internal/components/setup"
+	"github.com/pinas/ui/internal/endpoints"
 	"github.com/pinas/ui/internal/rest-client"
 	"github.com/pinas/ui/internal/structs"
 )
@@ -32,22 +33,22 @@ func WizardNavigation(c *echo.Context, wizardInfo *structs.WizardInfo) error {
 		systemInfoData.MemoryInfo = getMemoryInfo()
 
 		//Render System Info Page
-		return SystemInfo(c, wizardInfo, systemInfoData)
+		return endpoints.SystemInfo(c, wizardInfo, systemInfoData)
 	}
 
 	if wizardInfo.Step == 2 {
 		//Render Drive Setup Page
-		return DriveSetup(c, wizardInfo)
+		return endpoints.DriveSetup(c, wizardInfo)
 	}
 
 	if wizardInfo.Step == 3 {
 		//Render NAS Options Page
-		return NasOptions(c, wizardInfo)
+		return endpoints.NasOptions(c, wizardInfo)
 	}
 
 	if wizardInfo.Step == 4 {
 		//Render Install Summary Page
-		return InstallSummary(c, wizardInfo)
+		return endpoints.InstallSummary(c, wizardInfo)
 	}
 
 	cmp := setup.SetupWizard(*wizardInfo)

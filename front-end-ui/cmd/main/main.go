@@ -12,6 +12,7 @@ import (
 	"github.com/pinas/ui/internal"
 	"github.com/pinas/ui/internal/components"
 	"github.com/pinas/ui/internal/endpoints"
+	setup_navigation "github.com/pinas/ui/internal/setup-navigation"
 	"github.com/pinas/ui/internal/structs"
 )
 
@@ -43,9 +44,9 @@ func setupWebServer() {
 		return endpoints.Home(c, components.Home(*wizardInfo))
 	})
 
-	app.POST("/next", func(c *echo.Context) error { return endpoints.WizardNext(c, wizardInfo) })
+	app.POST("/next", func(c *echo.Context) error { return setup_navigation.WizardNext(c, wizardInfo) })
 
-	app.POST("/back", func(c *echo.Context) error { return endpoints.WizardBack(c, wizardInfo) })
+	app.POST("/back", func(c *echo.Context) error { return setup_navigation.WizardBack(c, wizardInfo) })
 
 	app.GET("/install", func(c *echo.Context) error { return endpoints.Install(c, wizardInfo) })
 
