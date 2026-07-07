@@ -36,6 +36,13 @@ func CreateZfsPool(c *echo.Context) error {
 	//Wipe Filesystem data
 	if poolInfo.WifeFilesystem {
 
+		//Destroy any existing pools
+		err := os_functions.DestroyPools(w)
+		if err != nil {
+			slog.Error("Error while destroying zfs pools", "Value", err)
+			return err
+		}
+
 		for _, drive := range poolInfo.NvmeDrives {
 			err := os_functions.WipeFileSystem("/dev/"+drive.DeviceIdentifier, w)
 			if err != nil {
