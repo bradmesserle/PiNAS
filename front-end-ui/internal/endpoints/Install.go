@@ -17,7 +17,7 @@ func Install(c *echo.Context, wizardInfo *structs.WizardInfo) error {
 
 	//Kick off the installation process
 	var wg sync.WaitGroup
-	wg.Add(7)
+	wg.Add(9)
 
 	var cmp templ.Component = setup.InstallProgressPage(*wizardInfo)
 	c.Response().Header().Set(echo.HeaderContentType, echo.MIMETextHTMLCharsetUTF8)
@@ -52,12 +52,17 @@ func Install(c *echo.Context, wizardInfo *structs.WizardInfo) error {
 			log.Println(errReboot.Error())
 		}
 
-		//Install Part 2
 		//Wait for the reboot to complete
 		waitForReboot(&wg)
 
+		//Install Part 2
+		// Create the ZFS Pool, standard work-area dataset.
+
 		//Create ZFS Pool
 		createZfsPool(&wg)
+
+		//Create Work Area Dataset
+		createWorkAreaDataset(&wg)
 
 	}()
 
@@ -99,7 +104,7 @@ func createZfsPool(wg *sync.WaitGroup) {
 
 	poolInfo := new(common_structs.ZfsPool)
 	poolInfo.WifeFilesystem = true
-	poolInfo.PoolName = "ZfsPool"
+	poolInfo.PoolName = "zfspool"
 
 	//Get Drive Telemetry
 	var drives, err = rest_client.GetDriveTelemetry()
@@ -114,6 +119,21 @@ func createZfsPool(wg *sync.WaitGroup) {
 	errCreatePool := rest_client.CreateZfsPool(wg, *poolInfo)
 	if errCreatePool != nil {
 		log.Println(errCreatePool.Error())
+	}
+
+}
+
+// createWorkAreaDataset sets up a working area ZFS dataset with specified options and synchronizes with a wait group.
+func createWorkAreaDataset(wg *sync.WaitGroup) {
+	defer wg.Done()
+
+	dataset := new(common_structs.ZfsDataset)
+	dataset.DatasetName = "work-area"
+	dataset.PoolName = "zfspool"
+
+	err := rest_client.CreateZfsDataset(wg, *dataset)
+	if err != nil {
+		log.Println(err.Error())
 	}
 
 }
