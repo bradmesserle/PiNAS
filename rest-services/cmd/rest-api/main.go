@@ -63,6 +63,9 @@ func main() {
 	//Install ZFS
 	e.GET("/installZFS", zfs.InstallZfs)
 
+	//Re-Install zfs-dkms
+	e.GET("/reinstallZFSDkms", zfs.ReinstallZfsDkms)
+
 	//Get Drive Telemetry
 	e.GET("/getDriveTelemetry", system_info.GetDriveTelemetry)
 
