@@ -17,7 +17,7 @@ func Install(c *echo.Context, wizardInfo *structs.WizardInfo) error {
 
 	//Kick off the installation process
 	var wg sync.WaitGroup
-	wg.Add(9)
+	wg.Add(10)
 
 	var cmp templ.Component = setup.InstallProgressPage(*wizardInfo)
 	c.Response().Header().Set(echo.HeaderContentType, echo.MIMETextHTMLCharsetUTF8)
@@ -63,6 +63,11 @@ func Install(c *echo.Context, wizardInfo *structs.WizardInfo) error {
 
 		//Create Work Area Dataset
 		createWorkAreaDataset(&wg)
+
+		//Check if nvme-fa is enabled if so compile the kernel and enable it
+		if wizardInfo.NasOptions.InstallNvmeFa {
+			installNvmeFa(&wg)
+		}
 
 	}()
 
@@ -132,6 +137,18 @@ func createWorkAreaDataset(wg *sync.WaitGroup) {
 	dataset.PoolName = "zfspool"
 
 	err := rest_client.CreateZfsDataset(wg, *dataset)
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+}
+
+// installNvmeFa checks if nvme-fa is enabled and compiles the kernel and enables it if so.
+func installNvmeFa(wg *sync.WaitGroup) {
+	defer wg.Done()
+	log.Println("Enable nvme-fa")
+
+	err := rest_client.CompileKernel(wg)
 	if err != nil {
 		log.Println(err.Error())
 	}
