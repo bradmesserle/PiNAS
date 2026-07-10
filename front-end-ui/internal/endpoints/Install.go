@@ -17,7 +17,7 @@ func Install(c *echo.Context, wizardInfo *structs.WizardInfo) error {
 
 	//Kick off the installation process
 	var wg sync.WaitGroup
-	wg.Add(10)
+	wg.Add(15)
 
 	var cmp templ.Component = setup.InstallProgressPage(*wizardInfo)
 	c.Response().Header().Set(echo.HeaderContentType, echo.MIMETextHTMLCharsetUTF8)
@@ -66,7 +66,10 @@ func Install(c *echo.Context, wizardInfo *structs.WizardInfo) error {
 
 		//Check if nvme-fa is enabled if so compile the kernel and enable it
 		if wizardInfo.NasOptions.InstallNvmeFa {
-			installNvmeFa(&wg)
+			err := installNvmeFa(&wg)
+			if err != nil {
+				log.Println(errInstallZfs.Error())
+			}
 		}
 
 	}()
@@ -144,13 +147,33 @@ func createWorkAreaDataset(wg *sync.WaitGroup) {
 }
 
 // installNvmeFa checks if nvme-fa is enabled and compiles the kernel and enables it if so.
-func installNvmeFa(wg *sync.WaitGroup) {
+func installNvmeFa(wg *sync.WaitGroup) error {
 	defer wg.Done()
 	log.Println("Enable nvme-fa")
 
+	// Compile the kernel
 	err := rest_client.CompileKernel(wg)
 	if err != nil {
 		log.Println(err.Error())
+		return err
 	}
+
+	//Reinstall ZFS so it can compile the headers
+	errReinstallZfsDkms := rest_client.ReinstallZfsDkms(wg)
+	if errReinstallZfsDkms != nil {
+		log.Println(errReinstallZfsDkms.Error())
+		return errReinstallZfsDkms
+	}
+
+	//Reboot
+	errReboot := rest_client.Reboot(wg)
+	if errReboot != nil {
+		log.Println(errReboot.Error())
+	}
+
+	//Wait for the reboot to complete
+	waitForReboot(wg)
+
+	return nil
 
 }

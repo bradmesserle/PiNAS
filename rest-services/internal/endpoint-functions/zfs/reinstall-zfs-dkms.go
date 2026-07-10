@@ -23,7 +23,7 @@ func ReinstallZfsDkms(c *echo.Context) error {
 	w.Header().Set("Connection", "keep-alive")
 
 	// Install new kernel headers
-	headerErr := aptReinstallZfsDkms(w)
+	headerErr := installKernelHeaders(w)
 	if headerErr != nil {
 		return c.JSON(http.StatusInternalServerError, "Error installing new header package")
 	}
