@@ -9,6 +9,7 @@ import (
 
 	"github.com/labstack/echo/v5"
 	"github.com/labstack/echo/v5/middleware"
+	"github.com/pinas/rest-services/internal/endpoint-functions/os-endpoints"
 	"github.com/pinas/rest-services/internal/endpoint-functions/zfs"
 	"github.com/pinas/rest-services/internal/kernel-compile"
 	"github.com/pinas/rest-services/internal/os-functions"
@@ -35,10 +36,10 @@ func main() {
 	// Get Drive Telemetry - get the installed nvme drive data with serial number so we can build the pool from drive SN - Done
 	// Create PiNAS working partition(1-5G?).. We will need a working partition to store data, install dns, step-ca and move /etc off the micro-sd
 	// Create zpool api - Done
-	// Create datasets - Need to look at the options and support what we need. nvme-fa block storage we will need
+	// Create datasets - Need to look at the options and support what we need. nvme-fa block storage we will need - Done
 	// Restart the system - Done
 	// Wipe Drives Clean - for before creating pools - Done
-	// Save the installation progress to a file so we can restart from where we left off
+	// Save the installation progress to a file so we can restart from where we left off - OBE? May Note be needed.
 	// Create endpoint to install DNS Server
 	// Create endpoint to install Step CA
 
@@ -65,6 +66,9 @@ func main() {
 
 	//Re-Install zfs-dkms
 	e.GET("/reinstallZFSDkms", zfs.ReinstallZfsDkms)
+
+	// Install NVMe CLI
+	e.GET("/installNvmeCli", os_endpoints.InstallNvmeCli)
 
 	//Get Drive Telemetry
 	e.GET("/getDriveTelemetry", system_info.GetDriveTelemetry)

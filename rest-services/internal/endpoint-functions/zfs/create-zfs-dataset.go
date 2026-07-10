@@ -28,7 +28,7 @@ func CreateZfsDataset(c *echo.Context) error {
 		})
 	}
 
-	//Destroy any existing pools
+	// Create ZFS Dataset
 	err := os_functions.CreateZfsDataset(*zfsDataset, w)
 	if err != nil {
 		slog.Error("Error while creating zfs dataset", "Value", err)
