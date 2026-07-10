@@ -123,5 +123,11 @@ func aptInstallZfs(w http.ResponseWriter) error {
 		return err
 	}
 
+	// Send Success Message
+	log.Printf("Installed ZFS Successfully")
+	if err := utilities.SendEventData("Installed ZFS Successfully", "consoleOutput", w); err != nil {
+		slog.Error("Error while sending event data", "Value", err)
+	}
+
 	return nil
 }

@@ -33,6 +33,12 @@ func ReinstallZfsDkms(c *echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, "Error re-installing zfs-dkms")
 	}
 
+	// Send Success Message
+	log.Printf("Reinstalled zfs-dkms Successfully")
+	if err := utilities.SendEventData("Reinstalled zfs-dkms Successfully", "consoleOutput", w); err != nil {
+		slog.Error("Error while sending event data", "Value", err)
+	}
+
 	return c.JSON(http.StatusOK, "Re-Installed zfs-dkms successfully")
 }
 

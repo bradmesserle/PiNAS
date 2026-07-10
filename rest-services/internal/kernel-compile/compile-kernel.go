@@ -88,6 +88,12 @@ func CompileLinuxKernel(c *echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, "Error copying header file to home directory")
 	}
 
+	// Send Success Message
+	log.Printf("Compiled Kernel Successfully")
+	if err := utilities.SendEventData("Compiled Kernel Successfully", "consoleOutput", w); err != nil {
+		slog.Error("Error while sending event data", "Value", err)
+	}
+
 	return c.JSON(http.StatusOK, "Built and installed the linux kernel successfully")
 }
 
