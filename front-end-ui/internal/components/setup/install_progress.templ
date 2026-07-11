@@ -11,6 +11,7 @@ templ InstallProgressPage(data structs.WizardInfo) {
     @helloHandle.Once() {
     <script>
         let bodyText = "";
+        let textarea = document.getElementById('consoleLog');
 
         function updateText(newValue) {
             let textarea = document.getElementById('consoleLog');
@@ -21,13 +22,14 @@ templ InstallProgressPage(data structs.WizardInfo) {
             }));
 
             textarea.scrollTop = textarea.scrollHeight;
+            textarea = null;
 
         }
 
     </script>
     }
 
-    <div data-init="@get('/consoleStream')">
+    <div data-init="@get('/consoleStream',{openWhenHidden: true})">
         <p>Install Progress</p>
         <div  data-signals:output2
               data-on:js-updated="$output2 = evt.detail.consoleLog"
