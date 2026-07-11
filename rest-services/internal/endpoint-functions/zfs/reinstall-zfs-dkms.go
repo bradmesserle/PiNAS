@@ -50,7 +50,7 @@ func installKernelHeaders(w http.ResponseWriter) error {
 		slog.Error("Error while sending event data", "Value", err)
 	}
 
-	out, errListCmd := exec.Command("sudo", "", "ls", "-tr", "/root").Output()
+	out, errListCmd := exec.Command("sudo", "ls", "-tr", "/root").Output()
 	if errListCmd != nil {
 		log.Println(errListCmd)
 		return errListCmd
