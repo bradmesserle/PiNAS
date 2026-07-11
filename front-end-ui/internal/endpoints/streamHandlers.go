@@ -24,8 +24,8 @@ func ConsoleLogStreamHandler(c *echo.Context) error {
 	// NewSSE sets the SSE headers and returns a generator bound to this request.
 	sse := datastar.NewSSE(c.Response(), c.Request())
 
-	// Flip the `streaming` signal on so the buttons disable and the status
-	// indicator lights up. This is a datastar-patch-signals SSE event.
+	// Flip the `streaming` signal on so front end can process the streaming data.
+	// This is a datastar-patch-signals SSE event.
 	_ = sse.MarshalAndPatchSignals(map[string]any{"streaming": true})
 
 	//Subscribe to the topic and post on the stream

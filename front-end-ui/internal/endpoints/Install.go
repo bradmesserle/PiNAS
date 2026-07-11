@@ -2,12 +2,14 @@ package endpoints
 
 import (
 	"log"
+	"strings"
 	"sync"
 	"time"
 
 	"github.com/a-h/templ"
 	"github.com/labstack/echo/v5"
 	"github.com/pinas/common-structs"
+	"github.com/pinas/ui/internal"
 	"github.com/pinas/ui/internal/components/setup"
 	"github.com/pinas/ui/internal/rest-client"
 	"github.com/pinas/ui/internal/structs"
@@ -68,7 +70,7 @@ func Install(c *echo.Context, wizardInfo *structs.WizardInfo) error {
 		if wizardInfo.NasOptions.InstallNvmeFa {
 			err := installNvmeFa(&wg)
 			if err != nil {
-				log.Println(errInstallZfs.Error())
+				log.Println(err.Error())
 			}
 		}
 
@@ -154,25 +156,34 @@ func installNvmeFa(wg *sync.WaitGroup) error {
 	// Compile the kernel
 	err := rest_client.CompileKernel(wg)
 	if err != nil {
-		log.Println(err.Error())
+		//log.Println(err.Error())
 		return err
 	}
 
 	//Reinstall ZFS so it can compile the headers
 	errReinstallZfsDkms := rest_client.ReinstallZfsDkms(wg)
 	if errReinstallZfsDkms != nil {
-		log.Println(errReinstallZfsDkms.Error())
+		//log.Println(errReinstallZfsDkms.Error())
 		return errReinstallZfsDkms
 	}
 
 	//Reboot
 	errReboot := rest_client.Reboot(wg)
 	if errReboot != nil {
-		log.Println(errReboot.Error())
+		//log.Println(errReboot.Error())
 	}
 
 	//Wait for the reboot to complete
 	waitForReboot(wg)
+
+	//Install nvme-cli
+	errNvmeCli := rest_client.InstallNvmeCli(wg)
+	if errNvmeCli != nil {
+		//log.Println(errNvmeCli.Error())
+	}
+
+	//Send Success message to the front end.
+	internal.EventBus.Publish("consoleLog", strings.TrimSpace("Setup Completed Successfully"))
 
 	return nil
 

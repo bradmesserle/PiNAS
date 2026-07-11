@@ -14,34 +14,30 @@ import (
 	"github.com/pinas/ui/internal"
 )
 
-func AptUpdate(wg *sync.WaitGroup) error {
+func InstallNvmeCli(wg *sync.WaitGroup) error {
 
 	defer wg.Done()
 
-	// 1. Setup a cancellable context to close the stream when needed
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Minute)
 	defer cancel()
 
-	// 2. Create the long-lived HTTP request
-	req, err := http.NewRequestWithContext(ctx, "GET", "http://192.168.0.22:9090/aptUpdate", nil)
+	req, err := http.NewRequestWithContext(ctx, "GET", "http://192.168.0.22:9090/installNvmeCli", nil)
 	if err != nil {
 		log.Printf("Failed to create request: %v", err)
 	}
 
-	// 3. Set the required SSE headers
 	req.Header.Set("Accept", "text/event-stream")
 	req.Header.Set("Cache-Control", "no-cache")
 	req.Header.Set("Connection", "keep-alive")
 
-	// 4. Execute request using default client (ensure no response timeouts are set)
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
 		//log.Fatalf("Failed to connect: %v", err)
 	}
 
+	//Check to see if we have a response.
 	if resp == nil {
-		log.Println("Response body is nil")
 		return nil
 	}
 
@@ -49,15 +45,13 @@ func AptUpdate(wg *sync.WaitGroup) error {
 		err := Body.Close()
 		if err != nil {
 			//log.Fatalf("Failed to close body: %v", err)
-			log.Printf("Failed to close body: %v", err)
 		}
 	}(resp.Body)
 
 	if resp.StatusCode != http.StatusOK {
-		//log.Fatalf("Unexpected status code: %d", resp.StatusCode)
+		//log.("Unexpected status code: %d", resp.StatusCode)
 	}
 
-	// 5. Scan the body line by line
 	scanner := bufio.NewScanner(resp.Body)
 	var currentData strings.Builder
 
