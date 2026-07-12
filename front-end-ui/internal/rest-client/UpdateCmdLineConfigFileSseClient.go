@@ -13,14 +13,15 @@ import (
 	"github.com/pinas/ui/internal"
 )
 
-func AptUpgrade() error {
+// UpdateCmdLineFile requests and processes updates to the command line configuration file from a remote server.
+func UpdateCmdLineFile() error {
 
 	//defer wg.Done()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Minute)
 	defer cancel()
 
-	req, err := http.NewRequestWithContext(ctx, "GET", "http://192.168.0.22:9090/aptUpgrade", nil)
+	req, err := http.NewRequestWithContext(ctx, "GET", "http://192.168.0.22:9090/updateCmdlineConfigFile", nil)
 	if err != nil {
 		log.Printf("Failed to create request: %v", err)
 	}
@@ -62,7 +63,6 @@ func AptUpgrade() error {
 		if line == "" {
 			if currentData.Len() > 0 {
 				internal.EventBus.Publish("consoleLog", strings.TrimSpace(currentData.String()))
-				//fmt.Printf("%s\n", strings.TrimSpace(currentData.String()))
 				currentData.Reset()
 			}
 			continue

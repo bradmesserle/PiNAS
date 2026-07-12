@@ -13,14 +13,17 @@ import (
 	"github.com/pinas/ui/internal"
 )
 
-func AptUpgrade() error {
+// UpdateCaCertificates retrieves and processes CA certificate updates from an SSE stream endpoint.
+// It handles the HTTP request, monitors the stream, and publishes parsed events via an internal event bus.
+// The function uses a wait group to signal completion and enforces a timeout for the operation.
+func UpdateCaCertificates() error {
 
 	//defer wg.Done()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Minute)
 	defer cancel()
 
-	req, err := http.NewRequestWithContext(ctx, "GET", "http://192.168.0.22:9090/aptUpgrade", nil)
+	req, err := http.NewRequestWithContext(ctx, "GET", "http://192.168.0.22:9090/updateCaCertificates", nil)
 	if err != nil {
 		log.Printf("Failed to create request: %v", err)
 	}
@@ -62,7 +65,6 @@ func AptUpgrade() error {
 		if line == "" {
 			if currentData.Len() > 0 {
 				internal.EventBus.Publish("consoleLog", strings.TrimSpace(currentData.String()))
-				//fmt.Printf("%s\n", strings.TrimSpace(currentData.String()))
 				currentData.Reset()
 			}
 			continue

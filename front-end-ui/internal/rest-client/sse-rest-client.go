@@ -8,15 +8,15 @@ import (
 	"log"
 	"net/http"
 	"strings"
-	"sync"
+
 	"time"
 
 	"github.com/pinas/ui/internal"
 )
 
-func AptUpdate(wg *sync.WaitGroup) error {
+func AptUpdate() error {
 
-	defer wg.Done()
+	//defer wg.Done()
 
 	// 1. Setup a cancellable context to close the stream when needed
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
