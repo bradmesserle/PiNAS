@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"sync"
 
 	"github.com/labstack/gommon/log"
 	"github.com/pinas/common-structs"
@@ -58,8 +57,7 @@ func GetMemoryInfo() (model common_structs.MemoryInfo, err error) {
 }
 
 // Reboot system
-func Reboot(wg *sync.WaitGroup) (err error) {
-	defer wg.Done()
+func Reboot() (err error) {
 	err = execRestGetCall(nil, rebootUrl)
 	return err
 }

@@ -8,15 +8,13 @@ import (
 	"log"
 	"net/http"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/pinas/ui/internal"
 )
 
 // ReinstallZfsDkms sends an HTTP request to reinstall the ZFS DKMS and processes the server-sent events (SSE) stream.
-func ReinstallZfsDkms(wg *sync.WaitGroup) (err error) {
-	defer wg.Done()
+func ReinstallZfsDkms() (err error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Minute)
 	defer cancel()

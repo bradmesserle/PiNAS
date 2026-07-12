@@ -8,15 +8,12 @@ import (
 	"log"
 	"net/http"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/pinas/ui/internal"
 )
 
-func InstallNvmeCli(wg *sync.WaitGroup) error {
-
-	defer wg.Done()
+func InstallNvmeCli() error {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Minute)
 	defer cancel()

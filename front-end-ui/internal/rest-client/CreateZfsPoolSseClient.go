@@ -10,7 +10,6 @@ import (
 	"log"
 	"net/http"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/pinas/common-structs"
@@ -18,8 +17,7 @@ import (
 )
 
 // CreateZfsPool Create ZFS Pool
-func CreateZfsPool(wg *sync.WaitGroup, poolInfo common_structs.ZfsPool) (err error) {
-	defer wg.Done()
+func CreateZfsPool(poolInfo common_structs.ZfsPool) (err error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Minute)
 	defer cancel()

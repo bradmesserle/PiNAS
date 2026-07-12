@@ -8,15 +8,12 @@ import (
 	"log"
 	"net/http"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/pinas/ui/internal"
 )
 
-func InstallZfs(wg *sync.WaitGroup) error {
-
-	defer wg.Done()
+func InstallZfs() error {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Hour)
 	defer cancel()

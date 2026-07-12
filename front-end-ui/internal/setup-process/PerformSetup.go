@@ -5,11 +5,13 @@ import (
 	"strings"
 	"time"
 
+	"github.com/pinas/common-structs"
 	"github.com/pinas/ui/internal"
 	"github.com/pinas/ui/internal/rest-client"
+	"github.com/pinas/ui/internal/structs"
 )
 
-func PerformSetup() {
+func PerformSetup(wizardInfo *structs.WizardInfo) {
 
 	time.Sleep(1 * time.Second)
 
@@ -44,37 +46,37 @@ func PerformSetup() {
 	}
 
 	//Install ZFS
-	//errInstallZfs := rest_client.InstallZfs()
-	//if errInstallZfs != nil {
-	//	log.Println(errInstallZfs.Error())
-	//}
-	//
-	////Reboot
-	//errReboot := rest_client.Reboot()
-	//if errReboot != nil {
-	//	log.Println(errReboot.Error())
-	//}
-	//
-	////Wait for the reboot to complete
-	//waitForReboot()
-	//
-	////Install Part 2
-	//// Create the ZFS Pool, standard work-area dataset.
-	//// Install Setup Options
-	//
-	////Create ZFS Pool
-	//createZfsPool()
-	//
-	////Create Work Area Dataset
-	//createWorkAreaDataset()
-	//
-	////Check if nvme-fa is enabled if so compile the kernel and enable it
-	//if wizardInfo.NasOptions.InstallNvmeFa {
-	//	err := installNvmeFa()
-	//	if err != nil {
-	//		log.Println(err.Error())
-	//	}
-	//}
+	errInstallZfs := rest_client.InstallZfs()
+	if errInstallZfs != nil {
+		log.Println(errInstallZfs.Error())
+	}
+
+	//Reboot
+	errReboot := rest_client.Reboot()
+	if errReboot != nil {
+		log.Println(errReboot.Error())
+	}
+
+	//Wait for the reboot to complete
+	waitForReboot()
+
+	//Install Part 2
+	// Create the ZFS Pool, standard work-area dataset.
+	// Install Setup Options
+
+	//Create ZFS Pool
+	createZfsPool()
+
+	//Create Work Area Dataset
+	createWorkAreaDataset()
+
+	//Check if nvme-fa is enabled if so compile the kernel and enable it
+	if wizardInfo.NasOptions.InstallNvmeFa {
+		err := installNvmeFa()
+		if err != nil {
+			log.Println(err.Error())
+		}
+	}
 
 	//Send Success message to the front end.
 	internal.EventBus.Publish("consoleLog", strings.TrimSpace("Setup Completed Successfully"))
@@ -112,77 +114,75 @@ func waitForReboot() {
 }
 
 func createZfsPool() {
-	//defer wg.Done()
 
-	//poolInfo := new(common_structs.ZfsPool)
-	//poolInfo.WifeFilesystem = true
-	//poolInfo.PoolName = "zfspool"
-	//
-	////Get Drive Telemetry
-	//var drives, err = rest_client.GetDriveTelemetry()
-	//if err != nil {
-	//	log.Println(err.Error())
-	//}
-	//
-	//for _, drive := range drives {
-	//	poolInfo.NvmeDrives = append(poolInfo.NvmeDrives, drive)
-	//}
-	//
-	//errCreatePool := rest_client.CreateZfsPool(*poolInfo)
-	//if errCreatePool != nil {
-	//	log.Println(errCreatePool.Error())
-	//}
+	poolInfo := new(common_structs.ZfsPool)
+	poolInfo.WifeFilesystem = true
+	poolInfo.PoolName = "zfspool"
+
+	//Get Drive Telemetry
+	var drives, err = rest_client.GetDriveTelemetry()
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	for _, drive := range drives {
+		poolInfo.NvmeDrives = append(poolInfo.NvmeDrives, drive)
+	}
+
+	errCreatePool := rest_client.CreateZfsPool(*poolInfo)
+	if errCreatePool != nil {
+		log.Println(errCreatePool.Error())
+	}
 
 }
 
 // createWorkAreaDataset sets up a working area ZFS dataset with specified options and synchronizes with a wait group.
 func createWorkAreaDataset() {
-	//defer wg.Done()
 
-	//dataset := new(common_structs.ZfsDataset)
-	//dataset.DatasetName = "work-area"
-	//dataset.PoolName = "zfspool"
-	//
-	//err := rest_client.CreateZfsDataset(wg, *dataset)
-	//if err != nil {
-	//	log.Println(err.Error())
-	//}
+	dataset := new(common_structs.ZfsDataset)
+	dataset.DatasetName = "work-area"
+	dataset.PoolName = "zfspool"
+
+	err := rest_client.CreateZfsDataset(*dataset)
+	if err != nil {
+		log.Println(err.Error())
+	}
 
 }
 
 // installNvmeFa checks if nvme-fa is enabled and compiles the kernel and enables it if so.
 func installNvmeFa() error {
-	////defer wg.Done()
-	//log.Println("Enable nvme-fa")
-	//
-	//// Compile the kernel
-	//err := rest_client.CompileKernel()
-	//if err != nil {
-	//	//log.Println(err.Error())
-	//	return err
-	//}
-	//
-	////Reinstall ZFS so it can compile the headers
-	//errReinstallZfsDkms := rest_client.ReinstallZfsDkms()
-	//if errReinstallZfsDkms != nil {
-	//	//log.Println(errReinstallZfsDkms.Error())
-	//	return errReinstallZfsDkms
-	//}
-	//
-	////Reboot
-	//errReboot := rest_client.Reboot()
-	//if errReboot != nil {
-	//	//log.Println(errReboot.Error())
-	//}
-	//
-	////Wait for the reboot to complete
-	//waitForReboot()
-	//
-	////Install nvme-cli
-	//errNvmeCli := rest_client.InstallNvmeCli()
-	//if errNvmeCli != nil {
-	//	//log.Println(errNvmeCli.Error())
-	//}
+
+	log.Println("Enable nvme-fa")
+
+	// Compile the kernel
+	err := rest_client.CompileKernel()
+	if err != nil {
+		//log.Println(err.Error())
+		return err
+	}
+
+	//Reinstall ZFS so it can compile the headers
+	errReinstallZfsDkms := rest_client.ReinstallZfsDkms()
+	if errReinstallZfsDkms != nil {
+		//log.Println(errReinstallZfsDkms.Error())
+		return errReinstallZfsDkms
+	}
+
+	//Reboot
+	errReboot := rest_client.Reboot()
+	if errReboot != nil {
+		//log.Println(errReboot.Error())
+	}
+
+	//Wait for the reboot to complete
+	waitForReboot()
+
+	//Install nvme-cli
+	errNvmeCli := rest_client.InstallNvmeCli()
+	if errNvmeCli != nil {
+		//log.Println(errNvmeCli.Error())
+	}
 
 	return nil
 

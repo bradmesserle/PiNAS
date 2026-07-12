@@ -10,7 +10,6 @@ import (
 	"log"
 	"net/http"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/pinas/common-structs"
@@ -18,8 +17,7 @@ import (
 )
 
 // CreateZfsDataset  Create ZFS Dataset
-func CreateZfsDataset(wg *sync.WaitGroup, zfsDataset common_structs.ZfsDataset) (err error) {
-	defer wg.Done()
+func CreateZfsDataset(zfsDataset common_structs.ZfsDataset) (err error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Minute)
 	defer cancel()

@@ -8,15 +8,12 @@ import (
 	"log"
 	"net/http"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/pinas/ui/internal"
 )
 
-func CompileKernel(wg *sync.WaitGroup) error {
-
-	defer wg.Done()
+func CompileKernel() error {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Hour)
 	defer cancel()

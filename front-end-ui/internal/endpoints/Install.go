@@ -21,7 +21,7 @@ func Install(c *echo.Context, wizardInfo *structs.WizardInfo) error {
 
 	//Kick off a background process to start the setup process.
 	wg.Go(func() {
-		setup_process.PerformSetup()
+		setup_process.PerformSetup(wizardInfo)
 	})
 
 	return renderPage
