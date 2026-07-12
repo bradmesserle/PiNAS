@@ -40,17 +40,19 @@ func UpdateBootCmdlineTextFile(w http.ResponseWriter) error {
 		//If the line does not contain the insertText, append it to the lines slice
 		if !strings.Contains(line, insertText) {
 			lines = append(lines, line+insertText)
+		} else {
+			lines = append(lines, line)
 		}
 
 	}
 
-	if err := scanner.Err(); err != nil {
-		return err
-	}
-	readFileError := file.Close()
-	if readFileError != nil {
-		return err
-	}
+	//if err := scanner.Err(); err != nil {
+	//	return err
+	//}
+	//readFileError := file.Close()
+	//if readFileError != nil {
+	//	return err
+	//}
 
 	output := strings.Join(lines, "\n") + "\n"
 	writeFileErr := os.WriteFile(filepath, []byte(output), 0644)
