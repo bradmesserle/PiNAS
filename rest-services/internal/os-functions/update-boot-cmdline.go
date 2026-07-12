@@ -32,10 +32,16 @@ func UpdateBootCmdlineTextFile(w http.ResponseWriter) error {
 
 	var lines []string
 	scanner := bufio.NewScanner(file)
+	insertText := "cgroup_memory=1 cgroup_enable=memory"
 
 	for scanner.Scan() {
 		line := scanner.Text()
-		lines = append(lines, line+" cgroup_memory=1 cgroup_enable=memory")
+
+		//If the line does not contain the insertText, append it to the lines slice
+		if !strings.Contains(line, insertText) {
+			lines = append(lines, line+insertText)
+		}
+
 	}
 
 	if err := scanner.Err(); err != nil {
