@@ -1,7 +1,6 @@
 package os_functions
 
 import (
-	"log"
 	"log/slog"
 	"net/http"
 	"os/exec"
@@ -12,14 +11,16 @@ import (
 // UpdateCaCertificates performs updates to CA certificates and communicates progress using Server-Sent Events.
 func UpdateCaCertificates(w http.ResponseWriter) error {
 
-	_, err := exec.Command("update-ca-certificates", "--fresh").Output()
-	if err != nil {
-		log.Println(err)
-		return err
+	if err := utilities.SendEventData("Updating CA certificates", "consoleOutput", w); err != nil {
+		slog.Error("Error while sending event data", "Value", err)
 	}
 
-	if err := utilities.SendEventData("Updating CA certificates", "consoleOutput", w); err != nil {
+	cmd := exec.Command("update-ca-certificates", "--fresh")
+	err := utilities.ExecCmdSseStdoutText(cmd, w)
+
+	if err != nil {
 		slog.Error("Error while updating CA certificates", "Value", err)
+		return err
 	}
 
 	return nil
