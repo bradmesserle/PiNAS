@@ -94,6 +94,12 @@ func main() {
 	//Reboot the system
 	e.GET("/reboot", os_functions.Reboot)
 
+	//Update cmdline config file
+	e.GET("/updateCmdlineConfigFile", os_endpoints.UpdateCmdlineConfigFile)
+
+	//Update CA certificates
+	e.GET("/updateCaCertificates", os_endpoints.UpdateCaCertificates)
+
 	// Start the server
 	sc := echo.StartConfig{
 		Address: ":9090",
