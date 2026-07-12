@@ -14,7 +14,7 @@ import (
 func UpdateBootCmdlineTextFile(w http.ResponseWriter) error {
 
 	if err := utilities.SendEventData("Updating cmdline.txt with cgroup memory settings", "consoleOutput", w); err != nil {
-		slog.Error("Error while updating cmdline.txt with cgroup memory settings", "Value", err)
+		slog.Error("Error while sending event data", "Value", err)
 	}
 
 	var filepath = "/boot/firmware/cmdline.txt"
@@ -23,7 +23,12 @@ func UpdateBootCmdlineTextFile(w http.ResponseWriter) error {
 	if err != nil {
 		return err
 	}
-	defer file.Close()
+	defer func(file *os.File) {
+		err := file.Close()
+		if err != nil {
+			slog.Error("Error while closing file", "Value", err)
+		}
+	}(file)
 
 	var lines []string
 	scanner := bufio.NewScanner(file)
