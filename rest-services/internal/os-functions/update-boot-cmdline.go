@@ -46,14 +46,6 @@ func UpdateBootCmdlineTextFile(w http.ResponseWriter) error {
 
 	}
 
-	//if err := scanner.Err(); err != nil {
-	//	return err
-	//}
-	//readFileError := file.Close()
-	//if readFileError != nil {
-	//	return err
-	//}
-
 	output := strings.Join(lines, "\n") + "\n"
 	writeFileErr := os.WriteFile(filepath, []byte(output), 0644)
 	if writeFileErr != nil {
