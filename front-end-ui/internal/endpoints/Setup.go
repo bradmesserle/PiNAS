@@ -10,7 +10,7 @@ import (
 	"github.com/pinas/ui/internal/structs"
 )
 
-func Install(c *echo.Context, wizardInfo *structs.WizardInfo) error {
+func Setup(c *echo.Context, wizardInfo *structs.WizardInfo) error {
 
 	//Kick off the installation process
 	var wg sync.WaitGroup

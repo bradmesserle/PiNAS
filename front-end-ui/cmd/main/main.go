@@ -48,7 +48,7 @@ func setupWebServer() {
 
 	app.POST("/back", func(c *echo.Context) error { return setup_navigation.WizardBack(c, wizardInfo) })
 
-	app.GET("/install", func(c *echo.Context) error { return endpoints.Install(c, wizardInfo) })
+	app.GET("/setup", func(c *echo.Context) error { return endpoints.Setup(c, wizardInfo) })
 
 	//Console output SSE
 	app.GET("/consoleStream", func(c *echo.Context) error { return endpoints.ConsoleLogStreamHandler(c) })
