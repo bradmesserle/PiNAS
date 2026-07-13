@@ -34,12 +34,11 @@ func GetZfsPoolStatus(c *echo.Context) error {
 
 		if strings.Contains(line, "pool:") {
 			poolArray := strings.Split(line, "pool:")
-			log.Println(poolArray)
 			poolInfo.PoolName = strings.TrimSpace(poolArray[1])
 		}
 
 		if strings.Contains(line, "state:") {
-			stateArray := strings.Split(line, " ")
+			stateArray := strings.Split(line, "state:")
 
 			switch strings.TrimSpace(stateArray[1]) {
 			case "ONLINE":
