@@ -39,7 +39,7 @@ func UpdateBootCmdlineTextFile(w http.ResponseWriter) error {
 
 		//If the line does not contain the insertText, append it to the lines slice
 		if !strings.Contains(line, insertText) {
-			lines = append(lines, line+insertText)
+			lines = append(lines, line+" "+insertText)
 		} else {
 			lines = append(lines, line)
 		}
