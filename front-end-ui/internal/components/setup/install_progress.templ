@@ -51,17 +51,20 @@ templ InstallProgressPage(data structs.WizardInfo) {
 
     <script>
 
-        function updateText(newValue) {
-            const targetDiv = document.getElementById('consoleStream');
-            const breakElement = document.createElement('div');
-            breakElement.classList.add('break');
 
-            const newSpan = document.createElement('span');
+        function updateText(newValue) {
+            let targetDiv = document.getElementById('consoleStream');
+            let breakElement = document.createElement('div');
+            breakElement.classList.add('break');
+            let newSpan = document.createElement('span');
             newSpan.textContent = newValue;
             targetDiv.append(newSpan);
             targetDiv.append(breakElement);
             targetDiv.scrollTop = targetDiv.scrollHeight;
 
+            targetDiv = null;
+            breakElement = null;
+            newSpan = null;
         }
 
     </script>
