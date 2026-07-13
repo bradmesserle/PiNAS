@@ -14,12 +14,12 @@ templ InstallProgressPage() {
         .fake-textarea {
             display: flex;
             flex-wrap: wrap;
-            width: 100%;
+            width: 950px;
             height: 300px;
             border: 1px solid #ccc;
             padding: 10px;
             font-family: sans-serif;
-            font-size: 16px;
+            font-size: 13px;
             line-height: 1.5;
             overflow-y: auto;
         }
@@ -72,9 +72,11 @@ templ InstallProgressPage() {
     <div data-init="@get('/consoleStream',{openWhenHidden: true})">
         <p>Install Progress</p>
 
-        <div class="fake-textarea" id="consoleStream" >
-
+        <div style="display: flex;  justify-content: center; align-items: center;">
+            <div class="fake-textarea" id="consoleStream" ></div>
         </div>
+
+
 
     </div>
 
