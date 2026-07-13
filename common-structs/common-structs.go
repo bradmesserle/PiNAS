@@ -59,10 +59,18 @@ type InstallStatus struct {
 	InstallComplete bool   `json:"installComplete"`
 }
 
+const (
+	ZFS_STATE_UNKNOWN int = iota
+	ZFS_STATE_ONLINE
+	ZFS_STATE_OFFLINE
+	ZFS_STATE_DEGRADED
+)
+
 type ZfsPool struct {
 	PoolName       string      `json:"poolName"`
 	WifeFilesystem bool        `json:"wipeFilesystem"`
 	NvmeDrives     []NvmeDrive `json:"nvmeDrives"`
+	State          int         `json:"state"`
 }
 
 type ZfsDataset struct {
