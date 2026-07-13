@@ -9,20 +9,58 @@ templ InstallProgressPage(data structs.WizardInfo) {
 <div id="setup-wizard">
 
     @helloHandle.Once() {
+
+    <style>
+
+        /* Styles the div container to look exactly like a textarea */
+        .fake-textarea {
+            display: flex;
+            flex-wrap: wrap;
+            width: 100%;
+            height: 300px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            font-family: sans-serif;
+            font-size: 16px;
+            line-height: 1.5;
+            overflow-y: auto;
+        }
+
+        .break {
+            flex-basis: 100%; /* Forces the element to take up the whole row */
+            height: 0;        /* Keeps it completely invisible */
+        }
+
+        .line-red {
+            background-color: #ffcccc;
+            display: block; /* Ensures the background spans the full width */
+        }
+
+        .line-green {
+            background-color: #ccffcc;
+            display: block;
+        }
+
+        .line-yellow {
+            background-color: #fffecb;
+            display: block;
+        }
+
+    </style>
+
+
     <script>
-        let bodyText = "";
-        let textarea = document.getElementById('consoleLog');
 
         function updateText(newValue) {
-            let textarea = document.getElementById('consoleLog');
-            bodyText = bodyText + newValue + "\n";
-            const consoleTextArea = document.getElementById("consoleOutput");
-            consoleTextArea.dispatchEvent( new CustomEvent('js-updated', {
-                detail: { consoleLog: bodyText },
-            }));
+            const targetDiv = document.getElementById('consoleStream');
+            const breakElement = document.createElement('div');
+            breakElement.classList.add('break');
 
-            textarea.scrollTop = textarea.scrollHeight;
-            textarea = null;
+            const newSpan = document.createElement('span');
+            newSpan.textContent = newValue;
+            targetDiv.append(newSpan);
+            targetDiv.append(breakElement);
+            targetDiv.scrollTop = targetDiv.scrollHeight;
 
         }
 
@@ -31,15 +69,11 @@ templ InstallProgressPage(data structs.WizardInfo) {
 
     <div data-init="@get('/consoleStream',{openWhenHidden: true})">
         <p>Install Progress</p>
-        <div  data-signals:output2
-              data-on:js-updated="$output2 = evt.detail.consoleLog"
-              id="consoleOutput">
 
-            <label>
-                <textarea  id="consoleLog" data-bind="output2"  rows="10" cols="60" readonly  style="overflow-y: auto; " ></textarea>
-            </label>
+        <div class="fake-textarea" id="consoleStream" >
 
         </div>
+
     </div>
 
 
