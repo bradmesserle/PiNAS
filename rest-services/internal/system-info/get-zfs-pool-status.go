@@ -32,9 +32,9 @@ func GetZfsPoolStatus(c *echo.Context) error {
 	for scanner.Scan() {
 		line := scanner.Text()
 
-		log.Println(line)
 		if strings.Contains(line, "pool:") {
-			poolArray := strings.Split(line, " ")
+			poolArray := strings.Split(line, "pool:")
+			log.Println(poolArray)
 			poolInfo.PoolName = strings.TrimSpace(poolArray[1])
 		}
 
