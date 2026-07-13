@@ -5,7 +5,6 @@ import (
 	"github.com/labstack/gommon/log"
 	"github.com/pinas/common-structs"
 	"github.com/pinas/ui/internal/components"
-	"github.com/pinas/ui/internal/components/setup"
 	"github.com/pinas/ui/internal/endpoints"
 	"github.com/pinas/ui/internal/rest-client"
 	"github.com/pinas/ui/internal/structs"
@@ -51,9 +50,7 @@ func WizardNavigation(c *echo.Context, wizardInfo *structs.WizardInfo, status *s
 		return endpoints.InstallSummary(c, wizardInfo)
 	}
 
-	cmp := setup.SetupWizard(*wizardInfo)
-	c.Response().Header().Set(echo.HeaderContentType, echo.MIMETextHTMLCharsetUTF8)
-	return cmp.Render(c.Request().Context(), c.Response())
+	return nil
 
 }
 
