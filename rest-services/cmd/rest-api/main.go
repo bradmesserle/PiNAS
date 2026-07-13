@@ -55,6 +55,9 @@ func main() {
 	//Get PCIe Info
 	e.GET("/pcieInfo", system_info.GetPcieInfo)
 
+	//Get Zfs status
+	e.GET("/zfsStatus", zfs.GetZfsPoolStatus)
+
 	//Verify the config.txt has pcie gen3 enabled. If not, update the config.txt file
 	e.GET("/verifyUpdateConfig", system_updates.VerifyUpdateConfig)
 

@@ -60,10 +60,10 @@ type InstallStatus struct {
 }
 
 const (
-	ZFS_STATE_UNKNOWN int = iota
-	ZFS_STATE_ONLINE
-	ZFS_STATE_OFFLINE
-	ZFS_STATE_DEGRADED
+	ZfsStateUnknown int = iota
+	ZfsStateOnline
+	ZfsStateOffline
+	ZfsStateDegraded
 )
 
 type ZfsPool struct {
