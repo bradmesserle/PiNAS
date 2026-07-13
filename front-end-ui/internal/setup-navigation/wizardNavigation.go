@@ -11,10 +11,10 @@ import (
 	"github.com/pinas/ui/internal/structs"
 )
 
-func WizardNavigation(c *echo.Context, wizardInfo *structs.WizardInfo) error {
+func WizardNavigation(c *echo.Context, wizardInfo *structs.WizardInfo, status *structs.SetupInfo) error {
 
 	if wizardInfo.Step == 0 {
-		cmp := components.Home(*wizardInfo)
+		cmp := components.Home(*wizardInfo, *status)
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMETextHTMLCharsetUTF8)
 		return cmp.Render(c.Request().Context(), c.Response())
 	}

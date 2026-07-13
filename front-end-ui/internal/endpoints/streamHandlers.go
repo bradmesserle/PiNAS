@@ -2,6 +2,7 @@ package endpoints
 
 import (
 	"fmt"
+	"html"
 	"log"
 
 	"github.com/labstack/echo/v5"
@@ -30,11 +31,18 @@ func ConsoleLogStreamHandler(c *echo.Context) error {
 
 	//Subscribe to the topic and post on the stream
 	_ = internal.EventBus.Subscribe("consoleLog", func(msg string) {
+
 		fmt.Printf("Receiving Data --->: %s\n", msg)
-		err := sse.ExecuteScript(fmt.Sprintf(`updateText("%s")`, msg))
-		if err != nil {
-			log.Println(err)
+
+		//Check to see if the SSE connection is still open
+		if !sse.IsClosed() {
+			sanitized := html.EscapeString(msg)
+			err := sse.ExecuteScript(fmt.Sprintf(`updateText("%s")`, sanitized))
+			if err != nil {
+				log.Println(err)
+			}
 		}
+
 	})
 
 	for {

@@ -10,7 +10,6 @@ import (
 	"github.com/labstack/echo/v5"
 	"github.com/labstack/echo/v5/middleware"
 	"github.com/pinas/ui/internal"
-	"github.com/pinas/ui/internal/components"
 	"github.com/pinas/ui/internal/endpoints"
 	setup_navigation "github.com/pinas/ui/internal/setup-navigation"
 	"github.com/pinas/ui/internal/structs"
@@ -29,6 +28,10 @@ func setupWebServer() {
 	//Echo web server
 	app := echo.New()
 
+	//Step Status
+	status := new(structs.SetupInfo)
+	status.IsRunning = false
+
 	//Static Files
 	app.StaticFS("/", echo.MustSubFS(internal.StaticFiles, ""))
 
@@ -40,15 +43,13 @@ func setupWebServer() {
 
 	wizardInfo := new(structs.WizardInfo)
 
-	app.GET("/", func(c *echo.Context) error {
-		return endpoints.Home(c, components.Home(*wizardInfo))
-	})
+	app.GET("/", func(c *echo.Context) error { return endpoints.Home(c, wizardInfo, status) })
 
-	app.POST("/next", func(c *echo.Context) error { return setup_navigation.WizardNext(c, wizardInfo) })
+	app.POST("/next", func(c *echo.Context) error { return setup_navigation.WizardNext(c, wizardInfo, status) })
 
-	app.POST("/back", func(c *echo.Context) error { return setup_navigation.WizardBack(c, wizardInfo) })
+	app.POST("/back", func(c *echo.Context) error { return setup_navigation.WizardBack(c, wizardInfo, status) })
 
-	app.GET("/setup", func(c *echo.Context) error { return endpoints.Setup(c, wizardInfo) })
+	app.GET("/setup", func(c *echo.Context) error { return endpoints.Setup(c, wizardInfo, status) })
 
 	//Console output SSE
 	app.GET("/consoleStream", func(c *echo.Context) error { return endpoints.ConsoleLogStreamHandler(c) })

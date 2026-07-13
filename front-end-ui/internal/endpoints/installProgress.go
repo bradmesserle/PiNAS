@@ -8,7 +8,7 @@ import (
 )
 
 func InstallProgress(c *echo.Context, wizardInfo *structs.WizardInfo) error {
-	var cmp templ.Component = setup.InstallProgressPage(*wizardInfo)
+	var cmp templ.Component = setup.InstallProgressPage()
 	c.Response().Header().Set(echo.HeaderContentType, echo.MIMETextHTMLCharsetUTF8)
 	return cmp.Render(c.Request().Context(), c.Response())
 }

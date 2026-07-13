@@ -5,9 +5,9 @@ import (
 	"github.com/pinas/ui/internal/structs"
 )
 
-func WizardBack(c *echo.Context, wizardInfo *structs.WizardInfo) error {
+func WizardBack(c *echo.Context, wizardInfo *structs.WizardInfo, status *structs.SetupInfo) error {
 
 	wizardInfo.Step = wizardInfo.Step - 1
-	return WizardNavigation(c, wizardInfo)
+	return WizardNavigation(c, wizardInfo, status)
 
 }

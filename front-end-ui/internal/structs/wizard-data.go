@@ -10,3 +10,7 @@ type NasOptions struct {
 	InstallCa     bool
 	InstallNvmeFa bool
 }
+
+type SetupInfo struct {
+	IsRunning bool
+}

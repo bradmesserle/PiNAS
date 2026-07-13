@@ -3,7 +3,7 @@ package components
 import "github.com/pinas/ui/internal/components/setup"
 import "github.com/pinas/ui/internal/structs"
 
-templ Home (data structs.WizardInfo) {
+templ Home (data structs.WizardInfo, status structs.SetupInfo) {
     <!DOCTYPE html>
     <html lang="es" class="dark">
         <head>
@@ -25,12 +25,20 @@ templ Home (data structs.WizardInfo) {
                @setup.SetupWizardHeader()
 
                <div id="setup-wizard">
-                    <div id="welcome-page" >
-                        <!--- For now just go to the setup pi flow -->
-                        @WelcomePage()
-                    </div>
 
-                   @setup.WizardButtons(data)
+                   if status.IsRunning {
+                      @setup.InstallProgressPage()
+                   } else {
+
+                        <div id="welcome-page" >
+                            <!--- For now just go to the setup pi flow -->
+                            @WelcomePage()
+                        </div>
+
+                        @setup.WizardButtons(data)
+                   }
+
+
 
                </div>
 
