@@ -1,5 +1,12 @@
 package common_structs
 
+const (
+	ZfsStateUnknown int = iota
+	ZfsStateOnline
+	ZfsStateOffline
+	ZfsStateDegraded
+)
+
 type CpuInfo struct {
 	NumberOfCpus int    `json:"numberOfCpus"`
 	BogoMIPS     string `json:"bogoMIPS"`
@@ -58,13 +65,6 @@ type InstallStatus struct {
 	CurrentProcess  string `json:"currentProcess"`
 	InstallComplete bool   `json:"installComplete"`
 }
-
-const (
-	ZfsStateUnknown int = iota
-	ZfsStateOnline
-	ZfsStateOffline
-	ZfsStateDegraded
-)
 
 type ZfsPool struct {
 	PoolName       string      `json:"poolName"`
