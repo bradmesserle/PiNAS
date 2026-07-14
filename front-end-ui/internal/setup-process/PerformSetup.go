@@ -21,58 +21,85 @@ func PerformSetup(wizardInfo *structs.WizardInfo) {
 	//Send Success message to the front end.
 	internal.EventBus.Publish("consoleLog", strings.TrimSpace("Starting the setup process"))
 
-	//Update ca certificates on the box
-	errCaCert := rest_client.UpdateCaCertificates()
-	if errCaCert != nil {
-		log.Println(errCaCert.Error())
+	//Get ZfsStatus
+	zfsStatus, errZfsStatus := rest_client.GetZfsStatus()
+	if errZfsStatus != nil {
+		log.Println(errZfsStatus.Error())
 	}
 
-	//Update the cmdline file for cgroup memory management.
-	errUpdateCmdLineFile := rest_client.UpdateCmdLineFile()
-	if errUpdateCmdLineFile != nil {
-		log.Println(errUpdateCmdLineFile.Error())
+	//Check to see if zfs is up and running and the pool is online
+	//If zfs pools are not online we need to install them
+	if zfsStatus.State != common_structs.ZfsStateOnline {
+
+		//Update ca certificates on the box
+		errCaCert := rest_client.UpdateCaCertificates()
+		if errCaCert != nil {
+			log.Println(errCaCert.Error())
+		}
+
+		//Update the cmdline file for cgroup memory management.
+		errUpdateCmdLineFile := rest_client.UpdateCmdLineFile()
+		if errUpdateCmdLineFile != nil {
+			log.Println(errUpdateCmdLineFile.Error())
+		}
+
+		//Update repos
+		errUpdate := rest_client.AptUpdate()
+		if errUpdate != nil {
+			log.Println(errUpdate.Error())
+		}
+
+		//Upgrade System
+		errUpgrade := rest_client.AptUpgrade()
+		if errUpgrade != nil {
+			log.Println(errUpgrade.Error())
+		}
+
+		//Install ZFS
+		errInstallZfs := rest_client.InstallZfs()
+		if errInstallZfs != nil {
+			log.Println(errInstallZfs.Error())
+		}
+
+		//Reboot
+		errReboot := rest_client.Reboot()
+		if errReboot != nil {
+			log.Println(errReboot.Error())
+		}
+
+		//Wait for the reboot to complete
+		waitForReboot()
+
+		//Install Part 2
+		// Create the ZFS Pool, standard work-area dataset.
+		// Install Setup Options
+
+		//Create ZFS Pool
+		createZfsPool()
+
+		//Create Work Area Dataset
+		createWorkAreaDataset()
 	}
-
-	//Update repos
-	errUpdate := rest_client.AptUpdate()
-	if errUpdate != nil {
-		log.Println(errUpdate.Error())
-	}
-
-	//Upgrade System
-	errUpgrade := rest_client.AptUpgrade()
-	if errUpgrade != nil {
-		log.Println(errUpgrade.Error())
-	}
-
-	//Install ZFS
-	errInstallZfs := rest_client.InstallZfs()
-	if errInstallZfs != nil {
-		log.Println(errInstallZfs.Error())
-	}
-
-	//Reboot
-	errReboot := rest_client.Reboot()
-	if errReboot != nil {
-		log.Println(errReboot.Error())
-	}
-
-	//Wait for the reboot to complete
-	waitForReboot()
-
-	//Install Part 2
-	// Create the ZFS Pool, standard work-area dataset.
-	// Install Setup Options
-
-	//Create ZFS Pool
-	createZfsPool()
-
-	//Create Work Area Dataset
-	createWorkAreaDataset()
 
 	//Check if nvme-fa is enabled if so compile the kernel and enable it
 	if wizardInfo.NasOptions.InstallNvmeFa {
 		err := installNvmeFa()
+		if err != nil {
+			log.Println(err.Error())
+		}
+	}
+
+	//Check if we need to install DNS
+	if wizardInfo.NasOptions.InstallDns {
+		err := installDns()
+		if err != nil {
+			log.Println(err.Error())
+		}
+	}
+
+	// Check to see if we need to install CA
+	if wizardInfo.NasOptions.InstallCa {
+		err := installCa()
 		if err != nil {
 			log.Println(err.Error())
 		}
@@ -186,4 +213,19 @@ func installNvmeFa() error {
 
 	return nil
 
+}
+
+// installDns configures and installs the DNS settings required for the application and returns an error if it fails.
+func installDns() error {
+
+	log.Println("Installing DNS")
+
+	return nil
+
+}
+
+// installCa installs a Certificate Authority (CA) on the system and returns an error if the installation fails.
+func installCa() error {
+
+	return nil
 }

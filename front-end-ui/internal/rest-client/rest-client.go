@@ -22,6 +22,7 @@ var rebootUrl = "http://192.168.0.22:9090/reboot"
 var healthCheckUrl = "http://192.168.0.22:9090/healthCheck"
 var getDriveTelemetryUrl = "http://192.168.0.22:9090/getDriveTelemetry"
 var createZfsPoolUrl = "http://192.168.0.22:9090/createZfsPool"
+var getZfsStatus = "http://192.168.0.22:9090/zfsStatus"
 
 // EnableGen3Pcie sends a GET request to enable Gen3 PCIe on the specified URL
 func EnableGen3Pcie() (resp *http.Response, err error) {
@@ -54,6 +55,13 @@ func GetMemoryInfo() (model common_structs.MemoryInfo, err error) {
 	var memoryInfo common_structs.MemoryInfo
 	err = execRestGetCall(&memoryInfo, getMemoryInfoUrl)
 	return memoryInfo, err
+}
+
+// GetZfsStatus Get Zfs Status
+func GetZfsStatus() (model common_structs.ZfsPool, err error) {
+	var zfsStatus common_structs.ZfsPool
+	err = execRestGetCall(&zfsStatus, getZfsStatus)
+	return zfsStatus, err
 }
 
 // Reboot system
