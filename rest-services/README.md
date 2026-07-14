@@ -16,3 +16,17 @@
 
 ### 5. Remove from system <br>
 `sudo apt remove pinas-rest-services`
+
+## Build process.
+You will need to have golang and make installed <br>
+`sudo apt install golang-go`
+
+To Build from this directory, run <br>
+`make build`
+
+To create a deb package, run. This will put the deb package in the /tmp directory <br>
+`make package-deb`
+ 
+To install the deb package, run <br>
+`sudo apt install /tmp/PINAS-REST-Services-0.0.1_arm64.deb`
+
