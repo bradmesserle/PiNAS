@@ -7,9 +7,11 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 
 	"github.com/labstack/gommon/log"
 	"github.com/pinas/common-structs"
+	"github.com/pinas/ui/internal"
 )
 
 var enableGen3PcieUrl = "http://192.168.0.22:9090/verifyUpdateConfig"
@@ -66,6 +68,7 @@ func GetZfsStatus() (model common_structs.ZfsPool, err error) {
 
 // Reboot system
 func Reboot() (err error) {
+	internal.EventBus.Publish("consoleLog", strings.TrimSpace("Rebooting the system"))
 	err = execRestGetCall(nil, rebootUrl)
 	return err
 }

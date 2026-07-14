@@ -69,6 +69,7 @@ func PerformSetup(wizardInfo *structs.WizardInfo) {
 
 		//Wait for the reboot to complete
 		waitForReboot()
+		internal.EventBus.Publish("consoleLog", strings.TrimSpace("System is back up"))
 
 		//Install Part 2
 		// Create the ZFS Pool, standard work-area dataset.
@@ -204,6 +205,7 @@ func installNvmeFa() error {
 
 	//Wait for the reboot to complete
 	waitForReboot()
+	internal.EventBus.Publish("consoleLog", strings.TrimSpace("System is back up"))
 
 	//Install nvme-cli
 	errNvmeCli := rest_client.InstallNvmeCli()
