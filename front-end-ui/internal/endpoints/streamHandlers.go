@@ -1,9 +1,13 @@
 package endpoints
 
 import (
+	"context"
+	"errors"
 	"fmt"
 	"html"
 	"log"
+	"log/slog"
+	"time"
 
 	"github.com/labstack/echo/v5"
 	"github.com/pinas/ui/internal"
@@ -22,6 +26,9 @@ func ConsoleLogStreamHandler(c *echo.Context) error {
 	var in Signals
 	_ = datastar.ReadSignals(c.Request(), &in)
 
+	ctx, cancel := context.WithTimeout(c.Request().Context(), 45*time.Second)
+	defer cancel()
+
 	// NewSSE sets the SSE headers and returns a generator bound to this request.
 	sse := datastar.NewSSE(c.Response(), c.Request())
 
@@ -30,12 +37,12 @@ func ConsoleLogStreamHandler(c *echo.Context) error {
 	_ = sse.MarshalAndPatchSignals(map[string]any{"streaming": true})
 
 	//Subscribe to the topic and post on the stream
-	_ = internal.EventBus.Subscribe("consoleLog", func(msg string) {
+	eventBusError := internal.EventBus.Subscribe("consoleLog", func(msg string) {
 
 		fmt.Printf("Receiving Data --->: %s\n", msg)
 
 		//Check to see if the SSE connection is still open
-		if !sse.IsClosed() {
+		if sse != nil && !sse.IsClosed() {
 			sanitized := html.EscapeString(msg)
 			err := sse.ExecuteScript(fmt.Sprintf(`updateText("%s")`, sanitized))
 			if err != nil {
@@ -45,8 +52,20 @@ func ConsoleLogStreamHandler(c *echo.Context) error {
 
 	})
 
+	if eventBusError != nil {
+		log.Println(eventBusError)
+		return nil
+	}
+
 	for {
 		select {
+
+		case <-ctx.Done():
+			if errors.Is(ctx.Err(), context.DeadlineExceeded) {
+				slog.Info("SSE Timeout to client")
+				return nil
+			}
+
 		case <-c.Request().Context().Done():
 			return sse.MarshalAndPatchSignals(map[string]any{"streaming": false})
 		}
