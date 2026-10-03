@@ -14,17 +14,17 @@ import (
 	"github.com/pinas/ui/internal"
 )
 
-var enableGen3PcieUrl = "http://192.168.0.22:9090/verifyUpdateConfig"
-var getPCIeInfoUrl = "http://192.168.0.22:9090/pcieInfo"
-var getModelInfoUrl = "http://192.168.0.22:9090/modelInfo"
-var getCpuInfoUrl = "http://192.168.0.22:9090/cpuInfo"
-var getMemoryInfoUrl = "http://192.168.0.22:9090/memoryInfo"
-var verifyUpdateConfigUrl = "http://192.168.0.22:9090/verifyUpdateConfig"
-var rebootUrl = "http://192.168.0.22:9090/reboot"
-var healthCheckUrl = "http://192.168.0.22:9090/healthCheck"
-var getDriveTelemetryUrl = "http://192.168.0.22:9090/getDriveTelemetry"
-var createZfsPoolUrl = "http://192.168.0.22:9090/createZfsPool"
-var getZfsStatus = "http://192.168.0.22:9090/zfsStatus"
+var enableGen3PcieUrl = "http://192.168.0.2:9090/verifyUpdateConfig"
+var getPCIeInfoUrl = "http://192.168.0.2:9090/pcieInfo"
+var getModelInfoUrl = "http://192.168.0.2:9090/modelInfo"
+var getCpuInfoUrl = "http://192.168.0.2:9090/cpuInfo"
+var getMemoryInfoUrl = "http://192.168.0.2:9090/memoryInfo"
+var verifyUpdateConfigUrl = "http://192.168.0.2:9090/verifyUpdateConfig"
+var rebootUrl = "http://192.168.0.2:9090/reboot"
+var healthCheckUrl = "http://192.168.0.2:9090/healthCheck"
+var getDriveTelemetryUrl = "http://192.168.0.2:9090/getDriveTelemetry"
+var createZfsPoolUrl = "http://192.168.0.2:9090/createZfsPool"
+var getZfsStatus = "http://192.168.0.2:9090/zfsStatus"
 
 // EnableGen3Pcie sends a GET request to enable Gen3 PCIe on the specified URL
 func EnableGen3Pcie() (resp *http.Response, err error) {
