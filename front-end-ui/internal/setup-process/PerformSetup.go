@@ -15,6 +15,9 @@ func PerformSetup(wizardInfo *structs.WizardInfo) {
 
 	time.Sleep(1 * time.Second)
 
+	//Get the current install checkpoint
+	checkpoint := GetStatus()
+
 	//Install Part 1
 	//Update system and install ZFS
 
@@ -28,8 +31,8 @@ func PerformSetup(wizardInfo *structs.WizardInfo) {
 	}
 
 	//Check to see if zfs is up and running and the pool is online
-	//If zfs pools are not online we need to install them
-	if zfsStatus.State != common_structs.ZfsStateOnline {
+	//If zfs pools are not online we need to install them and we are at the start of the install process
+	if zfsStatus.State != common_structs.ZfsStateOnline && checkpoint == structs.FreshInstall {
 
 		//Update ca certificates on the box
 		errCaCert := rest_client.UpdateCaCertificates()
@@ -61,6 +64,12 @@ func PerformSetup(wizardInfo *structs.WizardInfo) {
 			log.Println(errInstallZfs.Error())
 		}
 
+		//Save Checkpoint
+		errSaveCheckpoint := SaveStatus(structs.ZfsInstalled)
+		if errSaveCheckpoint != nil {
+			log.Println(errSaveCheckpoint.Error())
+		}
+
 		//Reboot
 		errReboot := rest_client.Reboot()
 		if errReboot != nil {
@@ -68,12 +77,23 @@ func PerformSetup(wizardInfo *structs.WizardInfo) {
 		}
 
 		//Wait for the reboot to complete
-		waitForReboot()
-		internal.EventBus.Publish("consoleLog", strings.TrimSpace("System is back up"))
+		//waitForReboot()
+		//internal.EventBus.Publish("consoleLog", strings.TrimSpace("System is back up"))
 
 		//Install Part 2
 		// Create the ZFS Pool, standard work-area dataset.
 		// Install Setup Options
+
+		//Create ZFS Pool
+		//createZfsPool()
+
+		//Create Work Area Dataset
+		//createWorkAreaDataset()
+	}
+
+	// Install Part 2
+	// Create the zfs pools and work area datasets
+	if checkpoint == structs.ZfsInstalled {
 
 		//Create ZFS Pool
 		createZfsPool()
