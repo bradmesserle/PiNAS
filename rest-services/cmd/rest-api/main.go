@@ -105,7 +105,7 @@ func main() {
 
 	// Start the server
 	sc := echo.StartConfig{
-		Address: ":9090",
+		Address: "localhost:9090",
 		BeforeServeFunc: func(s *http.Server) error {
 			s.WriteTimeout = 0 // IMPORTANT: disable for SSE
 			return nil
