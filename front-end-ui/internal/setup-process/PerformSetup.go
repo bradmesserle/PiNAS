@@ -23,6 +23,8 @@ func PerformSetup(wizardInfo *structs.WizardInfo) {
 		return
 	}
 
+	slog.Info("Current installation checkpoint", "checkpoint", checkpoint)
+
 	//Install Part 1
 	//Update system and install ZFS
 

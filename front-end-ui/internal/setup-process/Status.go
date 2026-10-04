@@ -13,7 +13,7 @@ func GetStatus() (structs.Checkpoint, error) {
 	file, err := os.Open("/opt/pinas/ui-services/installProgress.txt")
 	if err != nil {
 		slog.Error("Failed to read file", "err", err)
-		return structs.FreshInstall, err
+		return structs.FreshInstall, nil
 	}
 
 	defer func(file *os.File) {
