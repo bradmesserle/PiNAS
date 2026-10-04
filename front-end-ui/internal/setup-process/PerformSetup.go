@@ -2,6 +2,7 @@ package setup_process
 
 import (
 	"log"
+	"log/slog"
 	"strings"
 	"time"
 
@@ -15,8 +16,12 @@ func PerformSetup(wizardInfo *structs.WizardInfo) {
 
 	time.Sleep(1 * time.Second)
 
-	//Get the current install checkpoint
-	checkpoint := GetStatus()
+	//Get the current installation checkpoint
+	checkpoint, err := GetStatus()
+	if err != nil {
+		slog.Error("Error while getting status", "err", err)
+		return
+	}
 
 	//Install Part 1
 	//Update system and install ZFS
