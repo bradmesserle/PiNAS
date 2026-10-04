@@ -62,7 +62,7 @@ func ConsoleLogStreamHandler(c *echo.Context) error {
 
 		case <-ctx.Done():
 			if errors.Is(ctx.Err(), context.DeadlineExceeded) {
-				slog.Info("SSE Timeout to client")
+				slog.Info("StreamHandler:ConsoleLogStreamHandler>>SSE Timeout to client")
 				return nil
 			}
 
