@@ -14,8 +14,6 @@ import (
 
 func PerformSetup(wizardInfo *structs.WizardInfo) {
 
-	time.Sleep(1 * time.Second)
-
 	//Get the current installation checkpoint
 	checkpoint, err := GetStatus()
 	if err != nil {
@@ -25,11 +23,10 @@ func PerformSetup(wizardInfo *structs.WizardInfo) {
 
 	slog.Info("Current installation checkpoint", "checkpoint", checkpoint)
 
+	time.Sleep(1 * time.Second)
+
 	//Install Part 1
 	//Update system and install ZFS
-
-	//Send Success message to the front end.
-	internal.EventBus.Publish("consoleLog", strings.TrimSpace("Starting the setup process"))
 
 	//Get ZfsStatus
 	zfsStatus, errZfsStatus := rest_client.GetZfsStatus()
@@ -40,6 +37,9 @@ func PerformSetup(wizardInfo *structs.WizardInfo) {
 	//Check to see if zfs is up and running and the pool is online
 	//If zfs pools are not online we need to install them and we are at the start of the install process
 	if zfsStatus.State != common_structs.ZfsStateOnline && checkpoint == structs.FreshInstall {
+
+		//Send Success message to the front end.
+		internal.EventBus.Publish("consoleLog", strings.TrimSpace("Starting the setup process"))
 
 		//Update ca certificates on the box
 		errCaCert := rest_client.UpdateCaCertificates()

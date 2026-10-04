@@ -26,19 +26,12 @@ templ Home (data structs.WizardInfo, status structs.SetupInfo) {
 
                <div id="setup-wizard">
 
-                   if status.IsRunning {
-                      @setup.InstallProgressPage()
-                   } else {
+                    <div id="welcome-page" >
+                        <!--- For now just go to the setup pi flow -->
+                        @WelcomePage()
+                    </div>
 
-                        <div id="welcome-page" >
-                            <!--- For now just go to the setup pi flow -->
-                            @WelcomePage()
-                        </div>
-
-                        @setup.WizardButtons(data)
-                   }
-
-
+                    @setup.WizardButtons(data)
 
                </div>
 
