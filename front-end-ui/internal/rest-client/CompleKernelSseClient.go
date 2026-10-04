@@ -18,7 +18,7 @@ func CompileKernel() error {
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Hour)
 	defer cancel()
 
-	req, err := http.NewRequestWithContext(ctx, "GET", "http://192.168.0.22:9090/compileKernel", nil)
+	req, err := http.NewRequestWithContext(ctx, "GET", "http://localhost:9090/compileKernel", nil)
 	if err != nil {
 		log.Printf("Failed to create request: %v", err)
 	}

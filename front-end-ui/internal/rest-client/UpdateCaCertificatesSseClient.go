@@ -23,7 +23,7 @@ func UpdateCaCertificates() error {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Minute)
 	defer cancel()
 
-	req, err := http.NewRequestWithContext(ctx, "GET", "http://192.168.0.22:9090/updateCaCertificates", nil)
+	req, err := http.NewRequestWithContext(ctx, "GET", "http://localhost:9090/updateCaCertificates", nil)
 	if err != nil {
 		log.Printf("Failed to create request: %v", err)
 	}

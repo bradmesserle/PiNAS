@@ -14,17 +14,17 @@ import (
 	"github.com/pinas/ui/internal"
 )
 
-var enableGen3PcieUrl = "http://192.168.0.2:9090/verifyUpdateConfig"
-var getPCIeInfoUrl = "http://192.168.0.2:9090/pcieInfo"
-var getModelInfoUrl = "http://192.168.0.2:9090/modelInfo"
-var getCpuInfoUrl = "http://192.168.0.2:9090/cpuInfo"
-var getMemoryInfoUrl = "http://192.168.0.2:9090/memoryInfo"
-var verifyUpdateConfigUrl = "http://192.168.0.2:9090/verifyUpdateConfig"
-var rebootUrl = "http://192.168.0.2:9090/reboot"
-var healthCheckUrl = "http://192.168.0.2:9090/healthCheck"
-var getDriveTelemetryUrl = "http://192.168.0.2:9090/getDriveTelemetry"
-var createZfsPoolUrl = "http://192.168.0.2:9090/createZfsPool"
-var getZfsStatus = "http://192.168.0.2:9090/zfsStatus"
+var enableGen3PcieUrl = "http://localhost:9090/verifyUpdateConfig"
+var getPCIeInfoUrl = "http://localhost:9090/pcieInfo"
+var getModelInfoUrl = "http://localhost:9090/modelInfo"
+var getCpuInfoUrl = "http://localhost:9090/cpuInfo"
+var getMemoryInfoUrl = "http://localhost:9090/memoryInfo"
+var verifyUpdateConfigUrl = "http://localhost:9090/verifyUpdateConfig"
+var rebootUrl = "http://localhost:9090/reboot"
+var healthCheckUrl = "http://localhost:9090/healthCheck"
+var getDriveTelemetryUrl = "http://localhost:9090/getDriveTelemetry"
+var createZfsPoolUrl = "http://localhost:9090/createZfsPool"
+var getZfsStatus = "http://localhost:9090/zfsStatus"
 
 // EnableGen3Pcie sends a GET request to enable Gen3 PCIe on the specified URL
 func EnableGen3Pcie() (resp *http.Response, err error) {
@@ -100,7 +100,7 @@ func HealthCheck() (err error) {
 }
 
 // Execute Rest Call and handle errors
-func execRestGetCall(object interface{}, url string) error {
+func execRestGetCall(object any, url string) error {
 	client := &http.Client{}
 	resp, err := client.Get(url)
 
@@ -135,7 +135,7 @@ func execRestGetCall(object interface{}, url string) error {
 }
 
 // Execute Rest Call and handle errors
-func execRestPostCall(objectBody interface{}, postObject interface{}, url string) error {
+func execRestPostCall(objectBody any, postObject any, url string) error {
 	client := &http.Client{}
 
 	//Marshal Object

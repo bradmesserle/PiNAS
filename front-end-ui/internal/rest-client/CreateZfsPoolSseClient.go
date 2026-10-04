@@ -25,7 +25,7 @@ func CreateZfsPool(poolInfo common_structs.ZfsPool) (err error) {
 	// Marshal struct to JSON
 	jsonData, _ := json.Marshal(poolInfo)
 
-	req, err := http.NewRequestWithContext(ctx, "POST", "http://192.168.0.22:9090/createZfsPool", bytes.NewBuffer(jsonData))
+	req, err := http.NewRequestWithContext(ctx, "POST", "http://localhost:9090/createZfsPool", bytes.NewBuffer(jsonData))
 	if err != nil {
 		log.Printf("Failed to create request: %v", err)
 	}
