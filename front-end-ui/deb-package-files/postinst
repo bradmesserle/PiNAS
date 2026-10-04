@@ -1,0 +1,10 @@
+#!/bin/bash
+
+#Create symlink for the systemd service
+ln -s /opt/pinas/ui-services/pinas-ui-services.service /etc/systemd/system
+
+# Refresh Deamon
+systemctl daemon-reload
+
+#Start the service
+systemctl enable --now pinas-ui-services.service
