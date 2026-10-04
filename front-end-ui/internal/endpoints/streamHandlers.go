@@ -26,7 +26,7 @@ func ConsoleLogStreamHandler(c *echo.Context) error {
 	var in Signals
 	_ = datastar.ReadSignals(c.Request(), &in)
 
-	ctx, cancel := context.WithTimeout(c.Request().Context(), 45*time.Second)
+	ctx, cancel := context.WithTimeout(c.Request().Context(), 4*time.Hour)
 	defer cancel()
 
 	// NewSSE sets the SSE headers and returns a generator bound to this request.
