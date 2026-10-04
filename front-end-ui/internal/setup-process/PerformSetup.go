@@ -126,8 +126,10 @@ func PerformSetup(wizardInfo *structs.WizardInfo) {
 		}
 	}
 
-	//Send Success message to the front end.
-	internal.EventBus.Publish("consoleLog", strings.TrimSpace("Setup Completed Successfully"))
+	if checkpoint == structs.Completed {
+		//Send Success message to the front end.
+		internal.EventBus.Publish("consoleLog", strings.TrimSpace("Setup Completed Successfully"))
+	}
 
 }
 

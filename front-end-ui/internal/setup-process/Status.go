@@ -15,7 +15,7 @@ func GetStatus() structs.Checkpoint {
 // SaveStatus saves the current status to a file.
 func SaveStatus(checkPoint structs.Checkpoint) error {
 	data := []byte(checkPoint)
-	err := os.WriteFile("/tmp/installProcess.txt", data, 0644)
+	err := os.WriteFile("/opt/pinas/ui-services/installProgress.txt", data, 0644)
 	if err != nil {
 		slog.Error("Failed to write file", "err", err)
 		return err
