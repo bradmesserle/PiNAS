@@ -12,6 +12,8 @@ import (
 
 func Setup(c *echo.Context, wizardInfo *structs.WizardInfo, status *structs.SetupInfo) error {
 
+	slog.Info("Running Status : %s", status.IsRunning)
+
 	//Check to see if we are already running
 	if !status.IsRunning {
 		//Kick off the installation process
