@@ -1,6 +1,7 @@
 main_go_path=./cmd/main
 build_dir=./bin
 binary_name=nas-ui
+version=0.0.1
 
 all: compile-templ build
 
