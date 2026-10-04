@@ -2,7 +2,7 @@ main_go_path=./cmd/main
 build_dir=./bin
 binary_name=nas-ui
 
-.REST_API: build
+all: compile-templ build
 
 compile-templ:
 	go tool templ generate
