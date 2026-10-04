@@ -35,7 +35,7 @@ func PerformSetup(wizardInfo *structs.WizardInfo) {
 	}
 
 	//Check to see if zfs is up and running and the pool is online
-	//If zfs pools are not online we need to install them and we are at the start of the install process
+	//If zfs pools are not online, we need to install them, and we are at the start of the installation process
 	if zfsStatus.State != common_structs.ZfsStateOnline && checkpoint == structs.FreshInstall {
 
 		//Send Success message to the front end.
@@ -82,20 +82,6 @@ func PerformSetup(wizardInfo *structs.WizardInfo) {
 		if errReboot != nil {
 			log.Println(errReboot.Error())
 		}
-
-		//Wait for the reboot to complete
-		//waitForReboot()
-		//internal.EventBus.Publish("consoleLog", strings.TrimSpace("System is back up"))
-
-		//Install Part 2
-		// Create the ZFS Pool, standard work-area dataset.
-		// Install Setup Options
-
-		//Create ZFS Pool
-		//createZfsPool()
-
-		//Create Work Area Dataset
-		//createWorkAreaDataset()
 	}
 
 	// Install Part 2
@@ -109,14 +95,18 @@ func PerformSetup(wizardInfo *structs.WizardInfo) {
 
 		//Create Work Area Dataset
 		createWorkAreaDataset()
+
+		//Set to done
+		checkpoint = structs.PartDone
 	}
 
-	//Check if nvme-fa is enabled if so compile the kernel and enable it
+	//Check if nvme-fa is enabled if so, compile the kernel and enable it
 	if wizardInfo.NasOptions.InstallNvmeFa {
-		err := installNvmeFa()
+		err := installNvmeFa(checkpoint)
 		if err != nil {
 			log.Println(err.Error())
 		}
+
 	}
 
 	//Check if we need to install DNS
@@ -135,47 +125,21 @@ func PerformSetup(wizardInfo *structs.WizardInfo) {
 		}
 	}
 
-	//Save Checkpoint
-	errSaveCheckpoint := SaveStatus(structs.Completed)
-	if errSaveCheckpoint != nil {
-		log.Println(errSaveCheckpoint.Error())
-	}
+	//Save Checkpoint - Check to see if all steps are done
+	if checkpoint == structs.PartDone {
 
-	//Send Success message to the front end.
-	internal.EventBus.Publish("consoleLog", strings.TrimSpace("Setup Completed Successfully"))
+		//Send completed message to the front end.
+		internal.EventBus.Publish("consoleLog", strings.TrimSpace("Setup Completed Successfully"))
 
-}
-
-func waitForReboot() {
-
-	//defer wg.Done()
-	rebootStarted := false
-
-	//Check the health check
-	for {
-
-		//Check to see if we have an error if show we know the system is rebooting..
-		if !rebootStarted {
-			errReboot := rest_client.HealthCheck()
-			if errReboot != nil {
-				rebootStarted = true
-			}
-		} else {
-
-			//Lets wait until we dont get an error
-			errReboot := rest_client.HealthCheck()
-			if errReboot == nil {
-				log.Println("Reboot is finished")
-				break
-			}
-
+		errSaveCheckpoint := SaveStatus(structs.Completed)
+		if errSaveCheckpoint != nil {
+			log.Println(errSaveCheckpoint.Error())
 		}
-
-		time.Sleep(1 * time.Second)
 	}
 
 }
 
+// createZfsPool initializes and creates a ZFS pool using drive telemetry fetched via REST API calls.
 func createZfsPool() {
 
 	poolInfo := new(common_structs.ZfsPool)
@@ -214,42 +178,55 @@ func createWorkAreaDataset() {
 }
 
 // installNvmeFa checks if nvme-fa is enabled and compiles the kernel and enables it if so.
-func installNvmeFa() error {
+func installNvmeFa(checkpoint structs.Checkpoint) error {
 
 	log.Println("Enable nvme-fa")
+	slog.Info("Enable nvme-fa")
 
-	// Compile the kernel
-	err := rest_client.CompileKernel()
-	if err != nil {
-		//log.Println(err.Error())
-		return err
+	//We are at the start of the process
+	if checkpoint == structs.PartDone {
+
+		// Compile the kernel
+		err := rest_client.CompileKernel()
+		if err != nil {
+			//log.Println(err.Error())
+			return err
+		}
+
+		//Reinstall ZFS so it can compile the headers
+		errReinstallZfsDkms := rest_client.ReinstallZfsDkms()
+		if errReinstallZfsDkms != nil {
+			//log.Println(errReinstallZfsDkms.Error())
+			return errReinstallZfsDkms
+		}
+
+		//Save Checkpoint
+		errSaveCheckpoint := SaveStatus(structs.NvmeFaPart1)
+		if errSaveCheckpoint != nil {
+			log.Println(errSaveCheckpoint.Error())
+		}
+
+		//Reboot
+		errReboot := rest_client.Reboot()
+		if errReboot != nil {
+			//log.Println(errReboot.Error())
+		}
 	}
 
-	//Reinstall ZFS so it can compile the headers
-	errReinstallZfsDkms := rest_client.ReinstallZfsDkms()
-	if errReinstallZfsDkms != nil {
-		//log.Println(errReinstallZfsDkms.Error())
-		return errReinstallZfsDkms
+	//Continue onto part 2 Install the CLI
+	if checkpoint == structs.NvmeFaPart1 {
+		//Install nvme-cli
+		errNvmeCli := rest_client.InstallNvmeCli()
+		if errNvmeCli != nil {
+			//log.Println(errNvmeCli.Error())
+		}
+
 	}
 
-	//Reboot
-	errReboot := rest_client.Reboot()
-	if errReboot != nil {
-		//log.Println(errReboot.Error())
-	}
-
-	//Wait for the reboot to complete
-	waitForReboot()
-	internal.EventBus.Publish("consoleLog", strings.TrimSpace("System is back up"))
-
-	//Install nvme-cli
-	errNvmeCli := rest_client.InstallNvmeCli()
-	if errNvmeCli != nil {
-		//log.Println(errNvmeCli.Error())
-	}
+	//Set to done
+	checkpoint = structs.PartDone
 
 	return nil
-
 }
 
 // installDns configures and installs the DNS settings required for the application and returns an error if it fails.
