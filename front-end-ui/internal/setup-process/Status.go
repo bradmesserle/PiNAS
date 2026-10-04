@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"log/slog"
 	"os"
-	"strings"
 
 	"github.com/pinas/ui/internal/structs"
 )
@@ -28,10 +27,6 @@ func GetStatus() (structs.Checkpoint, error) {
 
 	for scanner.Scan() {
 		line := scanner.Text() // Retrieves the current line without the newline character
-		if strings.Trim(line, " \t\n\r") == "" {
-			return structs.FreshInstall, nil
-		}
-
 		return structs.Checkpoint(line), nil
 	}
 
