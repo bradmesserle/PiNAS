@@ -1,6 +1,7 @@
 package endpoints
 
 import (
+	"log/slog"
 	"sync"
 
 	"github.com/labstack/echo/v5"
@@ -18,6 +19,14 @@ func Setup(c *echo.Context, wizardInfo *structs.WizardInfo, status *structs.Setu
 
 		//Kick off a background process to start the setup process.
 		wg.Go(func() {
+
+			//Save the setup options
+			err := structs.SaveSetupOptions(wizardInfo.NasOptions)
+			if err != nil {
+				slog.Error("Failed to save setup options: %v", err)
+				return
+			}
+
 			status.IsRunning = true
 			setup_process.PerformSetup(wizardInfo)
 			status.IsRunning = false

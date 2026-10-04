@@ -14,6 +14,16 @@ import (
 
 func PerformSetup(wizardInfo *structs.WizardInfo) {
 
+	//Load the current setup options
+	options, err := structs.GetSetupOptions()
+	if err != nil {
+		slog.Error("Error while loading setup options", "err", err)
+		return
+	}
+
+	//Set the options in the wizardInfo
+	wizardInfo.NasOptions = options
+
 	//Get the current installation checkpoint
 	checkpoint, err := GetStatus()
 	if err != nil {
