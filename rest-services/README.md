@@ -17,6 +17,9 @@
 ### 5. Remove from system <br>
 `sudo apt remove pinas-rest-services`
 
+### 6. View service logs <br>
+`sudo journalctl -u pinas-rest-services`
+
 ## Build process.
 You will need to have golang and make installed <br>
 `sudo apt install golang-go`
