@@ -31,19 +31,6 @@ func setupWebServer() {
 	//Step Status
 	status := new(structs.SetupInfo)
 
-	////Get current checkpoint
-	//checkpoint, err := setup_process.GetStatus()
-	//if err != nil {
-	//	slog.Info("Error while getting checkpoint setting to fresh install", "err", err)
-	//	checkpoint = structs.FreshInstall
-	//}
-	//
-	//if checkpoint == structs.FreshInstall {
-	//	status.IsRunning = false
-	//} else {
-	//	status.IsRunning = true
-	//}
-
 	//Static Files
 	app.StaticFS("/", echo.MustSubFS(internal.StaticFiles, ""))
 
