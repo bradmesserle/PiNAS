@@ -6,35 +6,40 @@ import (
 
 	"github.com/labstack/echo/v5"
 	"github.com/pinas/ui/internal/components"
-	"github.com/pinas/ui/internal/setup-process"
+	setup_process "github.com/pinas/ui/internal/setup-process"
 	"github.com/pinas/ui/internal/structs"
 )
 
 func Home(c *echo.Context, wizardInfo *structs.WizardInfo, status *structs.SetupInfo) error {
 
-	//Get current checkpoint
-	checkpoint, err := setup_process.GetStatus()
-	if err != nil {
-		slog.Info("Error while getting checkpoint setting to fresh install", "err", err)
-		checkpoint = structs.FreshInstall
-	}
+	// Check to see if the setup process is running
+	if !status.IsRunning {
 
-	if checkpoint == structs.FreshInstall {
-		status.IsRunning = false
-	} else {
-		status.IsRunning = true
-	}
+		//Get current checkpoint
+		checkpoint, err := setup_process.GetStatus()
+		if err != nil {
+			slog.Info("Error while getting checkpoint setting to fresh install", "err", err)
+			checkpoint = structs.FreshInstall
+		}
 
-	// We want to resume where we left off before a reboot
-	if status.IsRunning {
+		if checkpoint == structs.FreshInstall {
+			status.IsRunning = false
+		} else {
+			status.IsRunning = true
+		}
 
-		//Kick off the installation process
-		var wg sync.WaitGroup
+		// We want to resume where we left off before a reboot
+		if status.IsRunning {
 
-		//Kick off a background process to start the setup process.
-		wg.Go(func() {
-			setup_process.PerformSetup(wizardInfo)
-		})
+			//Kick off the installation process
+			var wg sync.WaitGroup
+
+			//Kick off a background process to start the setup process.
+			wg.Go(func() {
+				setup_process.PerformSetup(wizardInfo)
+			})
+
+		}
 
 	}
 
