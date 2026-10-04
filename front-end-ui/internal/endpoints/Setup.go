@@ -5,7 +5,7 @@ import (
 
 	"github.com/labstack/echo/v5"
 	"github.com/pinas/ui/internal/components/setup"
-	setup_process "github.com/pinas/ui/internal/setup-process"
+	"github.com/pinas/ui/internal/setup-process"
 	"github.com/pinas/ui/internal/structs"
 )
 
