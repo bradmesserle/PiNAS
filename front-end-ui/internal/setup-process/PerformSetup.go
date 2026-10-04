@@ -133,10 +133,14 @@ func PerformSetup(wizardInfo *structs.WizardInfo) {
 		}
 	}
 
-	if checkpoint == structs.Completed {
-		//Send Success message to the front end.
-		internal.EventBus.Publish("consoleLog", strings.TrimSpace("Setup Completed Successfully"))
+	//Save Checkpoint
+	errSaveCheckpoint := SaveStatus(structs.Completed)
+	if errSaveCheckpoint != nil {
+		log.Println(errSaveCheckpoint.Error())
 	}
+
+	//Send Success message to the front end.
+	internal.EventBus.Publish("consoleLog", strings.TrimSpace("Setup Completed Successfully"))
 
 }
 

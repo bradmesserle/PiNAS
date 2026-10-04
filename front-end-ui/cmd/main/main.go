@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
@@ -13,7 +12,6 @@ import (
 	"github.com/pinas/ui/internal"
 	"github.com/pinas/ui/internal/endpoints"
 	setup_navigation "github.com/pinas/ui/internal/setup-navigation"
-	setup_process "github.com/pinas/ui/internal/setup-process"
 	"github.com/pinas/ui/internal/structs"
 )
 
@@ -33,18 +31,18 @@ func setupWebServer() {
 	//Step Status
 	status := new(structs.SetupInfo)
 
-	//Get current checkpoint
-	checkpoint, err := setup_process.GetStatus()
-	if err != nil {
-		slog.Info("Error while getting checkpoint setting to fresh install", "err", err)
-		checkpoint = structs.FreshInstall
-	}
-
-	if checkpoint == structs.FreshInstall {
-		status.IsRunning = false
-	} else {
-		status.IsRunning = true
-	}
+	////Get current checkpoint
+	//checkpoint, err := setup_process.GetStatus()
+	//if err != nil {
+	//	slog.Info("Error while getting checkpoint setting to fresh install", "err", err)
+	//	checkpoint = structs.FreshInstall
+	//}
+	//
+	//if checkpoint == structs.FreshInstall {
+	//	status.IsRunning = false
+	//} else {
+	//	status.IsRunning = true
+	//}
 
 	//Static Files
 	app.StaticFS("/", echo.MustSubFS(internal.StaticFiles, ""))
