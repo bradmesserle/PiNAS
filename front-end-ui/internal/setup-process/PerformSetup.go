@@ -102,6 +102,8 @@ func PerformSetup(wizardInfo *structs.WizardInfo) {
 	// Create the zfs pools and work area datasets
 	if checkpoint == structs.ZfsInstalled {
 
+		slog.Info("Installing part 2")
+
 		//Create ZFS Pool
 		createZfsPool()
 
