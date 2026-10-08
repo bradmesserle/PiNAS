@@ -36,7 +36,7 @@ func Home(c *echo.Context, wizardInfo *structs.WizardInfo, status *structs.Setup
 
 			//Kick off a background process to start the setup process.
 			wg.Go(func() {
-				setup_process.PerformSetup(wizardInfo)
+				setup_process.PerformSetup(c, wizardInfo)
 			})
 
 		}
