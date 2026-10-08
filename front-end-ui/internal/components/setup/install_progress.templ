@@ -63,6 +63,7 @@ templ InstallProgressPage() {
               onRetry:   (n, delay, reason) => console.log(`Retry #${n} in ${delay} ms (${reason})`),
             });
             sse.start();
+            console.log("Server monitor started");
 
         }
 
