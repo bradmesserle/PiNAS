@@ -117,6 +117,7 @@ func PerformSetup(wizardInfo *structs.WizardInfo) {
 			if err != nil {
 				log.Println(err.Error())
 			}
+
 		}
 
 		if checkpoint == structs.NvmeFaPart1 {
@@ -146,8 +147,10 @@ func PerformSetup(wizardInfo *structs.WizardInfo) {
 	////Save Checkpoint - Check to see if all steps are done
 	//if checkpoint == structs.PartDone {
 	//
-	//	//Send completed message to the front end.
-	//	internal.EventBus.Publish("consoleLog", strings.TrimSpace("Setup Completed Successfully"))
+
+	log.Println("Setup Completed Successfully")
+	//Send completed message to the front end.
+	internal.EventBus.Publish("consoleLog", strings.TrimSpace("Setup Completed Successfully"))
 	//
 	//	errSaveCheckpoint := SaveStatus(structs.Completed)
 	//	if errSaveCheckpoint != nil {
@@ -223,6 +226,9 @@ func installNvmeFaPart1(checkpoint structs.Checkpoint) error {
 		log.Println(errSaveCheckpoint.Error())
 	}
 
+	log.Println("NvmeFa Install Part 1 Completed Successfully")
+	internal.EventBus.Publish("consoleLog", strings.TrimSpace("NvmeFa Install Part 1 Completed Successfully"))
+
 	//Reboot
 	errReboot := rest_client.Reboot()
 	if errReboot != nil {
@@ -243,6 +249,9 @@ func NvmeFaInstallPart2(checkpoint structs.Checkpoint) error {
 		log.Println(errNvmeCli.Error())
 		return errNvmeCli
 	}
+
+	log.Println("NvmeFa Install Part 2 Completed Successfully")
+	internal.EventBus.Publish("consoleLog", strings.TrimSpace("NvmeFa Install Part 2 Completed Successfully"))
 
 	return nil
 }
