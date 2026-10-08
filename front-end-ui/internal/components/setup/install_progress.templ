@@ -4,49 +4,50 @@ var onceHandle = templ.NewOnceHandle()
 
 templ InstallProgressPage() {
 
-<style>
 
-    /* Styles the div container to look exactly like a textarea */
-    .fake-textarea {
-        display: flex;
-        flex-wrap: wrap;
-        width: 950px;
-        height: 300px;
-        border: 1px solid #ccc;
-        padding: 10px;
-        font-family: sans-serif;
-        font-size: 13px;
-        line-height: 1.5;
-        overflow-y: auto;
-    }
-
-    .break {
-        flex-basis: 100%; /* Forces the element to take up the whole row */
-        height: 0;        /* Keeps it completely invisible */
-    }
-
-    .line-red {
-        background-color: #ffcccc;
-        display: block; /* Ensures the background spans the full width */
-    }
-
-    .line-green {
-        background-color: #ccffcc;
-        display: block;
-    }
-
-    .line-yellow {
-        background-color: #fffecb;
-        display: block;
-    }
-
-</style>
 
 
 <div id="setup-wizard">
 
     @onceHandle.Once() {
 
+    <style>
+
+        /* Styles the div container to look exactly like a textarea */
+        .fake-textarea {
+            display: flex;
+            flex-wrap: wrap;
+            width: 950px;
+            height: 300px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            font-family: sans-serif;
+            font-size: 13px;
+            line-height: 1.5;
+            overflow-y: auto;
+        }
+
+        .break {
+            flex-basis: 100%; /* Forces the element to take up the whole row */
+            height: 0;        /* Keeps it completely invisible */
+        }
+
+        .line-red {
+            background-color: #ffcccc;
+            display: block; /* Ensures the background spans the full width */
+        }
+
+        .line-green {
+            background-color: #ccffcc;
+            display: block;
+        }
+
+        .line-yellow {
+            background-color: #fffecb;
+            display: block;
+        }
+
+    </style>
 
     <script>
 
