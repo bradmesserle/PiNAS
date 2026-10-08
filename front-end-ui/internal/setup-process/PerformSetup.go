@@ -94,8 +94,8 @@ func PerformSetup(wizardInfo *structs.WizardInfo) {
 		}
 	}
 
-	// Install Part 2
-	// Create the zfs pools and work area datasets
+	// Continue with installation
+	// to Create the zfs pools and work area datasets
 	if checkpoint == structs.ZfsInstalled {
 
 		slog.Info("Installing part 2")
@@ -106,16 +106,28 @@ func PerformSetup(wizardInfo *structs.WizardInfo) {
 		//Create Work Area Dataset
 		createWorkAreaDataset()
 
-		//Set to done
-		checkpoint = structs.PartDone
+		checkpoint = structs.ZfsCreated
 	}
 
 	//Check if nvme-fa is enabled if so, compile the kernel and enable it
 	if wizardInfo.NasOptions.InstallNvmeFa {
-		err := installNvmeFa(checkpoint)
-		if err != nil {
-			log.Println(err.Error())
+
+		if checkpoint == structs.ZfsCreated {
+			err := installNvmeFaPart1(checkpoint)
+			if err != nil {
+				log.Println(err.Error())
+			}
 		}
+
+		if checkpoint == structs.NvmeFaPart1 {
+			err := NvmeFaInstallPart2(checkpoint)
+			if err != nil {
+				log.Println(err.Error())
+			}
+		}
+
+		//Set to done
+		checkpoint = structs.PartDone
 
 	}
 
@@ -188,53 +200,53 @@ func createWorkAreaDataset() {
 }
 
 // installNvmeFa checks if nvme-fa is enabled and compiles the kernel and enables it if so.
-func installNvmeFa(checkpoint structs.Checkpoint) error {
+func installNvmeFaPart1(checkpoint structs.Checkpoint) error {
 
 	log.Println("Enable nvme-fa")
 	slog.Info("Enable nvme-fa")
 
 	//We are at the start of the process
-	if checkpoint == structs.PartDone {
 
-		// Compile the kernel
-		err := rest_client.CompileKernel()
-		if err != nil {
-			//log.Println(err.Error())
-			return err
-		}
-
-		//Reinstall ZFS so it can compile the headers
-		errReinstallZfsDkms := rest_client.ReinstallZfsDkms()
-		if errReinstallZfsDkms != nil {
-			//log.Println(errReinstallZfsDkms.Error())
-			return errReinstallZfsDkms
-		}
-
-		//Save Checkpoint
-		errSaveCheckpoint := SaveStatus(structs.NvmeFaPart1)
-		if errSaveCheckpoint != nil {
-			log.Println(errSaveCheckpoint.Error())
-		}
-
-		//Reboot
-		errReboot := rest_client.Reboot()
-		if errReboot != nil {
-			//log.Println(errReboot.Error())
-		}
+	// Compile the kernel
+	err := rest_client.CompileKernel()
+	if err != nil {
+		//log.Println(err.Error())
+		return err
 	}
+
+	//Reinstall ZFS so it can compile the headers
+	errReinstallZfsDkms := rest_client.ReinstallZfsDkms()
+	if errReinstallZfsDkms != nil {
+		//log.Println(errReinstallZfsDkms.Error())
+		return errReinstallZfsDkms
+	}
+
+	//Save Checkpoint
+	errSaveCheckpoint := SaveStatus(structs.NvmeFaPart1)
+	if errSaveCheckpoint != nil {
+		log.Println(errSaveCheckpoint.Error())
+	}
+
+	//Reboot
+	errReboot := rest_client.Reboot()
+	if errReboot != nil {
+		//log.Println(errReboot.Error())
+	}
+
+	return nil
+}
+
+func NvmeFaInstallPart2(checkpoint structs.Checkpoint) error {
 
 	//Continue onto part 2 Install the CLI
-	if checkpoint == structs.NvmeFaPart1 {
-		//Install nvme-cli
-		errNvmeCli := rest_client.InstallNvmeCli()
-		if errNvmeCli != nil {
-			//log.Println(errNvmeCli.Error())
-		}
+	log.Println("NvmeFaPart2 - Installing nvme-cli ")
 
+	//Install nvme-cli
+	errNvmeCli := rest_client.InstallNvmeCli()
+	if errNvmeCli != nil {
+		log.Println(errNvmeCli.Error())
+		return errNvmeCli
 	}
-
-	//Set to done
-	checkpoint = structs.PartDone
 
 	return nil
 }
