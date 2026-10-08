@@ -3,7 +3,7 @@ build_dir=./bin
 binary_name=nas-ui
 version=0.0.1
 
-all: compile-templ build
+all: compile-templ build package-deb
 
 compile-templ:
 	go tool templ generate
@@ -26,3 +26,7 @@ package-deb:
 	chmod +x  /tmp/PINAS-UI-Services-${version}_arm64/DEBIAN/postinst
 	chmod +x  /tmp/PINAS-UI-Services-${version}_arm64/DEBIAN/postrm
 	dpkg-deb --build --root-owner-group /tmp/PINAS-UI-Services-${version}_arm64
+
+
+deploy:
+	unix-scripts/redploy.sh
