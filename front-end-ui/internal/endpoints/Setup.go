@@ -1,6 +1,8 @@
 package endpoints
 
 import (
+	"fmt"
+	"log"
 	"log/slog"
 	"sync"
 
@@ -8,6 +10,7 @@ import (
 	"github.com/pinas/ui/internal/components/setup"
 	"github.com/pinas/ui/internal/setup-process"
 	"github.com/pinas/ui/internal/structs"
+	"github.com/starfederation/datastar-go/datastar"
 )
 
 func Setup(c *echo.Context, wizardInfo *structs.WizardInfo, status *structs.SetupInfo) error {
@@ -30,7 +33,8 @@ func Setup(c *echo.Context, wizardInfo *structs.WizardInfo, status *structs.Setu
 			}
 
 			status.IsRunning = true
-			setup_process.PerformSetup(wizardInfo)
+			setup_process.PerformSetup(c, wizardInfo)
+			startSSEMonitor(c)
 			status.IsRunning = false
 		})
 	}
@@ -38,5 +42,17 @@ func Setup(c *echo.Context, wizardInfo *structs.WizardInfo, status *structs.Setu
 	var cmp = setup.InstallProgressPage()
 	c.Response().Header().Set(echo.HeaderContentType, echo.MIMETextHTMLCharsetUTF8)
 	return cmp.Render(c.Request().Context(), c.Response())
+
+}
+
+// Start the SSE monitor. This to detect reboots and reconnect when the server comes back up
+func startSSEMonitor(c *echo.Context) {
+
+	// NewSSE sets the SSE headers and returns a generator bound to this request.
+	sse := datastar.NewSSE(c.Response(), c.Request())
+	err := sse.ExecuteScript(fmt.Sprintf(`startServerMonitor()`))
+	if err != nil {
+		log.Println(err)
+	}
 
 }

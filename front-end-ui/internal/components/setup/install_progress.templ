@@ -49,6 +49,22 @@ templ InstallProgressPage() {
 
     <script>
 
+        function startServerMonitor() {
+
+            const sse = new SSEMonitor("/consoleStream", {
+              healthUrl: "/health",              // optional
+              heartbeatTimeout: 45000,           // server should send something at least every ~30s
+              events: {
+                message: (e) => console.log("message:", e.data),
+                update:  (e) => console.log("update:", JSON.parse(e.data)),
+              },
+              onOpen:    () => console.log("✅ Connected"),
+              onOffline: (reason) => console.warn("❌ Disconnected:", reason),
+              onRetry:   (n, delay, reason) => console.log(`Retry #${n} in ${delay} ms (${reason})`),
+            });
+            sse.start();
+
+        }
 
         function updateText(newValue) {
             let targetDiv = document.getElementById('consoleStream');
