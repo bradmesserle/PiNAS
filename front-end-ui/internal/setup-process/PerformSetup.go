@@ -283,6 +283,7 @@ func installCa() error {
 
 func startSSEMonitor(c *echo.Context) {
 
+	slog.Info("Starting the server monitor")
 	// NewSSE sets the SSE headers and returns a generator bound to this request.
 	sse := datastar.NewSSE(c.Response(), c.Request())
 	err := sse.ExecuteScript(fmt.Sprintf(`startServerMonitor()`))
