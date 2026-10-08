@@ -1,6 +1,22 @@
 package setup
 
-var helloHandle = templ.NewOnceHandle()
+var onceHandle = templ.NewOnceHandle()
+
+script startServerMonitor() {
+
+    const monitor = new PollMonitor("/health", {
+    mode: "short",                       // or "short" with pollInterval: 5000
+    onEvent:   (evt) => console.log(evt.type, evt.data),
+    onOnline:  () => console.log("✅ Connected"),
+    onOffline: (reason) => console.warn("❌ Disconnected:", reason),
+    onRetry:   (n, delay, reason) => console.log(`Retry #${n} in ${delay} ms (${reason})`),
+    });
+    monitor.start();
+}
+
+
+
+
 
 templ InstallProgressPage() {
 
@@ -45,7 +61,7 @@ templ InstallProgressPage() {
 
 <div id="setup-wizard">
 
-    @helloHandle.Once() {
+    @onceHandle.Once() {
 
 
     <div data-init="startMonitor()">
