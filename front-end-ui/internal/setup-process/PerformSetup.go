@@ -92,6 +92,8 @@ func PerformSetup(wizardInfo *structs.WizardInfo) {
 		if errReboot != nil {
 			log.Println(errReboot.Error())
 		}
+
+		return
 	}
 
 	// Continue with installation
@@ -117,6 +119,8 @@ func PerformSetup(wizardInfo *structs.WizardInfo) {
 			if err != nil {
 				log.Println(err.Error())
 			}
+
+			return
 
 		}
 
