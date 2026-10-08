@@ -48,6 +48,9 @@ templ InstallProgressPage() {
     @onceHandle.Once() {
 
 
+    <script src="/static/js/poll-monitor.js"></script>
+    <script src="/static/js/progressView.js"></script>
+
     <div data-init="'startMonitor()'">
 
         <div data-init="@get('/consoleStream',{openWhenHidden: true})"  >
