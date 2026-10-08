@@ -85,7 +85,10 @@ templ InstallProgressPage() {
     </script>
     }
 
-    <div data-init="'startMonitor()'">
+    <div data-init="startMonitor()">
+
+
+
         <div data-init="@get('/consoleStream',{openWhenHidden: true})"  >
             <p>Install Progress</p>
 
