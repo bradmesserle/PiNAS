@@ -29,4 +29,4 @@ package-deb:
 
 
 deploy:
-	./unix-scripts/redploy.sh
+	./unix-scripts/redeploy.sh
