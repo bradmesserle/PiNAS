@@ -85,17 +85,18 @@ templ InstallProgressPage() {
     </script>
     }
 
-    <div data-init="@get('/consoleStream',{openWhenHidden: true})">
-        <p>Install Progress</p>
+    <div data-init="'startMonitor()'">
+        <div data-init="@get('/consoleStream',{openWhenHidden: true})"  >
+            <p>Install Progress</p>
 
-        <div style="display: flex;  justify-content: center; align-items: center;">
-            <div class="fake-textarea" id="consoleStream" ></div>
+            <div style="display: flex;  justify-content: center; align-items: center;">
+                <div class="fake-textarea" id="consoleStream" ></div>
+            </div>
+
+
+
         </div>
-
-
-
     </div>
-
 
 
 </div>
