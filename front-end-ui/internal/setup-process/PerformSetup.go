@@ -1,7 +1,6 @@
 package setup_process
 
 import (
-	"fmt"
 	"log"
 	"log/slog"
 	"strings"
@@ -12,13 +11,9 @@ import (
 	"github.com/pinas/ui/internal"
 	"github.com/pinas/ui/internal/rest-client"
 	"github.com/pinas/ui/internal/structs"
-	"github.com/starfederation/datastar-go/datastar"
 )
 
 func PerformSetup(c *echo.Context, wizardInfo *structs.WizardInfo) {
-
-	//Start the SSE monitor. This to detect reboots and reconnect when the server comes back up
-	//startSSEMonitor(c)
 
 	//Load the current setup options
 	options, err := structs.GetSetupOptions()
@@ -279,16 +274,4 @@ func installDns() error {
 func installCa() error {
 
 	return nil
-}
-
-func startSSEMonitor(c *echo.Context) {
-
-	slog.Info("Starting the server monitor")
-	// NewSSE sets the SSE headers and returns a generator bound to this request.
-	sse := datastar.NewSSE(c.Response(), c.Request())
-	err := sse.ExecuteScript(fmt.Sprintf(`startServerMonitor()`))
-	if err != nil {
-		log.Println(err)
-	}
-
 }

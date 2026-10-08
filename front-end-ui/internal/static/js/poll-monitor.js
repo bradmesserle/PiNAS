@@ -41,6 +41,8 @@ class PollMonitor {
         this.maxRetries    = options.maxRetries    ?? Infinity;
         this.cursorParam   = options.cursorParam   ?? "cursor";
         this.fetchOptions  = options.fetchOptions  ?? {};       // extra fetch options, e.g. headers
+        this.reloadOnReconnect = options.reloadOnReconnect ?? true; // browser: refresh page after an outage
+        this.reloadDelay       = options.reloadDelay       ?? 500;  // ms to wait before refreshing
 
         this.onEvent   = options.onEvent   ?? (() => {});
         this.onOnline  = options.onOnline  ?? (() => {});
@@ -50,6 +52,7 @@ class PollMonitor {
 
         this.cursor = options.cursor ?? null;
         this.isOnline = false;
+        this.wasDisconnected = false; // true once we've lost a connection we previously had
         this.retries = 0;
         this.running = false;
         this.timer = null;
@@ -148,15 +151,23 @@ class PollMonitor {
 
     _markOnline() {
         this.retries = 0;
-        if (!this.isOnline) {
-            this.isOnline = true;
-            this.onOnline();
+        if (this.isOnline) return;
+
+        this.isOnline = true;
+        this.onOnline();
+
+        // Server is back after an outage: refresh the page so it picks up fresh state.
+        // (Skipped on the very first connection so the page doesn't reload in a loop.)
+        if (this.wasDisconnected && this.reloadOnReconnect && typeof location !== "undefined") {
+            this.stop();
+            setTimeout(() => location.reload(), this.reloadDelay);
         }
     }
 
     _handleDown(reason) {
         if (this.isOnline) {
             this.isOnline = false;
+            this.wasDisconnected = true;
             this.onOffline(reason);
         }
 
@@ -183,10 +194,6 @@ class PollMonitor {
         this.controller = null;
         this._poll();
     }
-}
-
-if (typeof module !== "undefined" && module.exports) {
-    module.exports = PollMonitor;
 }
 
 /* ---------------- Example ---------------- */
