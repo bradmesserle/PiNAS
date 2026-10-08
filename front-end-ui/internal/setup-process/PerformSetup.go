@@ -18,7 +18,7 @@ import (
 func PerformSetup(c *echo.Context, wizardInfo *structs.WizardInfo) {
 
 	//Start the SSE monitor. This to detect reboots and reconnect when the server comes back up
-	startSSEMonitor(c)
+	//startSSEMonitor(c)
 
 	//Load the current setup options
 	options, err := structs.GetSetupOptions()

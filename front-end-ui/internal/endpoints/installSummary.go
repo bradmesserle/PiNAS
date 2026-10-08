@@ -16,7 +16,7 @@ func InstallSummary(c *echo.Context, wizardInfo *structs.WizardInfo) error {
 	var cmp templ.Component = setup.InstallSummaryPage(*wizardInfo)
 	c.Response().Header().Set(echo.HeaderContentType, echo.MIMETextHTMLCharsetUTF8)
 	err := cmp.Render(c.Request().Context(), c.Response())
-	startSSEMonitor(c)
+	//startSSEMonitor(c)
 	return err
 }
 

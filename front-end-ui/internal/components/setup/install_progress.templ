@@ -49,6 +49,11 @@ templ InstallProgressPage() {
 
     <script>
 
+        document.addEventListener("DOMContentLoaded", (event) => {
+            console.log("DOM fully loaded and parsed");
+            startServerMonitor();
+        });
+
         function startServerMonitor() {
 
             const monitor = new PollMonitor("/health", {
