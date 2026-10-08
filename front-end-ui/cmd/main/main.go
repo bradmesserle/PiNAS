@@ -50,6 +50,8 @@ func setupWebServer() {
 
 	app.GET("/setup", func(c *echo.Context) error { return endpoints.Setup(c, wizardInfo, status) })
 
+	app.GET("/health", func(c *echo.Context) error { return endpoints.HealthCheck(c) })
+
 	//Console output SSE
 	app.GET("/consoleStream", func(c *echo.Context) error { return endpoints.ConsoleLogStreamHandler(c) })
 

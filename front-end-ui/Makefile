@@ -28,5 +28,5 @@ package-deb:
 	dpkg-deb --build --root-owner-group /tmp/PINAS-UI-Services-${version}_arm64
 
 
-deploy:
+redeploy:
 	./unix-scripts/redeploy.sh

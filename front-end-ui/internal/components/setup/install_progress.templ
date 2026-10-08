@@ -52,7 +52,7 @@ templ InstallProgressPage() {
         function startServerMonitor() {
 
             const sse = new SSEMonitor("/consoleStream", {
-              //healthUrl: "/health",              // optional
+              healthUrl: "/health",              // optional
               heartbeatTimeout: 2000,           // server should send something at least every ~30s
               events: {
                 message: (e) => console.log("message:", e.data),
