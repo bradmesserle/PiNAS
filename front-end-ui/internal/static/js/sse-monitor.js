@@ -1,71 +1,63 @@
 /**
- * SSEMonitor — keeps a Server-Sent Events (EventSource) connection alive.
+ * PollMonitor — receives updates from a server and stays connected using
+ * plain HTTP requests only (fetch). No Server-Sent Events, no WebSockets.
  *
- * The browser's EventSource retries on its own for simple network blips, but it
- * gives up for good (readyState = CLOSED) on things like a 500, a 404, or a wrong
- * Content-Type, and it can't tell when a connection is "open" but silently dead.
- * This class handles all of that:
- *   - reconnects with exponential backoff + jitter whenever the stream closes or errors
- *   - treats the stream as dead if nothing arrives within `heartbeatTimeout`
- *   - optionally pings a health URL first so it doesn't hammer a server that's down
- *   - resumes from the last event ID (sent as a query param, since a new
- *     EventSource can't set the Last-Event-ID header itself)
- *   - reconnects immediately when the browser comes back online or the tab regains focus
+ * Two modes:
+ *   "long"  (default) — long polling: the server holds each request open until it
+ *            has new data (or ~30s pass), so updates arrive almost instantly.
+ *   "short" — asks the server every `pollInterval` ms whether anything is new.
+ *            Simpler server side, slightly delayed updates.
  *
- * Browser: works as-is.
- * Node: install the `eventsource` package and pass it in as `EventSourceImpl`.
+ * If a request fails or times out, the server is treated as offline and the
+ * monitor retries with exponential backoff + jitter until it's back. It also
+ * retries immediately when the browser comes back online or the tab regains focus.
+ *
+ * Works in the browser and in Node 18+ (built-in fetch + AbortController).
+ *
+ * Expected server response (JSON, status 200):
+ *   { "cursor": "123", "events": [ { "id": "123", "type": "update", "data": {...} } ] }
+ * A 204 No Content means "nothing new" and is fine too.
+ * The monitor sends the last cursor back as ?cursor=123 so nothing is missed.
  *
  * Usage:
- *   const sse = new SSEMonitor("https://your-server.com/events", {
- *     events: {
- *       message: (e) => console.log("message:", e.data),
- *       update:  (e) => console.log("update:", JSON.parse(e.data)),
- *     },
- *     onOpen:    ()         => console.log("✅ Connected"),
+ *   const monitor = new PollMonitor("https://your-server.com/updates", {
+ *     onEvent:   (evt)      => console.log(evt.type, evt.data),
+ *     onOnline:  ()         => console.log("✅ Connected"),
  *     onOffline: (reason)   => console.warn("❌ Disconnected:", reason),
  *     onRetry:   (n, delay) => console.log(`Retry #${n} in ${delay} ms`),
  *   });
- *   sse.start();
- *   // later: sse.stop();
+ *   monitor.start();
+ *   // later: monitor.stop();
  */
-class SSEMonitor {
+class PollMonitor {
     constructor(url, options = {}) {
         this.url = url;
-        this.events = options.events ?? {};              // { eventName: handler(event) }
-        this.withCredentials = options.withCredentials ?? false;
+        this.mode          = options.mode          ?? "long";  // "long" | "short"
+        this.pollInterval  = options.pollInterval  ?? 5_000;   // short mode: ms between polls
+        this.requestTimeout =
+            options.requestTimeout ?? (this.mode === "long" ? 40_000 : 5_000); // long: > server hold time
+        this.minRetryDelay = options.minRetryDelay ?? 1_000;
+        this.maxRetryDelay = options.maxRetryDelay ?? 60_000;
+        this.maxRetries    = options.maxRetries    ?? Infinity;
+        this.cursorParam   = options.cursorParam   ?? "cursor";
+        this.fetchOptions  = options.fetchOptions  ?? {};       // extra fetch options, e.g. headers
 
-        this.healthUrl        = options.healthUrl ?? null; // optional: ping this before reconnecting
-        this.healthTimeout    = options.healthTimeout    ?? 5_000;
-        this.heartbeatTimeout = options.heartbeatTimeout ?? 45_000; // no data for this long = dead
-        this.minRetryDelay    = options.minRetryDelay    ?? 1_000;
-        this.maxRetryDelay    = options.maxRetryDelay    ?? 60_000;
-        this.maxRetries       = options.maxRetries       ?? Infinity;
-        this.lastEventIdParam = options.lastEventIdParam ?? "lastEventId";
-
-        this.onOpen    = options.onOpen    ?? (() => {});
+        this.onEvent   = options.onEvent   ?? (() => {});
+        this.onOnline  = options.onOnline  ?? (() => {});
         this.onOffline = options.onOffline ?? (() => {});
         this.onRetry   = options.onRetry   ?? (() => {});
         this.onGiveUp  = options.onGiveUp  ?? (() => {});
 
-        this.EventSourceImpl =
-            options.EventSourceImpl ?? (typeof EventSource !== "undefined" ? EventSource : null);
-        if (!this.EventSourceImpl) {
-            throw new Error("No EventSource available. In Node, pass `EventSourceImpl` (npm i eventsource).");
-        }
-
-        this.source = null;
-        this.lastEventId = null;
+        this.cursor = options.cursor ?? null;
         this.isOnline = false;
         this.retries = 0;
         this.running = false;
-        this.retryTimer = null;
-        this.heartbeatTimer = null;
+        this.timer = null;
+        this.controller = null;
 
-        this._onBrowserOnline = () => this._reconnectNow("network back online");
+        this._onBrowserOnline = () => this._retryNow("network back online");
         this._onVisible = () => {
-            if (document.visibilityState === "visible" && !this.isOnline) {
-                this._reconnectNow("tab visible again");
-            }
+            if (document.visibilityState === "visible") this._retryNow("tab visible again");
         };
     }
 
@@ -76,130 +68,93 @@ class SSEMonitor {
             window.addEventListener("online", this._onBrowserOnline);
             document.addEventListener("visibilitychange", this._onVisible);
         }
-        this._connect();
+        this._poll();
     }
 
     stop() {
         this.running = false;
-        clearTimeout(this.retryTimer);
-        this._teardown();
+        clearTimeout(this.timer);
+        this.controller?.abort();
         if (typeof window !== "undefined") {
             window.removeEventListener("online", this._onBrowserOnline);
             document.removeEventListener("visibilitychange", this._onVisible);
         }
     }
 
-    /* ---------------- connection ---------------- */
+    /* ---------------- polling loop ---------------- */
 
-    async _connect() {
+    async _poll() {
         if (!this.running) return;
-        this._teardown();
+        clearTimeout(this.timer);
 
-        // Optional: confirm the server is up before opening a stream.
-        if (this.healthUrl) {
-            try {
-                await this._ping();
-            } catch (err) {
-                return this._handleDown(`health check failed: ${err.message}`);
-            }
-            if (!this.running) return;
-        }
+        const controller = new AbortController();
+        this.controller = controller;
+        const timeout = setTimeout(() => controller.abort("timeout"), this.requestTimeout);
 
-        const es = new this.EventSourceImpl(this._buildUrl(), {
-            withCredentials: this.withCredentials,
-        });
-        this.source = es;
-
-        es.onopen = () => {
-            if (es !== this.source) return;
-            this.isOnline = true;
-            this.retries = 0;
-            this._resetHeartbeat();
-            this.onOpen();
-        };
-
-        es.onerror = () => {
-            if (es !== this.source) return;
-            // Take over reconnection ourselves so backoff and resume logic always apply.
-            const reason = es.readyState === 2 ? "connection closed by server" : "connection error";
-            this._handleDown(reason);
-        };
-
-        // Default unnamed events.
-        es.onmessage = (e) => {
-            this._track(e);
-            this.events.message?.(e);
-        };
-
-        // Named events (event: update, event: ping, ...).
-        for (const [name, handler] of Object.entries(this.events)) {
-            if (name === "message") continue;
-            es.addEventListener(name, (e) => {
-                this._track(e);
-                handler(e);
+        try {
+            const res = await fetch(this._buildUrl(), {
+                cache: "no-store",
+                ...this.fetchOptions,
+                signal: controller.signal,
             });
-        }
+            if (res.status !== 200 && res.status !== 204) throw new Error(`HTTP ${res.status}`);
 
-        // Any event named "ping" or "heartbeat" also keeps the connection alive,
-        // even if you didn't register a handler for it.
-        for (const name of ["ping", "heartbeat"]) {
-            if (!this.events[name]) es.addEventListener(name, (e) => this._track(e));
+            const body = res.status === 204 ? null : await res.json();
+            if (controller !== this.controller || !this.running) return; // superseded or stopped
+
+            this._markOnline();
+            this._handleBody(body);
+
+            // Long polling: ask again right away. Short polling: wait first.
+            this._schedule(this.mode === "long" ? 0 : this.pollInterval);
+        } catch (err) {
+            if (controller !== this.controller || !this.running) return;
+            const reason =
+                controller.signal.aborted ? `no response after ${this.requestTimeout} ms` : err.message;
+            this._handleDown(reason);
+        } finally {
+            clearTimeout(timeout);
         }
     }
 
-    _track(e) {
-        if (e.lastEventId) this.lastEventId = e.lastEventId;
-        this._resetHeartbeat();
+    _handleBody(body) {
+        if (!body) return;
+        for (const evt of body.events ?? []) {
+            try {
+                this.onEvent(evt);
+            } catch (err) {
+                console.error("onEvent handler threw:", err);
+            }
+        }
+        const last = body.events?.at(-1);
+        this.cursor = body.cursor ?? last?.id ?? this.cursor;
     }
 
     _buildUrl() {
-        if (!this.lastEventId) return this.url;
+        if (this.cursor == null) return this.url;
         const base = typeof location !== "undefined" ? location.href : undefined;
         const u = new URL(this.url, base);
-        u.searchParams.set(this.lastEventIdParam, this.lastEventId);
+        u.searchParams.set(this.cursorParam, this.cursor);
         return u.toString();
     }
 
-    _teardown() {
-        clearTimeout(this.heartbeatTimer);
-        if (this.source) {
-            this.source.onopen = this.source.onerror = this.source.onmessage = null;
-            this.source.close();
-            this.source = null;
+    _schedule(ms) {
+        if (!this.running) return;
+        clearTimeout(this.timer);
+        this.timer = setTimeout(() => this._poll(), ms);
+    }
+
+    /* ---------------- online / offline ---------------- */
+
+    _markOnline() {
+        this.retries = 0;
+        if (!this.isOnline) {
+            this.isOnline = true;
+            this.onOnline();
         }
     }
-
-    /* ---------------- liveness ---------------- */
-
-    _resetHeartbeat() {
-        clearTimeout(this.heartbeatTimer);
-        if (!this.heartbeatTimeout) return;
-        this.heartbeatTimer = setTimeout(
-            () => this._handleDown(`no data for ${this.heartbeatTimeout} ms`),
-            this.heartbeatTimeout
-        );
-    }
-
-    async _ping() {
-        const controller = new AbortController();
-        const t = setTimeout(() => controller.abort(), this.healthTimeout);
-        try {
-            const res = await fetch(this.healthUrl, { cache: "no-store", signal: controller.signal });
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        } catch (err) {
-            if (err.name === "AbortError") throw new Error(`timed out after ${this.healthTimeout} ms`);
-            throw err;
-        } finally {
-            clearTimeout(t);
-        }
-    }
-
-    /* ---------------- reconnect ---------------- */
 
     _handleDown(reason) {
-        this._teardown();
-        if (!this.running) return;
-
         if (this.isOnline) {
             this.isOnline = false;
             this.onOffline(reason);
@@ -217,38 +172,40 @@ class SSEMonitor {
         this.retries++;
         this.onRetry(this.retries, delay, reason);
 
-        clearTimeout(this.retryTimer);
-        this.retryTimer = setTimeout(() => this._connect(), delay);
+        this._schedule(delay);
     }
 
-    _reconnectNow(reason) {
+    _retryNow(reason) {
         if (!this.running || this.isOnline) return;
-        clearTimeout(this.retryTimer);
-        this.retries = 0;
         console.info(`Reconnecting now (${reason})`);
-        this._connect();
+        this.retries = 0;
+        this.controller?.abort();
+        this.controller = null;
+        this._poll();
     }
 }
 
+if (typeof module !== "undefined" && module.exports) {
+    module.exports = PollMonitor;
+}
 
 /* ---------------- Example ---------------- */
-// Browser:
-// const sse = new SSEMonitor("/events", {
-//   healthUrl: "/health",              // optional
-//   heartbeatTimeout: 45000,           // server should send something at least every ~30s
-//   events: {
-//     message: (e) => console.log("message:", e.data),
-//     update:  (e) => console.log("update:", JSON.parse(e.data)),
-//   },
-//   onOpen:    () => console.log("✅ Connected"),
+// const monitor = new PollMonitor("/updates", {
+//   mode: "long",                       // or "short" with pollInterval: 5000
+//   onEvent:   (evt) => console.log(evt.type, evt.data),
+//   onOnline:  () => console.log("✅ Connected"),
 //   onOffline: (reason) => console.warn("❌ Disconnected:", reason),
 //   onRetry:   (n, delay, reason) => console.log(`Retry #${n} in ${delay} ms (${reason})`),
 // });
-// sse.start();
+// monitor.start();
 //
-// Node:
-// const { EventSource } = require("eventsource");
-// const sse = new SSEMonitor("https://your-server.com/events", { EventSourceImpl: EventSource, ... });
-//
-// Server side, send a keep-alive so the heartbeat check has something to see, e.g. every 30s:
-//   res.write("event: ping\ndata: {}\n\n");
+// Minimal Express long-poll endpoint for reference:
+//   app.get("/updates", (req, res) => {
+//     const since = req.query.cursor;
+//     const pending = getEventsAfter(since);           // your own storage
+//     if (pending.length) return res.json({ cursor: pending.at(-1).id, events: pending });
+//     const done = (events) => res.json({ cursor: events.at(-1).id, events });
+//     waiters.add(done);                              // call done(newEvents) when data arrives
+//     req.on("close", () => waiters.delete(done));
+//     setTimeout(() => { waiters.delete(done); if (!res.headersSent) res.status(204).end(); }, 30000);
+//   });

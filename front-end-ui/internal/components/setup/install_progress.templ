@@ -51,20 +51,14 @@ templ InstallProgressPage() {
 
         function startServerMonitor() {
 
-            const sse = new SSEMonitor("/consoleStream", {
-              healthUrl: "/health",              // optional
-              heartbeatTimeout: 2000,           // server should send something at least every ~30s
-              events: {
-                message: (e) => console.log("message:", e.data),
-                update:  (e) => console.log("update:", JSON.parse(e.data)),
-              },
-              onOpen:    () => console.log("✅ Connected"),
-              onOffline: (reason) => console.warn("❌ Disconnected:", reason),
-              onRetry:   (n, delay, reason) => console.log(`Retry #${n} in ${delay} ms (${reason})`),
+            const monitor = new PollMonitor("/health", {
+                mode: "short",                       // or "short" with pollInterval: 5000
+                onEvent:   (evt) => console.log(evt.type, evt.data),
+                onOnline:  () => console.log("✅ Connected"),
+                onOffline: (reason) => console.warn("❌ Disconnected:", reason),
+                onRetry:   (n, delay, reason) => console.log(`Retry #${n} in ${delay} ms (${reason})`),
             });
-            sse.start();
-            console.log("Server monitor started");
-
+            monitor.start();
         }
 
         function updateText(newValue) {
