@@ -26,11 +26,11 @@ templ Home (data structs.WizardInfo, status structs.SetupInfo) {
        <body>
 
 
-           <main id="app"  data-init="'startServerMonitor()'">
+           <main id="app">
 
                @setup.SetupWizardHeader()
 
-               <div id="setup-wizard">
+               <div id="setup-wizard" data-init="'startServerMonitor()'">
 
                    if status.IsRunning {
                       @setup.InstallProgressPage()
