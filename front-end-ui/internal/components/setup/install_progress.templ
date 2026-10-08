@@ -4,90 +4,88 @@ var helloHandle = templ.NewOnceHandle()
 
 templ InstallProgressPage() {
 
+<script>
+
+    document.addEventListener("datastar-patch-elements", (event) => {
+        console.log("DOM fully loaded and parsed");
+        startServerMonitor();
+    });
+
+    function startServerMonitor() {
+
+        const monitor = new PollMonitor("/health", {
+            mode: "short",                       // or "short" with pollInterval: 5000
+            onEvent:   (evt) => console.log(evt.type, evt.data),
+            onOnline:  () => console.log("✅ Connected"),
+            onOffline: (reason) => console.warn("❌ Disconnected:", reason),
+            onRetry:   (n, delay, reason) => console.log(`Retry #${n} in ${delay} ms (${reason})`),
+        });
+        monitor.start();
+    }
+
+    function updateText(newValue) {
+        let targetDiv = document.getElementById('consoleStream');
+        let breakElement = document.createElement('div');
+        breakElement.classList.add('break');
+        let newSpan = document.createElement('span');
+        newSpan.textContent = newValue;
+        targetDiv.append(newSpan);
+        targetDiv.append(breakElement);
+        targetDiv.scrollTop = targetDiv.scrollHeight;
+
+        targetDiv = null;
+        breakElement = null;
+        newSpan = null;
+        newValue = null;
+    }
+
+</script>
+
+<style>
+
+    /* Styles the div container to look exactly like a textarea */
+    .fake-textarea {
+        display: flex;
+        flex-wrap: wrap;
+        width: 950px;
+        height: 300px;
+        border: 1px solid #ccc;
+        padding: 10px;
+        font-family: sans-serif;
+        font-size: 13px;
+        line-height: 1.5;
+        overflow-y: auto;
+    }
+
+    .break {
+        flex-basis: 100%; /* Forces the element to take up the whole row */
+        height: 0;        /* Keeps it completely invisible */
+    }
+
+    .line-red {
+        background-color: #ffcccc;
+        display: block; /* Ensures the background spans the full width */
+    }
+
+    .line-green {
+        background-color: #ccffcc;
+        display: block;
+    }
+
+    .line-yellow {
+        background-color: #fffecb;
+        display: block;
+    }
+
+</style>
+
+
 <div id="setup-wizard">
 
     @helloHandle.Once() {
 
-    <style>
-
-        /* Styles the div container to look exactly like a textarea */
-        .fake-textarea {
-            display: flex;
-            flex-wrap: wrap;
-            width: 950px;
-            height: 300px;
-            border: 1px solid #ccc;
-            padding: 10px;
-            font-family: sans-serif;
-            font-size: 13px;
-            line-height: 1.5;
-            overflow-y: auto;
-        }
-
-        .break {
-            flex-basis: 100%; /* Forces the element to take up the whole row */
-            height: 0;        /* Keeps it completely invisible */
-        }
-
-        .line-red {
-            background-color: #ffcccc;
-            display: block; /* Ensures the background spans the full width */
-        }
-
-        .line-green {
-            background-color: #ccffcc;
-            display: block;
-        }
-
-        .line-yellow {
-            background-color: #fffecb;
-            display: block;
-        }
-
-    </style>
-
-
-    <script>
-
-        document.addEventListener("datastar-patch-elements", (event) => {
-            console.log("DOM fully loaded and parsed");
-            startServerMonitor();
-        });
-
-        function startServerMonitor() {
-
-            const monitor = new PollMonitor("/health", {
-                mode: "short",                       // or "short" with pollInterval: 5000
-                onEvent:   (evt) => console.log(evt.type, evt.data),
-                onOnline:  () => console.log("✅ Connected"),
-                onOffline: (reason) => console.warn("❌ Disconnected:", reason),
-                onRetry:   (n, delay, reason) => console.log(`Retry #${n} in ${delay} ms (${reason})`),
-            });
-            monitor.start();
-        }
-
-        function updateText(newValue) {
-            let targetDiv = document.getElementById('consoleStream');
-            let breakElement = document.createElement('div');
-            breakElement.classList.add('break');
-            let newSpan = document.createElement('span');
-            newSpan.textContent = newValue;
-            targetDiv.append(newSpan);
-            targetDiv.append(breakElement);
-            targetDiv.scrollTop = targetDiv.scrollHeight;
-
-            targetDiv = null;
-            breakElement = null;
-            newSpan = null;
-            newValue = null;
-        }
-
-    </script>
-    }
 
     <div data-init="startMonitor()">
-
-
 
         <div data-init="@get('/consoleStream',{openWhenHidden: true})"  >
             <p>Install Progress</p>
