@@ -125,10 +125,6 @@ func PerformSetup(wizardInfo *structs.WizardInfo) {
 				log.Println(err.Error())
 			}
 		}
-
-		//Set to done
-		checkpoint = structs.PartDone
-
 	}
 
 	//Check if we need to install DNS
@@ -147,17 +143,17 @@ func PerformSetup(wizardInfo *structs.WizardInfo) {
 		}
 	}
 
-	//Save Checkpoint - Check to see if all steps are done
-	if checkpoint == structs.PartDone {
-
-		//Send completed message to the front end.
-		internal.EventBus.Publish("consoleLog", strings.TrimSpace("Setup Completed Successfully"))
-
-		errSaveCheckpoint := SaveStatus(structs.Completed)
-		if errSaveCheckpoint != nil {
-			log.Println(errSaveCheckpoint.Error())
-		}
-	}
+	////Save Checkpoint - Check to see if all steps are done
+	//if checkpoint == structs.PartDone {
+	//
+	//	//Send completed message to the front end.
+	//	internal.EventBus.Publish("consoleLog", strings.TrimSpace("Setup Completed Successfully"))
+	//
+	//	errSaveCheckpoint := SaveStatus(structs.Completed)
+	//	if errSaveCheckpoint != nil {
+	//		log.Println(errSaveCheckpoint.Error())
+	//	}
+	//}
 
 }
 
