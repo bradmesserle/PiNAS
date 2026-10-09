@@ -1,6 +1,7 @@
 package components
 
 import "github.com/pinas/ui/internal/components/setup"
+import "github.com/pinas/ui/internal/components/adminInterface"
 import "github.com/pinas/ui/internal/structs"
 
 templ Home (data structs.WizardInfo, status structs.SetupInfo) {
@@ -28,25 +29,28 @@ templ Home (data structs.WizardInfo, status structs.SetupInfo) {
 
            <main id="app">
 
-               @setup.SetupWizardHeader()
+               //Got to the login page if the installation is complete
+               if status.IsComplete {
+                    @adminInterface.LoginPage()
+               } else {
 
-               <div id="setup-wizard" data-init="startServerMonitor()">
+                   @setup.SetupWizardHeader()
 
-                   if status.IsRunning {
-                      @setup.InstallProgressPage()
-                   } else {
+                   <div id="setup-wizard" data-init="startServerMonitor()">
 
-                        <div id="welcome-page" >
-                            <!--- For now just go to the setup pi flow -->
-                            @WelcomePage()
-                        </div>
+                       if status.IsRunning {
+                          @setup.InstallProgressPage()
+                       } else {
 
-                        @setup.WizardButtons(data)
-                   }
+                            <div id="welcome-page" >
+                                <!--- For now just go to the setup pi flow -->
+                                @WelcomePage()
+                            </div>
 
-
-
-               </div>
+                            @setup.WizardButtons(data)
+                       }
+                   </div>
+               }
 
            </main>
 

@@ -18,7 +18,8 @@ type NasOptions struct {
 }
 
 type SetupInfo struct {
-	IsRunning bool
+	IsRunning  bool
+	IsComplete bool
 }
 
 // SaveSetupOptions saves the setup options and returns an error if it fails.

@@ -22,7 +22,12 @@ func Home(c *echo.Context, wizardInfo *structs.WizardInfo, status *structs.Setup
 			checkpoint = structs.FreshInstall
 		}
 
-		if checkpoint == structs.FreshInstall {
+		//Check to see if the setup process is complete
+		if checkpoint == structs.Completed {
+			status.IsComplete = true
+		}
+
+		if checkpoint == structs.FreshInstall || checkpoint == structs.Completed {
 			status.IsRunning = false
 		} else {
 			status.IsRunning = true
