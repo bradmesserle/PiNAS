@@ -120,9 +120,7 @@ func PerformSetup(c *echo.Context, wizardInfo *structs.WizardInfo) {
 			if err != nil {
 				log.Println(err.Error())
 			}
-
 			return
-
 		}
 
 		if checkpoint == structs.NvmeFaPart1 {
@@ -149,19 +147,15 @@ func PerformSetup(c *echo.Context, wizardInfo *structs.WizardInfo) {
 		}
 	}
 
-	////Save Checkpoint - Check to see if all steps are done
-	//if checkpoint == structs.PartDone {
-	//
-
 	log.Println("Setup Completed Successfully")
+
 	//Send completed message to the front end.
 	internal.EventBus.Publish("consoleLog", strings.TrimSpace("Setup Completed Successfully"))
-	//
-	//	errSaveCheckpoint := SaveStatus(structs.Completed)
-	//	if errSaveCheckpoint != nil {
-	//		log.Println(errSaveCheckpoint.Error())
-	//	}
-	//}
+
+	errSaveCheckpoint := SaveStatus(structs.Completed)
+	if errSaveCheckpoint != nil {
+		log.Println(errSaveCheckpoint.Error())
+	}
 
 }
 
