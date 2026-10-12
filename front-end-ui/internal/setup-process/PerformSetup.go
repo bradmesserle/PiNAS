@@ -260,8 +260,16 @@ func installDns() error {
 
 	log.Println("Installing DNS")
 
-	return nil
+	errDns := rest_client.InstallDns()
+	if errDns != nil {
+		log.Println(errDns.Error())
+		return errDns
+	}
 
+	log.Println("DNS Install Completed Successfully")
+	internal.EventBus.Publish("consoleLog", strings.TrimSpace("DNS Install Completed Successfully"))
+
+	return nil
 }
 
 // installCa installs a Certificate Authority (CA) on the system and returns an error if the installation fails.

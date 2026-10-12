@@ -33,6 +33,7 @@ func InstallZfs() error {
 		//log.Fatalf("Failed to connect: %v", err)
 	}
 
+	//Check to see if we have a response.
 	if resp == nil {
 		return nil
 	}
@@ -48,7 +49,6 @@ func InstallZfs() error {
 		//log.("Unexpected status code: %d", resp.StatusCode)
 	}
 
-	// 5. Scan the body line by line
 	scanner := bufio.NewScanner(resp.Body)
 	var currentData strings.Builder
 

@@ -14,12 +14,13 @@ import (
 	"github.com/pinas/ui/internal"
 )
 
-func AptUpdate() error {
+// ExecuteGetSseCall executes a GET SSE call to the specified URL.
+func ExecuteGetSseCall(url string, timeout time.Duration) error {
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
-	req, err := http.NewRequestWithContext(ctx, "GET", "http://localhost:9090/aptUpdate", nil)
+	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
 	if err != nil {
 		log.Printf("Failed to create request: %v", err)
 	}
@@ -31,25 +32,31 @@ func AptUpdate() error {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		//log.Fatalf("Failed to connect: %v", err)
+		log.Printf("Failed to connect: %v", err)
 	}
 
+	//Check to see if we have a response.
 	if resp == nil {
-		log.Println("Response body is nil")
 		return nil
 	}
 
+	//Clean up resources
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
 		if err != nil {
 			//log.Fatalf("Failed to close body: %v", err)
-			log.Printf("Failed to close body: %v", err)
 		}
 	}(resp.Body)
 
 	if resp.StatusCode != http.StatusOK {
-		//log.Fatalf("Unexpected status code: %d", resp.StatusCode)
+		//log.("Unexpected status code: %d", resp.StatusCode)
 	}
+
+	return processResponseStreamToEventBus(resp)
+}
+
+// ProcessResponseStreamToEventBus reads the response body line by line and publishes console logs to the event bus.
+func processResponseStreamToEventBus(resp *http.Response) error {
 
 	scanner := bufio.NewScanner(resp.Body)
 	var currentData strings.Builder
