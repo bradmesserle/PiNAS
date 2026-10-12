@@ -5,6 +5,9 @@ version=0.0.1
 
 .REST_API: build
 
+all: build package-deb
+
+
 build:
 	@mkdir -p ${build_dir}
 	GOARCH=arm64 GOOS=linux go build -o ${build_dir}/${binary_name}-arm64 ${rest_package_path}
@@ -21,3 +24,6 @@ package-deb:
 	chmod +x  /tmp/PINAS-REST-Services-${version}_arm64/DEBIAN/postinst
 	chmod +x  /tmp/PINAS-REST-Services-${version}_arm64/DEBIAN/postrm
 	dpkg-deb --build --root-owner-group /tmp/PINAS-REST-Services-${version}_arm64
+
+redeploy:
+	./unix-scripts/redeploy.sh
