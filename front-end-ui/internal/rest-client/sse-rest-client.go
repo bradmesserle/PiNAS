@@ -2,6 +2,7 @@ package rest_client
 
 import (
 	"bufio"
+	"bytes"
 	"context"
 	"fmt"
 	"io"
@@ -21,6 +22,47 @@ func ExecuteGetSseCall(url string, timeout time.Duration) error {
 	defer cancel()
 
 	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
+	if err != nil {
+		log.Printf("Failed to create request: %v", err)
+	}
+
+	req.Header.Set("Accept", "text/event-stream")
+	req.Header.Set("Cache-Control", "no-cache")
+	req.Header.Set("Connection", "keep-alive")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Printf("Failed to connect: %v", err)
+	}
+
+	//Check to see if we have a response.
+	if resp == nil {
+		return nil
+	}
+
+	//Clean up resources
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			//log.Fatalf("Failed to close body: %v", err)
+		}
+	}(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		//log.("Unexpected status code: %d", resp.StatusCode)
+	}
+
+	return processResponseStreamToEventBus(resp)
+}
+
+// ExecutePostSseCall executes a GET SSE call to the specified URL.
+func ExecutePostSseCall(url string, jsonData []byte, timeout time.Duration) error {
+
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	req, err := http.NewRequestWithContext(ctx, "POST", url, bytes.NewBuffer(jsonData))
 	if err != nil {
 		log.Printf("Failed to create request: %v", err)
 	}
