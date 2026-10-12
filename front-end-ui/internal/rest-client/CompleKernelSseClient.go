@@ -5,5 +5,5 @@ import (
 )
 
 func CompileKernel() error {
-	return ExecuteGetSseCall("http://localhost:9090/compileKernel", 5*time.Hour)
+	return ExecuteGetSseCall("http://localhost:9090/compileKernel", 2*time.Hour)
 }

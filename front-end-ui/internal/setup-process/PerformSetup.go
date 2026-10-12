@@ -104,10 +104,16 @@ func PerformSetup(c *echo.Context, wizardInfo *structs.WizardInfo) {
 		slog.Info("Installing part 2")
 
 		//Create ZFS Pool
-		createZfsPool()
+		zfsPoolError := createZfsPool()
+		if zfsPoolError != nil {
+			return
+		}
 
 		//Create Work Area Dataset
-		createWorkAreaDataset()
+		err := createWorkAreaDataset()
+		if err != nil {
+			return
+		}
 
 		checkpoint = structs.ZfsCreated
 	}
@@ -160,7 +166,9 @@ func PerformSetup(c *echo.Context, wizardInfo *structs.WizardInfo) {
 }
 
 // createZfsPool initializes and creates a ZFS pool using drive telemetry fetched via REST API calls.
-func createZfsPool() {
+func createZfsPool() error {
+
+	log.Println("Creating ZFS Pool")
 
 	poolInfo := new(common_structs.ZfsPool)
 	poolInfo.WifeFilesystem = true
@@ -179,12 +187,18 @@ func createZfsPool() {
 	errCreatePool := rest_client.CreateZfsPool(*poolInfo)
 	if errCreatePool != nil {
 		log.Println(errCreatePool.Error())
+		return errCreatePool
 	}
 
+	log.Println("Created ZFS Pools Successfully")
+
+	return nil
 }
 
 // createWorkAreaDataset sets up a working area ZFS dataset with specified options and synchronizes with a wait group.
-func createWorkAreaDataset() {
+func createWorkAreaDataset() error {
+
+	log.Println("Creating work area dataset")
 
 	dataset := new(common_structs.ZfsDataset)
 	dataset.DatasetName = "work-area"
@@ -193,8 +207,12 @@ func createWorkAreaDataset() {
 	err := rest_client.CreateZfsDataset(*dataset)
 	if err != nil {
 		log.Println(err.Error())
+		return err
 	}
 
+	log.Println("Created Work Area Successfully")
+
+	return nil
 }
 
 // installNvmeFa checks if nvme-fa is enabled and compiles the kernel and enables it if so.
