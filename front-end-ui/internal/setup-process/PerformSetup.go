@@ -48,53 +48,12 @@ func PerformSetup(c *echo.Context, wizardInfo *structs.WizardInfo) {
 	//Check to see if zfs is up and running and the pool is online
 	//If zfs pools are not online, we need to install them, and we are at the start of the installation process
 	if zfsStatus.State != common_structs.ZfsStateOnline && checkpoint == structs.FreshInstall {
-
-		//Send Success message to the front end.
-		internal.EventBus.Publish("consoleLog", strings.TrimSpace("Starting the setup process"))
-
-		//Update ca certificates on the box
-		errCaCert := rest_client.UpdateCaCertificates()
-		if errCaCert != nil {
-			log.Println(errCaCert.Error())
+		firstPartError := startSetupProcess(zfsStatus, checkpoint)
+		if firstPartError != nil {
+			slog.Info("error occurred", "checkpoint", firstPartError)
+		} else {
+			return
 		}
-
-		//Update the cmdline file for cgroup memory management.
-		errUpdateCmdLineFile := rest_client.UpdateCmdLineFile()
-		if errUpdateCmdLineFile != nil {
-			log.Println(errUpdateCmdLineFile.Error())
-		}
-
-		//Update repos
-		errUpdate := rest_client.AptUpdate()
-		if errUpdate != nil {
-			log.Println(errUpdate.Error())
-		}
-
-		//Upgrade System
-		errUpgrade := rest_client.AptUpgrade()
-		if errUpgrade != nil {
-			log.Println(errUpgrade.Error())
-		}
-
-		//Install ZFS
-		errInstallZfs := rest_client.InstallZfs()
-		if errInstallZfs != nil {
-			log.Println(errInstallZfs.Error())
-		}
-
-		//Save Checkpoint
-		errSaveCheckpoint := SaveStatus(structs.ZfsInstalled)
-		if errSaveCheckpoint != nil {
-			log.Println(errSaveCheckpoint.Error())
-		}
-
-		//Reboot
-		errReboot := rest_client.Reboot()
-		if errReboot != nil {
-			log.Println(errReboot.Error())
-		}
-
-		return
 	}
 
 	// Continue with installation
@@ -163,6 +122,73 @@ func PerformSetup(c *echo.Context, wizardInfo *structs.WizardInfo) {
 		log.Println(errSaveCheckpoint.Error())
 	}
 
+	//Reboot
+	internal.EventBus.Publish("Restarting System", "")
+
+	rebootErr := rest_client.Reboot()
+	if rebootErr != nil {
+		return
+	}
+}
+
+// startSetupProcess begins the setup process when the ZFS pool is not online and the system is in fresh install state.
+// It performs CA certificate updates, modifies system command line configurations, updates and upgrades the system,
+// installs ZFS, records the installation progress, and triggers a system reboot.
+func startSetupProcess(zfsStatus common_structs.ZfsPool, checkpoint structs.Checkpoint) error {
+
+	//Send Success message to the front end.
+	internal.EventBus.Publish("consoleLog", strings.TrimSpace("Starting the setup process"))
+
+	//Update ca certificates on the box
+	errCaCert := rest_client.UpdateCaCertificates()
+	if errCaCert != nil {
+		log.Println(errCaCert.Error())
+		return errCaCert
+	}
+
+	//Update the cmdline file for cgroup memory management.
+	errUpdateCmdLineFile := rest_client.UpdateCmdLineFile()
+	if errUpdateCmdLineFile != nil {
+		log.Println(errUpdateCmdLineFile.Error())
+		return errUpdateCmdLineFile
+	}
+
+	//Update repos
+	errUpdate := rest_client.AptUpdate()
+	if errUpdate != nil {
+		log.Println(errUpdate.Error())
+		return errUpdate
+	}
+
+	//Upgrade System
+	errUpgrade := rest_client.AptUpgrade()
+	if errUpgrade != nil {
+		log.Println(errUpgrade.Error())
+		return errUpgrade
+	}
+
+	//Install ZFS
+	errInstallZfs := rest_client.InstallZfs()
+	if errInstallZfs != nil {
+		log.Println(errInstallZfs.Error())
+		return errInstallZfs
+	}
+
+	//Save Checkpoint
+	errSaveCheckpoint := SaveStatus(structs.ZfsInstalled)
+	if errSaveCheckpoint != nil {
+		log.Println(errSaveCheckpoint.Error())
+		return errSaveCheckpoint
+	}
+
+	//Reboot
+	errReboot := rest_client.Reboot()
+	if errReboot != nil {
+		log.Println(errReboot.Error())
+		return errReboot
+	}
+
+	return nil
 }
 
 // createZfsPool initializes and creates a ZFS pool using drive telemetry fetched via REST API calls.
