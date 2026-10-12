@@ -55,7 +55,7 @@ func ExecuteGetSseCall(url string, timeout time.Duration) error {
 	return processResponseStreamToEventBus(resp)
 }
 
-// ProcessResponseStreamToEventBus reads the response body line by line and publishes console logs to the event bus.
+// processResponseStreamToEventBus reads the response body line by line and publishes console logs to the event bus.
 func processResponseStreamToEventBus(resp *http.Response) error {
 
 	scanner := bufio.NewScanner(resp.Body)
