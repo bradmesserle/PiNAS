@@ -9,6 +9,7 @@ import (
 
 	"github.com/labstack/echo/v5"
 	"github.com/labstack/echo/v5/middleware"
+	"github.com/pinas/rest-services/internal/endpoint-functions/features"
 	"github.com/pinas/rest-services/internal/endpoint-functions/os-endpoints"
 	"github.com/pinas/rest-services/internal/endpoint-functions/zfs"
 	"github.com/pinas/rest-services/internal/kernel-compile"
@@ -102,6 +103,9 @@ func main() {
 
 	//Update CA certificates
 	e.GET("/updateCaCertificates", os_endpoints.UpdateCaCertificates)
+
+	//Install DNS Feature
+	e.GET("/installDnsFeature", features.InstallBind9Dns)
 
 	// Start the server
 	sc := echo.StartConfig{
