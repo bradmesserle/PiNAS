@@ -180,6 +180,8 @@ func createZfsPool() error {
 		log.Println(err.Error())
 	}
 
+	log.Println("Drive Telemetry -->", drives)
+
 	for _, drive := range drives {
 		poolInfo.NvmeDrives = append(poolInfo.NvmeDrives, drive)
 	}

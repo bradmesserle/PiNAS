@@ -50,7 +50,8 @@ func ExecuteGetSseCall(url string, timeout time.Duration) error {
 	}(resp.Body)
 
 	if resp.StatusCode != http.StatusOK {
-		//log.("Unexpected status code: %d", resp.StatusCode)
+		log.Printf("Unexpected status code: %d\n", resp.StatusCode)
+		return fmt.Errorf("unexpected status code: %d", resp.StatusCode)
 	}
 
 	return processResponseStreamToEventBus(resp)
@@ -91,7 +92,8 @@ func ExecutePostSseCall(url string, jsonData []byte, timeout time.Duration) erro
 	}(resp.Body)
 
 	if resp.StatusCode != http.StatusOK {
-		//log.("Unexpected status code: %d", resp.StatusCode)
+		log.Printf("Unexpected status code: %d\n", resp.StatusCode)
+		return fmt.Errorf("unexpected status code: %d", resp.StatusCode)
 	}
 
 	return processResponseStreamToEventBus(resp)
