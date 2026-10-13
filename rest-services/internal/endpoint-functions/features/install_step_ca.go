@@ -21,7 +21,6 @@ func InstallStepCa(c *echo.Context) error {
 	err := install_features.InstallStepCA(w)
 	if err != nil {
 		slog.Error("Error while installing Step CA", "Value", err)
-		return err
 	}
 
 	return nil

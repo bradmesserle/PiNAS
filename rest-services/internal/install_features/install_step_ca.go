@@ -12,28 +12,19 @@ import (
 func InstallStepCA(w http.ResponseWriter) error {
 
 	// OS Dependencies
-	osDepErr := installOsPackages(w)
-	if osDepErr != nil {
-		return osDepErr
-	}
+	installOsPackages(w)
 
-	//// Add SmallStep Repo to system
-	//repoErr := installSmallStepAptRepo(w)
-	//if repoErr != nil {
-	//	return repoErr
-	//}
+	// Add SmallStep Repo to system
+	installSmallStepAptRepo(w)
 
 	// Install  installSmallStep
-	installErr := installSmallStep(w)
-	if installErr != nil {
-		return installErr
-	}
+	installSmallStep(w)
 
 	return nil
 }
 
 // installOsPackages installs required OS packages and streams progress updates via Server-Sent Events to the client.
-func installOsPackages(w http.ResponseWriter) error {
+func installOsPackages(w http.ResponseWriter) {
 
 	if err := utilities.SendEventData("Installing Small Step CA Dependencies", "consoleOutput", w); err != nil {
 		slog.Error("Error while sending event data", "Value", err)
@@ -43,10 +34,7 @@ func installOsPackages(w http.ResponseWriter) error {
 	err := utilities.ExecCmdSseStdoutText(cmd, w)
 	if err != nil {
 		slog.Error("Error while installing SmallStep CA Dependencies", "Value", err)
-		//return err
 	}
-
-	return nil
 
 }
 
@@ -55,24 +43,30 @@ func installOsPackages(w http.ResponseWriter) error {
 // installSmallStepAptRepo installs the SmallStep APT repository on a Debian-based system and streams updates via HTTP response.
 // It uses utilities to send SSE events and execute commands while providing feedback to the client.
 // Returns an error if the repository setup or related operations fail.
-func installSmallStepAptRepo(w http.ResponseWriter) error {
+func installSmallStepAptRepo(w http.ResponseWriter) {
 
 	if err := utilities.SendEventData("Installing STEP CA APT Repo", "consoleOutput", w); err != nil {
 		slog.Error("Error while sending event data", "Value", err)
 	}
 
-	cmd := exec.Command("curl", "-fsSL", " https://packages.smallstep.com/keys/apt/repo-signing-key.gpg", "-o", "/etc/apt/trusted.gpg.d/smallstep.asc", "&&", `echo deb [signed-by=/etc/apt/trusted.gpg.d/smallstep.asc] https://packages.smallstep.com/stable/debian debs main | tee /etc/apt/sources.list.d/smallstep.list`)
-	err := utilities.ExecCmdSseStdoutText(cmd, w)
-	if err != nil {
-		slog.Error("Error while installing CA APT Repo", "Value", err)
-		//return err
+	// Get signing keys
+	keysCmd := exec.Command("curl", "-fsSL", " https://packages.smallstep.com/keys/apt/repo-signing-key.gpg", "-o", "/etc/apt/trusted.gpg.d/smallstep.asc")
+	keysErr := utilities.ExecCmdSseStdoutText(keysCmd, w)
+	if keysErr != nil {
+		slog.Error("Error while creating repo signing keys", "Value", keysErr)
 	}
 
-	return nil
+	//Create package list
+	listCmd := exec.Command(`echo deb [signed-by=/etc/apt/trusted.gpg.d/smallstep.asc] https://packages.smallstep.com/stable/debian debs main | tee /etc/apt/sources.list.d/smallstep.list`)
+	listErr := utilities.ExecCmdSseStdoutText(listCmd, w)
+	if listErr != nil {
+		slog.Error("Error while installing CA APT Repo", "Value", listErr)
+	}
+
 }
 
 // installSmallStep installs the Step CA by updating package lists and executing the installation, sending progress as SSE.
-func installSmallStep(w http.ResponseWriter) error {
+func installSmallStep(w http.ResponseWriter) {
 
 	if err := utilities.SendEventData("Installing STEP CA", "consoleOutput", w); err != nil {
 		slog.Error("Error while sending event data", "Value", err)
@@ -83,7 +77,6 @@ func installSmallStep(w http.ResponseWriter) error {
 	updateErr := utilities.ExecCmdSseStdoutText(updateCmd, w)
 	if updateErr != nil {
 		slog.Error("Error while Installing Step CA", "Value", updateErr)
-		return nil
 	}
 
 	//Install Packages
@@ -91,8 +84,6 @@ func installSmallStep(w http.ResponseWriter) error {
 	installErr := utilities.ExecCmdSseStdoutText(installCmd, w)
 	if installErr != nil {
 		slog.Error("Error while Installing Step CA", "Value", installErr)
-		return nil
 	}
 
-	return nil
 }
