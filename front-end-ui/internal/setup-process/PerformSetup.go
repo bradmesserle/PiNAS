@@ -50,10 +50,12 @@ func PerformSetup(c *echo.Context, wizardInfo *structs.WizardInfo) {
 	if zfsStatus.State != common_structs.ZfsStateOnline && checkpoint == structs.FreshInstall {
 		firstPartError := startSetupProcess(zfsStatus, checkpoint)
 		if firstPartError != nil {
+			internal.EventBus.Publish("error occurred", firstPartError)
 			slog.Info("error occurred", "checkpoint", firstPartError)
-		} else {
 			return
 		}
+
+		return
 	}
 
 	// Continue with installation
@@ -117,16 +119,16 @@ func PerformSetup(c *echo.Context, wizardInfo *structs.WizardInfo) {
 		}
 	}
 
-	log.Println("Setup Completed Successfully")
+	//	log.Println("Setup Completed Successfully")
 
-	//Send completed message to the front end.
-	internal.EventBus.Publish("consoleLog", strings.TrimSpace("Setup Completed Successfully"))
-
-	checkpoint = structs.Completed
-	errSaveCheckpoint := SaveStatus(structs.Completed)
-	if errSaveCheckpoint != nil {
-		log.Println(errSaveCheckpoint.Error())
-	}
+	////Send completed message to the front end.
+	//internal.EventBus.Publish("consoleLog", strings.TrimSpace("Setup Completed Successfully"))
+	//
+	//checkpoint = structs.Completed
+	//errSaveCheckpoint := SaveStatus(structs.Completed)
+	//if errSaveCheckpoint != nil {
+	//	log.Println(errSaveCheckpoint.Error())
+	//}
 
 	////Reboot
 	//internal.EventBus.Publish("Restarting System", "")
