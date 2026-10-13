@@ -119,24 +119,24 @@ func PerformSetup(c *echo.Context, wizardInfo *structs.WizardInfo) {
 		}
 	}
 
-	//	log.Println("Setup Completed Successfully")
+	log.Println("Setup Completed Successfully")
 
-	////Send completed message to the front end.
-	//internal.EventBus.Publish("consoleLog", strings.TrimSpace("Setup Completed Successfully"))
-	//
-	//checkpoint = structs.Completed
-	//errSaveCheckpoint := SaveStatus(structs.Completed)
-	//if errSaveCheckpoint != nil {
-	//	log.Println(errSaveCheckpoint.Error())
-	//}
+	//Send completed message to the front end.
+	internal.EventBus.Publish("consoleLog", strings.TrimSpace("Setup Completed Successfully"))
 
-	////Reboot
-	//internal.EventBus.Publish("Restarting System", "")
-	//
-	//rebootErr := rest_client.Reboot()
-	//if rebootErr != nil {
-	//	return
-	//}
+	checkpoint = structs.Completed
+	errSaveCheckpoint := SaveStatus(structs.Completed)
+	if errSaveCheckpoint != nil {
+		log.Println(errSaveCheckpoint.Error())
+	}
+
+	//Reboot
+	internal.EventBus.Publish("Restarting System", "")
+
+	rebootErr := rest_client.Reboot()
+	if rebootErr != nil {
+		return
+	}
 
 }
 
