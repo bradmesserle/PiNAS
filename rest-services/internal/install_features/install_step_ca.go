@@ -78,11 +78,20 @@ func installSmallStep(w http.ResponseWriter) error {
 		slog.Error("Error while sending event data", "Value", err)
 	}
 
-	cmd := exec.Command("apt-get", "update", "&&", "apt-get", "-y", "install", "step-cli", "step-ca")
-	err := utilities.ExecCmdSseStdoutText(cmd, w)
-	if err != nil {
-		slog.Error("Error while Installing Step CA", "Value", err)
-		//return err
+	//Update packages
+	updateCmd := exec.Command("apt-get", "update")
+	updateErr := utilities.ExecCmdSseStdoutText(updateCmd, w)
+	if updateErr != nil {
+		slog.Error("Error while Installing Step CA", "Value", updateErr)
+		return nil
+	}
+
+	//Install Packages
+	installCmd := exec.Command("apt-get", "-y", "install", "step-cli", "step-ca")
+	installErr := utilities.ExecCmdSseStdoutText(installCmd, w)
+	if installErr != nil {
+		slog.Error("Error while Installing Step CA", "Value", installErr)
+		return nil
 	}
 
 	return nil
