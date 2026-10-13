@@ -129,13 +129,13 @@ func PerformSetup(c *echo.Context, wizardInfo *structs.WizardInfo) {
 		log.Println(errSaveCheckpoint.Error())
 	}
 
-	//Reboot
-	internal.EventBus.Publish("Restarting System", "")
-
-	rebootErr := rest_client.Reboot()
-	if rebootErr != nil {
-		return
-	}
+	////Reboot
+	//internal.EventBus.Publish("Restarting System", "")
+	//
+	//rebootErr := rest_client.Reboot()
+	//if rebootErr != nil {
+	//	return
+	//}
 
 }
 
