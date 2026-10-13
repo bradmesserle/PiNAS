@@ -24,10 +24,10 @@ func InstallStepCA(w http.ResponseWriter) error {
 	}
 
 	// Install  installSmallStep
-	installErr := installSmallStep(w)
-	if installErr != nil {
-		return installErr
-	}
+	//installErr := installSmallStep(w)
+	//if installErr != nil {
+	//	return installErr
+	//}
 
 	return nil
 }
