@@ -50,14 +50,14 @@ func installSmallStepAptRepo(w http.ResponseWriter) {
 	}
 
 	// Get signing keys
-	keysCmd := exec.Command("curl", "-fsSL", " https://packages.smallstep.com/keys/apt/repo-signing-key.gpg", "-o", "/etc/apt/trusted.gpg.d/smallstep.asc")
+	keysCmd := exec.Command("curl", "-fsSL", "https://packages.smallstep.com/keys/apt/repo-signing-key.gpg", "-o", "/etc/apt/trusted.gpg.d/smallstep.asc")
 	keysErr := utilities.ExecCmdSseStdoutText(keysCmd, w)
 	if keysErr != nil {
 		slog.Error("Error while creating repo signing keys", "Value", keysErr)
 	}
 
 	//Create package list
-	listCmd := exec.Command(`echo deb [signed-by=/etc/apt/trusted.gpg.d/smallstep.asc] https://packages.smallstep.com/stable/debian debs main | tee /etc/apt/sources.list.d/smallstep.list`)
+	listCmd := exec.Command("bash", "-c", `echo deb [signed-by=/etc/apt/trusted.gpg.d/smallstep.asc] https://packages.smallstep.com/stable/debian debs main | tee /etc/apt/sources.list.d/smallstep.list`)
 	listErr := utilities.ExecCmdSseStdoutText(listCmd, w)
 	if listErr != nil {
 		slog.Error("Error while installing CA APT Repo", "Value", listErr)
