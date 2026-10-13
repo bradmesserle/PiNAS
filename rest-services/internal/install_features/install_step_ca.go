@@ -17,17 +17,17 @@ func InstallStepCA(w http.ResponseWriter) error {
 		return osDepErr
 	}
 
-	// Add SmallStep Repo to system
-	repoErr := installSmallStepAptRepo(w)
-	if repoErr != nil {
-		return repoErr
-	}
+	//// Add SmallStep Repo to system
+	//repoErr := installSmallStepAptRepo(w)
+	//if repoErr != nil {
+	//	return repoErr
+	//}
 
 	// Install  installSmallStep
-	//installErr := installSmallStep(w)
-	//if installErr != nil {
-	//	return installErr
-	//}
+	installErr := installSmallStep(w)
+	if installErr != nil {
+		return installErr
+	}
 
 	return nil
 }
