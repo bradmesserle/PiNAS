@@ -107,6 +107,9 @@ func main() {
 	//Install DNS Feature
 	e.GET("/installDnsFeature", features.InstallBind9Dns)
 
+	//Install STEP CA
+	e.GET("/installStepCa", features.InstallStepCa)
+
 	// Start the server
 	sc := echo.StartConfig{
 		Address: "localhost:9090",
