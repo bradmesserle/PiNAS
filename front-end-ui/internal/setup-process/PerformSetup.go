@@ -75,6 +75,11 @@ func PerformSetup(c *echo.Context, wizardInfo *structs.WizardInfo) {
 		}
 
 		checkpoint = structs.ZfsCreated
+		errSaveCheckpoint := SaveStatus(checkpoint)
+		if errSaveCheckpoint != nil {
+			log.Println(errSaveCheckpoint.Error())
+		}
+
 	}
 
 	//Check if nvme-fa is enabled if so, compile the kernel and enable it
@@ -89,7 +94,7 @@ func PerformSetup(c *echo.Context, wizardInfo *structs.WizardInfo) {
 		}
 
 		if checkpoint == structs.NvmeFaPart1 {
-			err := NvmeFaInstallPart2(checkpoint)
+			err := nvmeFaInstallPart2(checkpoint)
 			if err != nil {
 				log.Println(err.Error())
 			}
@@ -97,7 +102,7 @@ func PerformSetup(c *echo.Context, wizardInfo *structs.WizardInfo) {
 	}
 
 	//Check if we need to install DNS
-	if wizardInfo.NasOptions.InstallDns {
+	if (checkpoint == structs.ZfsCreated || checkpoint == structs.NvmeFaDone) && wizardInfo.NasOptions.InstallDns {
 		err := installDns()
 		if err != nil {
 			log.Println(err.Error())
@@ -105,7 +110,7 @@ func PerformSetup(c *echo.Context, wizardInfo *structs.WizardInfo) {
 	}
 
 	// Check to see if we need to install CA
-	if wizardInfo.NasOptions.InstallCa {
+	if (checkpoint == structs.ZfsCreated || checkpoint == structs.NvmeFaDone) && wizardInfo.NasOptions.InstallCa {
 		err := installCa()
 		if err != nil {
 			log.Println(err.Error())
@@ -117,18 +122,20 @@ func PerformSetup(c *echo.Context, wizardInfo *structs.WizardInfo) {
 	//Send completed message to the front end.
 	internal.EventBus.Publish("consoleLog", strings.TrimSpace("Setup Completed Successfully"))
 
+	checkpoint = structs.Completed
 	errSaveCheckpoint := SaveStatus(structs.Completed)
 	if errSaveCheckpoint != nil {
 		log.Println(errSaveCheckpoint.Error())
 	}
 
-	//Reboot
-	internal.EventBus.Publish("Restarting System", "")
+	////Reboot
+	//internal.EventBus.Publish("Restarting System", "")
+	//
+	//rebootErr := rest_client.Reboot()
+	//if rebootErr != nil {
+	//	return
+	//}
 
-	rebootErr := rest_client.Reboot()
-	if rebootErr != nil {
-		return
-	}
 }
 
 // startSetupProcess begins the setup process when the ZFS pool is not online and the system is in fresh install state.
@@ -283,7 +290,8 @@ func installNvmeFaPart1(checkpoint structs.Checkpoint) error {
 	return nil
 }
 
-func NvmeFaInstallPart2(checkpoint structs.Checkpoint) error {
+// nvmeFaInstallPart2 continues onto part 2 of the NVMe FA setup process.
+func nvmeFaInstallPart2(checkpoint structs.Checkpoint) error {
 
 	//Continue onto part 2 Install the CLI
 	log.Println("NvmeFaPart2 - Installing nvme-cli ")
@@ -297,6 +305,13 @@ func NvmeFaInstallPart2(checkpoint structs.Checkpoint) error {
 
 	log.Println("NvmeFa Install Part 2 Completed Successfully")
 	internal.EventBus.Publish("consoleLog", strings.TrimSpace("NvmeFa Install Part 2 Completed Successfully"))
+
+	//Save Checkpoint
+	checkpoint = structs.NvmeFaDone
+	errSaveCheckpoint := SaveStatus(checkpoint)
+	if errSaveCheckpoint != nil {
+		log.Println(errSaveCheckpoint.Error())
+	}
 
 	return nil
 }
