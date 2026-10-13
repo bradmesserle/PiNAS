@@ -50,7 +50,6 @@ func PerformSetup(c *echo.Context, wizardInfo *structs.WizardInfo) {
 	if zfsStatus.State != common_structs.ZfsStateOnline && checkpoint == structs.FreshInstall {
 		firstPartError := startSetupProcess(zfsStatus, checkpoint)
 		if firstPartError != nil {
-			internal.EventBus.Publish("error occurred", firstPartError)
 			slog.Info("error occurred", "checkpoint", firstPartError)
 			return
 		}
