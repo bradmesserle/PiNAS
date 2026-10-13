@@ -29,6 +29,7 @@ func ExecCmdSseStdoutText(cmd *exec.Cmd, w http.ResponseWriter) error {
 
 	stdErrScanner := bufio.NewScanner(stderr)
 	for stdErrScanner.Scan() {
+		log.Printf("Scanner error: %v", err)
 		if err := SendEventData(stdErrScanner.Text(), "consoleErrOutput", w); err != nil {
 			return err
 		}
@@ -39,7 +40,7 @@ func ExecCmdSseStdoutText(cmd *exec.Cmd, w http.ResponseWriter) error {
 	}
 
 	if err := cmd.Wait(); err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	return nil

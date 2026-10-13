@@ -43,7 +43,7 @@ func installOsPackages(w http.ResponseWriter) error {
 	err := utilities.ExecCmdSseStdoutText(cmd, w)
 	if err != nil {
 		slog.Error("Error while installing SmallStep CA Dependencies", "Value", err)
-		return err
+		//return err
 	}
 
 	return nil
@@ -65,7 +65,7 @@ func installSmallStepAptRepo(w http.ResponseWriter) error {
 	err := utilities.ExecCmdSseStdoutText(cmd, w)
 	if err != nil {
 		slog.Error("Error while installing CA APT Repo", "Value", err)
-		return err
+		//return err
 	}
 
 	return nil
@@ -82,7 +82,7 @@ func installSmallStep(w http.ResponseWriter) error {
 	err := utilities.ExecCmdSseStdoutText(cmd, w)
 	if err != nil {
 		slog.Error("Error while Installing Step CA", "Value", err)
-		return err
+		//return err
 	}
 
 	return nil
