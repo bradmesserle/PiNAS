@@ -321,5 +321,16 @@ func installDns() error {
 // installCa installs a Certificate Authority (CA) on the system and returns an error if the installation fails.
 func installCa() error {
 
+	log.Println("Installing SmallStep CA")
+
+	err := rest_client.InstallSmallStep()
+	if err != nil {
+		log.Println(err.Error())
+		return err
+	}
+
+	log.Println("SmallStep CA Installed Completed Successfully")
+	internal.EventBus.Publish("consoleLog", strings.TrimSpace("SmallStep CA Installed Completed Successfully"))
+
 	return nil
 }
