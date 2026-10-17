@@ -24,7 +24,7 @@ func CreateZfsDataset(c *echo.Context) error {
 
 	if err := c.Bind(zfsDataset); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "Invalid request payload",
+			"error": "Invalid request payload - Unable to unmarshall json data",
 		})
 	}
 
@@ -32,7 +32,7 @@ func CreateZfsDataset(c *echo.Context) error {
 	err := os_functions.CreateZfsDataset(*zfsDataset, w)
 	if err != nil {
 		slog.Error("Error while creating zfs dataset", "Value", err)
-		return err
+		return nil
 	}
 
 	return nil

@@ -29,7 +29,7 @@ func AptUpdate(c *echo.Context) error {
 	err := utilities.ExecCmdSseStdoutText(cmd, w)
 	if err != nil {
 		slog.Error("Error while running apt update", "Value", err)
-		return err
+		return nil
 	}
 
 	return nil
