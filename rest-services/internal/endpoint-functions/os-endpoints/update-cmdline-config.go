@@ -22,7 +22,7 @@ func UpdateCmdlineConfigFile(c *echo.Context) error {
 	err := os_functions.UpdateBootCmdlineTextFile(w)
 	if err != nil {
 		slog.Error("Error while updating cmdline config file", "Value", err)
-		return err
+		return nil
 	}
 
 	return nil

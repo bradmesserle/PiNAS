@@ -22,7 +22,7 @@ func UpdateCaCertificates(c *echo.Context) error {
 	err := os_functions.UpdateCaCertificates(w)
 	if err != nil {
 		slog.Error("Error while updating CA certificates", "Value", err)
-		return err
+		return nil
 	}
 
 	return nil
