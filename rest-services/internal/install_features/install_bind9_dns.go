@@ -13,25 +13,25 @@ func InstallBind9DNS(w http.ResponseWriter) error {
 	// Install Bind DNS
 	installDnsErr := installDns(w)
 	if installDnsErr != nil {
-		return installDnsErr
+		return nil
 	}
 
 	//Install DNS Utils
 	installDnsUtilErr := installDnsUtils(w)
 	if installDnsUtilErr != nil {
-		return installDnsUtilErr
+		return nil
 	}
 
 	//Install Systemd Resolve
 	installSystemdResolveErr := installSystemdResolve(w)
 	if installSystemdResolveErr != nil {
-		return installSystemdResolveErr
+		return nil
 	}
 
 	// Updating /etc/bind permissions
 	updateEtcBindErr := updateEtcBindPermissions(w)
 	if updateEtcBindErr != nil {
-		return updateEtcBindErr
+		return nil
 	}
 
 	return nil
