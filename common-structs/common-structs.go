@@ -78,3 +78,7 @@ type ZfsDataset struct {
 	PoolName    string            `json:"poolName"`
 	Options     map[string]string `json:"options"`
 }
+
+type DnsSettings struct {
+	DomainName string `json:"domainName"`
+}

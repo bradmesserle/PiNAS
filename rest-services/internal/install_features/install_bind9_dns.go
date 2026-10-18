@@ -5,10 +5,11 @@ import (
 	"net/http"
 	"os/exec"
 
+	common_structs "github.com/pinas/common-structs"
 	"github.com/pinas/rest-services/internal/utilities"
 )
 
-func InstallBind9DNS(w http.ResponseWriter) error {
+func InstallBind9DNS(dnsSettings common_structs.DnsSettings, w http.ResponseWriter) error {
 
 	// Install Bind DNS
 	installDnsErr := installDns(w)
@@ -31,6 +32,18 @@ func InstallBind9DNS(w http.ResponseWriter) error {
 	// Updating /etc/bind permissions
 	updateEtcBindErr := updateEtcBindPermissions(w)
 	if updateEtcBindErr != nil {
+		return nil
+	}
+
+	// Updating /var/cache/bind permissions
+	updateVarCacheErr := updateVarCacheBindPermissions(w)
+	if updateVarCacheErr != nil {
+		return nil
+	}
+
+	// Generate DNS Key
+	dnsKeyErr := generateDnsKey(w)
+	if dnsKeyErr != nil {
 		return nil
 	}
 
@@ -142,4 +155,22 @@ func createLogDir(w http.ResponseWriter) error {
 
 	return nil
 
+}
+
+// generateDnsKey generates a DNS key, returning an error if the operation fails.
+func generateDnsKey(w http.ResponseWriter) error {
+
+	if err := utilities.SendEventData("Generating DNS Key", "consoleOutput", w); err != nil {
+		slog.Error("Error while sending event data", "Value", err)
+	}
+
+	// tsig-keygen -a hmac-sha256 externaldns
+	cmd := exec.Command("tsig-keygen", "-a", "hmac-sha256", "externaldns")
+	err := utilities.ExecCmdSseStdoutText(cmd, w)
+	if err != nil {
+		slog.Error("Error while creating DNS key", "Value", err)
+		return err
+	}
+
+	return nil
 }

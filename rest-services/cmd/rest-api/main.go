@@ -105,7 +105,7 @@ func main() {
 	e.GET("/updateCaCertificates", os_endpoints.UpdateCaCertificates)
 
 	//Install DNS Feature
-	e.GET("/installDnsFeature", features.InstallBind9Dns)
+	e.POST("/installDnsFeature", features.InstallBind9Dns)
 
 	//Install STEP CA
 	e.GET("/installStepCa", features.InstallStepCa)
