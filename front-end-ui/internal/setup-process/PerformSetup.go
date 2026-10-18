@@ -104,7 +104,7 @@ func PerformSetup(c *echo.Context, wizardInfo *structs.WizardInfo) {
 
 	//Check if we need to install DNS
 	if (checkpoint == structs.ZfsCreated || checkpoint == structs.NvmeFaDone) && wizardInfo.NasOptions.InstallDns {
-		err := installDns()
+		err := installDns(wizardInfo)
 		if err != nil {
 			log.Println(err.Error())
 		}
@@ -318,11 +318,11 @@ func nvmeFaInstallPart2(checkpoint structs.Checkpoint) error {
 }
 
 // installDns configures and installs the DNS settings required for the application and returns an error if it fails.
-func installDns() error {
+func installDns(wizardInfo *structs.WizardInfo) error {
 
 	log.Println("Installing DNS")
 
-	errDns := rest_client.InstallDns()
+	errDns := rest_client.InstallDns(wizardInfo.DnsSettings)
 	if errDns != nil {
 		log.Println(errDns.Error())
 		return errDns

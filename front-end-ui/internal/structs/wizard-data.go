@@ -4,11 +4,14 @@ import (
 	"encoding/json"
 	"log/slog"
 	"os"
+
+	common_structs "github.com/pinas/common-structs"
 )
 
 type WizardInfo struct {
-	Step       int
-	NasOptions NasOptions
+	Step        int
+	NasOptions  NasOptions
+	DnsSettings common_structs.DnsSettings
 }
 
 type NasOptions struct {
